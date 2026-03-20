@@ -1,9 +1,9 @@
 use std::env;
 use std::ffi::OsStr;
-use std::fs::remove_file;
-use std::io::{ErrorKind, Result};
+use std::fs::{remove_file, File};
+use std::io::{Error, ErrorKind, Result};
 use std::os::unix::fs::symlink;
-use std::path::PathBuf;
+use std::path::{PathBuf};
 use std::process::{Child, Command};
 
 // I'll think about it.
@@ -14,6 +14,20 @@ fn main() {
 			format!("Failed to install '{}'!", &arg).as_str()
 		);
 	};
+}
+
+fn download<S: AsRef<OsStr>>(url: S, file: PathBuf) -> Result<()> {
+	if !file.exists() {
+		File::create(&file)?;
+	}
+	let mut command = Command::new("curl")
+		.arg("-L")
+		.arg(url)
+		.arg("-o")
+		.arg(file.canonicalize()?)
+		.spawn()?;
+	command.wait()?;
+	Ok(())
 }
 
 fn link_bin(path: PathBuf) -> Result<()> {
@@ -34,9 +48,9 @@ fn link_bin(path: PathBuf) -> Result<()> {
 		let usr_bin_path: String = format!("/usr/bin/{}", filename.display());
 		let result: Result<()> = symlink(file, &usr_bin_path);
 		if result.is_err() {
-			let error = result.unwrap_err();
+			let error: Error = result.unwrap_err();
 			if error.kind() == ErrorKind::AlreadyExists {
-				println!("File already exists: {}", usr_bin_path);
+				println!("Removing existing file: {}", usr_bin_path);
 				remove_file(&usr_bin_path)?;
 				symlink(file, &usr_bin_path)?;
 			} else {
