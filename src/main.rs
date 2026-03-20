@@ -2,13 +2,13 @@ mod commands;
 
 use std::env::args;
 use std::ffi::OsStr;
-use std::fs::{remove_file, File};
+use std::fs::remove_file;
 use std::io::{Error, ErrorKind, Result};
 use std::os::unix::fs::symlink;
-use std::path::{PathBuf};
+use std::path::PathBuf;
 use std::process::{Child, Command};
 
-use crate::commands::has_program;
+use crate::commands::{download, has_program};
 
 // I'll think about it.
 #[cfg(not(windows))]
@@ -18,20 +18,6 @@ fn main() {
 			format!("Failed to install '{}'!", &arg).as_str()
 		);
 	};
-}
-
-fn download<S: AsRef<OsStr>>(url: S, file: PathBuf) -> Result<()> {
-	if !file.exists() {
-		File::create(&file)?;
-	}
-	let mut child: Child = Command::new("curl")
-		.arg("-L")
-		.arg(url)
-		.arg("-o")
-		.arg(file.canonicalize()?)
-		.spawn()?;
-	child.wait()?;
-	Ok(())
 }
 
 fn link_bin(path: PathBuf) -> Result<()> {
