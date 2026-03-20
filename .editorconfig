@@ -1,0 +1,12 @@
+root = true
+
+[*]
+indent_style = tab
+tab_width = 4
+end_of_line = lf
+charset = utf-8
+insert_final_newline = false
+trim_trailing_whitespace = true
+
+[{*.json,*.json5,*.xml,*.md,*.nix}]
+tab_width = 2
