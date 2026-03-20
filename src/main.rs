@@ -6,6 +6,8 @@ use std::os::unix::fs::symlink;
 use std::path::PathBuf;
 use std::process::{Child, Command};
 
+// I'll think about it.
+#[cfg(not(windows))]
 fn main() {
 	for arg in env::args().skip(1) {
 		link_bin((&arg).into()).expect(
@@ -41,14 +43,19 @@ fn link_bin(path: PathBuf) -> Result<()> {
 				return Err(error)
 			}
 		}
-		let mut x: Child = Command::new("update-alternatives")
-			.arg("--install")
-			.arg(usr_bin_path)
-			.arg(filename)
-			.arg(file)
-			.arg("4000")
-			.spawn()?;
-		x.wait()?;
+		update_alternatives(file, filename, usr_bin_path)?;
 	};
+	Ok(())
+}
+
+fn update_alternatives(file: &PathBuf, filename: &OsStr, usr_bin_path: String) -> Result<()> {
+	let mut x: Child = Command::new("update-alternatives")
+		.arg("--install")
+		.arg(usr_bin_path)
+		.arg(filename)
+		.arg(file)
+		.arg("4000")
+		.spawn()?;
+	x.wait()?;
 	Ok(())
 }
