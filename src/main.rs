@@ -1,4 +1,6 @@
-use std::env;
+mod commands;
+
+use std::env::args;
 use std::ffi::OsStr;
 use std::fs::{remove_file, File};
 use std::io::{Error, ErrorKind, Result};
@@ -6,10 +8,12 @@ use std::os::unix::fs::symlink;
 use std::path::{PathBuf};
 use std::process::{Child, Command};
 
+use crate::commands::has_program;
+
 // I'll think about it.
 #[cfg(not(windows))]
 fn main() {
-	for arg in env::args().skip(1) {
+	for arg in args().skip(1) {
 		link_bin((&arg).into()).expect(
 			format!("Failed to install '{}'!", &arg).as_str()
 		);
@@ -20,13 +24,13 @@ fn download<S: AsRef<OsStr>>(url: S, file: PathBuf) -> Result<()> {
 	if !file.exists() {
 		File::create(&file)?;
 	}
-	let mut command = Command::new("curl")
+	let mut child: Child = Command::new("curl")
 		.arg("-L")
 		.arg(url)
 		.arg("-o")
 		.arg(file.canonicalize()?)
 		.spawn()?;
-	command.wait()?;
+	child.wait()?;
 	Ok(())
 }
 
@@ -63,13 +67,16 @@ fn link_bin(path: PathBuf) -> Result<()> {
 }
 
 fn update_alternatives(file: &PathBuf, filename: &OsStr, usr_bin_path: String) -> Result<()> {
-	let mut x: Child = Command::new("update-alternatives")
+	if !has_program("update-alternatives")? {
+		return Ok(())
+	}
+	let mut child: Child = Command::new("update-alternatives")
 		.arg("--install")
 		.arg(usr_bin_path)
 		.arg(filename)
 		.arg(file)
 		.arg("4000")
 		.spawn()?;
-	x.wait()?;
+	child.wait()?;
 	Ok(())
 }
