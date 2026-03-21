@@ -20,13 +20,13 @@ fn main() {
 		env::set_var("RUST_BACKTRACE", "1");
 	}
 	for arg in args().skip(1) {
-		link_bin(&arg).expect(
+		install(&arg).expect(
 			format!("Failed to install '{}'!", &arg).as_str()
 		);
 	};
 }
 
-fn link_bin<P: AsRef<Path>>(path: P) -> Result<()> {
+fn install<P: AsRef<Path>>(path: P) -> Result<()> {
 	let path: &Path = path.as_ref();
 	println!("Installing path: {}", path.display());
 	let bin: PathBuf = path.join("bin");
