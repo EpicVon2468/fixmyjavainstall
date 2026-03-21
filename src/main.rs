@@ -1,7 +1,6 @@
 mod commands;
 
-use std::env;
-use std::env::args;
+use std::env::{args, set_var};
 use std::ffi::os_str::Display;
 use std::ffi::OsStr;
 use std::fs::remove_file;
@@ -17,7 +16,7 @@ use crate::commands::{download, has_program, io_expect};
 fn main() {
 	// Doing this when trying to run the binary didn't work
 	unsafe {
-		env::set_var("RUST_BACKTRACE", "1");
+		set_var("RUST_BACKTRACE", "1");
 	}
 	for arg in args().skip(1) {
 		install(&arg).expect(
