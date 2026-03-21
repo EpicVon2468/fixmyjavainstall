@@ -28,12 +28,12 @@ fn link_bin(path: PathBuf) -> Result<()> {
 		println!("\n{}", file.display());
 		if file.is_dir() {
 			continue;
-		}
+		};
 		let name: Option<&OsStr> = file.file_name();
 		if name.is_none() {
 			println!("Filename was none! '{}'", file.display());
 			continue;
-		}
+		};
 		let filename: &OsStr = name.unwrap();
 		let usr_bin_path: String = format!("/usr/bin/{}", filename.display());
 		let result: Result<()> = symlink(file, &usr_bin_path);
@@ -44,18 +44,18 @@ fn link_bin(path: PathBuf) -> Result<()> {
 				remove_file(&usr_bin_path)?;
 				symlink(file, &usr_bin_path)?;
 			} else {
-				return Err(error)
-			}
-		}
+				return Err(error);
+			};
+		};
 		update_alternatives(file, filename, usr_bin_path)?;
 	};
 	Ok(())
 }
 
-fn update_alternatives(file: &PathBuf, filename: &OsStr, usr_bin_path: String) -> Result<()> {
+fn update_alternatives<S: AsRef<OsStr>>(file: &PathBuf, filename: &OsStr, usr_bin_path: S) -> Result<()> {
 	if !has_program("update-alternatives")? {
 		return Ok(())
-	}
+	};
 	let mut child: Child = Command::new("update-alternatives")
 		.arg("--install")
 		.arg(usr_bin_path)

@@ -5,12 +5,7 @@ use std::path::Path;
 use std::process::{Child, Command};
 
 pub fn has_program(name: &str) -> Result<bool> {
-	Ok(
-		command_v(name)?
-			.wait_with_output()?
-			.status
-			.success()
-	)
+	Ok(command_v(name)?.wait()?.success())
 }
 
 fn command_v(name: &str) -> Result<Child> {
@@ -42,10 +37,10 @@ pub fn download<S: AsRef<OsStr>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> 
 	if exists && file.is_dir() {
 		remove_file(file)?;
 		exists = file.try_exists()?;
-	}
+	};
 	if !exists {
 		File::create(file)?;
-	}
+	};
 	let mut child: Child = Command::new("curl")
 		.arg("-L")
 		.arg(url)
