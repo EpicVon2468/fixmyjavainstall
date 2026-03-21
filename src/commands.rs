@@ -2,7 +2,7 @@ use std::ffi::OsStr;
 use std::fs::{remove_file, File};
 use std::io::{Error, ErrorKind, Result};
 use std::path::Path;
-use std::process::{Child, Command};
+use std::process::{Child, Command, Stdio};
 
 pub fn has_program(name: &str) -> Result<bool> {
 	Ok(command_v(name)?.wait()?.success())
@@ -12,6 +12,7 @@ fn command_v(name: &str) -> Result<Child> {
 	Ok(
 		Command::new("which")
 			.arg(name)
+			.stdout(Stdio::null())
 			.spawn()?
 	)
 }
@@ -31,21 +32,29 @@ pub fn require_program(name: &str) -> Result<()> {
 
 pub fn download<S: AsRef<OsStr>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 	require_program("curl")?;
-	let file: &Path = dest.as_ref();
-	let mut exists: bool = file.try_exists()?;
-	if exists && file.is_dir() {
-		remove_file(file)?;
-		exists = file.try_exists()?;
+	let dest: &Path = dest.as_ref();
+	let mut exists: bool = dest.try_exists()?;
+	if exists && dest.is_dir() {
+		remove_file(dest).expect(io_expect(dest, "delete").as_str());
+		exists = dest.try_exists()?;
 	};
 	if !exists {
-		File::create(file)?;
+		File::create(dest).expect(io_expect(dest, "create").as_str());
 	};
 	let mut child: Child = Command::new("curl")
 		.arg("-L")
 		.arg(url)
 		.arg("-o")
-		.arg(file.canonicalize()?)
+		.arg(dest.canonicalize()?)
 		.spawn()?;
 	child.wait()?;
 	Ok(())
+}
+
+pub fn io_expect<P: AsRef<Path>, S: AsRef<str>>(dest: P, msg: S) -> String {
+	format!(
+		"Couldn't {} path '{}'!",
+		msg.as_ref(),
+		dest.as_ref().display()
+	)
 }
