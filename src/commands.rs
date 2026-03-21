@@ -10,8 +10,7 @@ pub fn has_program(name: &str) -> Result<bool> {
 
 fn command_v(name: &str) -> Result<Child> {
 	Ok(
-		Command::new("command")
-			.arg("-v")
+		Command::new("which")
 			.arg(name)
 			.spawn()?
 	)
