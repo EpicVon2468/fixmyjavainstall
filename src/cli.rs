@@ -7,17 +7,21 @@ use clap::{Parser, Subcommand};
 	long_about = "Fix Ur Java Install – A JVM & Kotlin management utility."
 )]
 pub struct Arguments {
-	#[arg(long, value_name = "PATHS", trailing_var_arg = true, num_args = 1..)]
-	pub install: Vec<String>,
-
-	#[arg(short, long, value_name = "DIR", default_value = "/usr/bin")]
-	pub link_dir: String,
-
-	#[arg(short, long, default_value = "false")]
-	pub use_update_alternatives: bool
+	#[command(subcommand)]
+	pub command: Option<Cmd>,
 }
 
-// #[derive(Subcommand)]
-// pub enum Install {
-//
-// }
+#[derive(Subcommand)]
+pub enum Cmd {
+	Install {
+		// #[arg(long, value_name = "PATHS", trailing_var_arg = true, num_args = 1..)]
+		paths: Vec<String>,
+
+		#[arg(short, long, value_name = "DIR", default_value = "/usr/bin")]
+		link_dir: String,
+
+		#[arg(short, long, default_value = "false")]
+		use_update_alternatives: bool
+	},
+	Foo {},
+}
