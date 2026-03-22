@@ -2,7 +2,6 @@ mod commands;
 mod cli;
 
 use std::env::set_var;
-use std::ffi::os_str::Display;
 use std::ffi::OsStr;
 use std::fs::remove_file;
 use std::io::{Error, ErrorKind, Result};
@@ -48,7 +47,7 @@ fn do_install(command: &Cmd) -> Result<()> {
 	};
 	for path in paths {
 		install(path, link_dir, *use_update_alternatives).expect(
-			format!("Failed to install '{}'!", path).as_str()
+			format!("Failed to install '{path}'!").as_str()
 		);
 	};
 	Ok(())
@@ -84,7 +83,7 @@ fn install<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alter
 		if can_use_update_alternatives {
 			debian_install(file, filename, dest).expect("Couldn't install with update-alternatives!");
 		} else {
-			symlink_install(file, &dest).expect("Couldn't install with symlink!");
+			symlink_install(file, dest).expect("Couldn't install with symlink!");
 		};
 	};
 	Ok(())
@@ -97,8 +96,7 @@ fn symlink_install<P: AsRef<Path>, S: AsRef<OsStr>>(source: P, dest: S) -> Resul
 	if result.is_err() {
 		let error: Error = result.unwrap_err();
 		if error.kind() == ErrorKind::AlreadyExists {
-			let display: Display = dest.display();
-			println!("Removing existing file: {}", display);
+			println!("Removing existing file: {}", dest.display());
 			remove_file(dest).expect(io_expect(dest, "remove").as_str());
 			symlink(source, dest).expect("Symbolic linking failed second time, panicking!");
 		} else {
@@ -115,40 +113,42 @@ where
 	S2: AsRef<OsStr>
 {
 	let file: &Path = file.as_ref();
+	let filename: &OsStr = filename.as_ref();
 	let mut install_child: Child = Command::new("update-alternatives")
 		.arg("--install")
 		.arg(dest)
-		.arg(&filename)
+		.arg(filename)
 		.arg(file)
 		.arg("4000")
-		.spawn().expect("Couldn't start update-alternatives!");
-	let install_status = install_child.wait().expect("update-alternatives never started?");
-	if let Some(err) = check_status(install_status) {
-		return err;
+		.spawn()
+		.expect("Couldn't start update-alternatives!");
+	let install_status: ExitStatus = install_child.wait().expect("update-alternatives never started?");
+	if let Some(error) = check_status(install_status) {
+		return Err(error);
 	};
 	let mut set_child: Child = Command::new("update-alternatives")
 		.arg("--set")
-		.arg(&filename)
+		.arg(filename)
 		.arg(file)
-		.spawn().expect("Couldn't start update-alternatives!");
-	let set_status = set_child.wait().expect("update-alternatives never started?");
-	if let Some(err) = check_status(set_status) {
-		return err;
+		.spawn()
+		.expect("Couldn't start update-alternatives!");
+	let set_status: ExitStatus = set_child.wait().expect("update-alternatives never started?");
+	if let Some(error) = check_status(set_status) {
+		return Err(error);
 	};
 	Ok(())
 }
 
-fn check_status(status: ExitStatus) -> Option<Result<()>> {
+fn check_status(status: ExitStatus) -> Option<Error> {
 	if !status.success() {
-		Some(Err(
-			Error::new(
-				ErrorKind::Other,
+		Some(
+			Error::other(
 				format!(
 					"update-alternatives failed with exit code: {}",
 					status.code().unwrap_or(1)
 				)
 			)
-		))
+		)
 	} else {
 		None
 	}

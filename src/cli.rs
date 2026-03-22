@@ -21,7 +21,7 @@ pub enum Cmd {
 		link_dir: String,
 
 		#[arg(short, long, default_value = "false")]
-		use_update_alternatives: bool
+		use_update_alternatives: bool,
 	},
 	Foo {},
 }
