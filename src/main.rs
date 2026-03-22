@@ -8,7 +8,7 @@ use std::fs::remove_file;
 use std::io::{Error, ErrorKind, Result};
 use std::os::unix::fs::symlink;
 use std::path::{Path, PathBuf};
-use std::process::{Child, Command};
+use std::process::{Child, Command, ExitStatus};
 
 use clap::Parser;
 
@@ -28,7 +28,7 @@ fn main() {
 			Cmd::Install { .. } => {
 				do_install(command).unwrap();
 			},
-			Cmd::Foo {  } => todo!(),
+			Cmd::Foo { .. } => todo!(),
 		};
 	};
 }
@@ -37,7 +37,7 @@ fn do_install(command: &Cmd) -> Result<()> {
 	let Cmd::Install {
 		paths,
 		link_dir,
-		use_update_alternatives
+		use_update_alternatives,
 	} = command else {
 		return Err(
 			Error::new(
@@ -122,12 +122,34 @@ where
 		.arg(file)
 		.arg("4000")
 		.spawn().expect("Couldn't start update-alternatives!");
-	install_child.wait().expect("update-alternatives never started?");
+	let install_status = install_child.wait().expect("update-alternatives never started?");
+	if let Some(err) = check_status(install_status) {
+		return err;
+	};
 	let mut set_child: Child = Command::new("update-alternatives")
 		.arg("--set")
 		.arg(&filename)
 		.arg(file)
 		.spawn().expect("Couldn't start update-alternatives!");
-	set_child.wait().expect("update-alternatives never started?");
+	let set_status = set_child.wait().expect("update-alternatives never started?");
+	if let Some(err) = check_status(set_status) {
+		return err;
+	};
 	Ok(())
+}
+
+fn check_status(status: ExitStatus) -> Option<Result<()>> {
+	if !status.success() {
+		Some(Err(
+			Error::new(
+				ErrorKind::Other,
+				format!(
+					"update-alternatives failed with exit code: {}",
+					status.code().unwrap_or(1)
+				)
+			)
+		))
+	} else {
+		None
+	}
 }
