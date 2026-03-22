@@ -1,6 +1,7 @@
 mod commands;
+mod cli;
 
-use std::env::{args, set_var};
+use std::env::set_var;
 use std::ffi::os_str::Display;
 use std::ffi::OsStr;
 use std::fs::remove_file;
@@ -9,7 +10,10 @@ use std::os::unix::fs::symlink;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command};
 
-use crate::commands::{download, has_program, io_expect};
+use clap::Parser;
+
+use crate::cli::Arguments;
+use crate::commands::{has_program, io_expect};
 
 // I'll think about it.
 #[cfg(not(windows))]
@@ -17,19 +21,29 @@ fn main() {
 	// Doing this when trying to run the binary didn't work
 	unsafe {
 		set_var("RUST_BACKTRACE", "1");
-	}
-	for arg in args().skip(1) {
-		install(&arg).expect(
-			format!("Failed to install '{}'!", &arg).as_str()
+	};
+	let arguments: Arguments = Arguments::parse();
+	for arg in &arguments.install {
+		install(arg, &arguments).expect(
+			format!("Failed to install '{}'!", arg).as_str()
 		);
 	};
 }
 
-fn install<P: AsRef<Path>>(path: P) -> Result<()> {
+fn install<P: AsRef<Path>>(path: P, arguments: &Arguments) -> Result<()> {
 	let path: &Path = path.as_ref();
 	println!("Installing path: {}", path.display());
 	let bin: PathBuf = path.join("bin");
-	let use_update_alternatives: bool = has_program("update-alternatives")?;
+	let use_update_alternatives: bool = arguments.use_update_alternatives && has_program("update-alternatives")?;
+	if !use_update_alternatives && arguments.use_update_alternatives {
+		println!("Couldn't find update-alternatives on system when explicitly requested!");
+		return Err(
+			Error::new(
+				ErrorKind::NotFound,
+				"Couldn't find update-alternatives on system when explicitly requested!"
+			)
+		);
+	};
 	for entry in bin.read_dir().expect(io_expect(bin, "list directory").as_str()) {
 		let file: &PathBuf = &entry?.path();
 		println!("\n{}", file.display());
@@ -42,11 +56,11 @@ fn install<P: AsRef<Path>>(path: P) -> Result<()> {
 			continue;
 		};
 		let filename: &OsStr = name.unwrap();
-		let usr_bin_path: String = format!("/usr/bin/{}", filename.display());
+		let dest: String = format!("{}/{}", arguments.link_dir, filename.display());
 		if use_update_alternatives {
-			debian_install(file, filename, usr_bin_path).expect("Couldn't install with update-alternatives!");
+			debian_install(file, filename, dest).expect("Couldn't install with update-alternatives!");
 		} else {
-			symlink_install(file, &usr_bin_path).expect("Couldn't install with symlink!");
+			symlink_install(file, &dest).expect("Couldn't install with symlink!");
 		};
 	};
 	Ok(())
