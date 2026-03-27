@@ -8,8 +8,8 @@ use std::process::{Child, Command, ExitStatus};
 use crate::cli::Cmd;
 use crate::commands::{has_program, io_expect};
 
-pub fn cmd_install(command: &Cmd) -> Result<()> {
-	let Cmd::Install {
+pub fn cmd_link(command: &Cmd) -> Result<()> {
+	let Cmd::Link {
 		paths,
 		link_dir,
 		use_update_alternatives,
@@ -17,21 +17,21 @@ pub fn cmd_install(command: &Cmd) -> Result<()> {
 		return Err(
 			Error::new(
 				ErrorKind::InvalidInput,
-				"Function cmd_install() had wrong parameter!"
+				"Function cmd_link() had wrong parameter!"
 			)
 		);
 	};
 	for path in paths {
-		install(path, link_dir, *use_update_alternatives).expect(
-			format!("Failed to install '{path}'!").as_str()
+		link(path, link_dir, *use_update_alternatives).expect(
+			format!("Failed to link '{path}'!").as_str()
 		);
 	};
 	Ok(())
 }
 
-pub fn install<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alternatives: bool) -> Result<()> {
+pub fn link<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alternatives: bool) -> Result<()> {
 	let path: &Path = path.as_ref();
-	println!("Installing path: {}", path.display());
+	println!("Linking path: {}", path.display());
 	let bin: PathBuf = path.join("bin");
 	let can_use_update_alternatives: bool = use_update_alternatives && has_program("update-alternatives")?;
 	if !can_use_update_alternatives && use_update_alternatives {
@@ -57,15 +57,15 @@ pub fn install<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_a
 		let filename: &OsStr = name.unwrap();
 		let dest: String = format!("{}/{}", link_dir.as_ref(), filename.display());
 		if can_use_update_alternatives {
-			debian_install(file, filename, dest).expect("Couldn't install with update-alternatives!");
+			debian_link(file, filename, dest).expect("Couldn't link with update-alternatives!");
 		} else {
-			symlink_install(file, dest).expect("Couldn't install with symlink!");
+			symlink_link(file, dest).expect("Couldn't link with symlink!");
 		};
 	};
 	Ok(())
 }
 
-fn symlink_install<P: AsRef<Path>, S: AsRef<OsStr>>(source: P, dest: S) -> Result<()> {
+fn symlink_link<P: AsRef<Path>, S: AsRef<OsStr>>(source: P, dest: S) -> Result<()> {
 	let source: &Path = source.as_ref();
 	let dest: &OsStr = dest.as_ref();
 	let result: Result<()> = symlink(source, dest);
@@ -82,7 +82,7 @@ fn symlink_install<P: AsRef<Path>, S: AsRef<OsStr>>(source: P, dest: S) -> Resul
 	Ok(())
 }
 
-fn debian_install<P, S, S2>(file: P, filename: S, dest: S2) -> Result<()>
+fn debian_link<P, S, S2>(file: P, filename: S, dest: S2) -> Result<()>
 where
 	P: AsRef<Path>,
 	S: AsRef<OsStr>,

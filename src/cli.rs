@@ -13,7 +13,7 @@ pub struct Arguments {
 
 #[derive(Subcommand)]
 pub enum Cmd {
-	Install {
+	Link {
 		// #[arg(long, value_name = "PATHS", trailing_var_arg = true, num_args = 1..)]
 		paths: Vec<String>,
 

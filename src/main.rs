@@ -1,13 +1,13 @@
 mod commands;
 mod cli;
-mod cmd_install;
+mod cmd_link;
 
 use std::env::set_var;
 
 use clap::Parser;
 
 use crate::cli::{Arguments, Cmd};
-use crate::cmd_install::cmd_install;
+use crate::cmd_link::cmd_link;
 
 // I'll think about it.
 #[cfg(not(windows))]
@@ -19,8 +19,8 @@ fn main() {
 	let arguments: Arguments = Arguments::parse();
 	if let Some(command) = &arguments.command {
 		match command {
-			Cmd::Install { .. } => {
-				cmd_install(command).unwrap();
+			Cmd::Link { .. } => {
+				cmd_link(command).unwrap();
 			},
 			Cmd::Foo { .. } => todo!(),
 		};
