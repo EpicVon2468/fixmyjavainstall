@@ -18,10 +18,10 @@ macro_rules! wait_and_check_status {
 	($child:ident, $name:literal) => {
 		wait_and_check_status!($child, $name, 1);
 	};
-	($child:ident, $name:literal, $substituteCode:literal) => {
+	($child:ident, $name:literal, $substitute_code:literal) => {
 		let exit_status: std::process::ExitStatus = $child.wait().expect(concat!($name, " never started?"));
-		check_status!(exit_status, $name, $substituteCode);
-	}
+		check_status!(exit_status, $name, $substitute_code);
+	};
 }
 
 #[macro_export]
@@ -32,11 +32,11 @@ macro_rules! check_status {
     ($status:ident, $name:literal) => {
 		check_status!($status, $name, 1);
 	};
-	($status:ident, $name:literal, $substituteCode:literal) => {
+	($status:ident, $name:literal, $substitute_code:literal) => {
 		if (!$status.success()) {
 			return core::result::Result::Err(
 				std::io::Error::other(
-					format!(concat!($name, " failed with exit code: {}"), $status.code().unwrap_or($substituteCode))
+					format!(concat!($name, " failed with exit code: {}"), $status.code().unwrap_or($substitute_code))
 				)
 			);
 		};
