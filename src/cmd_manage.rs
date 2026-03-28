@@ -1,4 +1,4 @@
-use std::io::{Error, ErrorKind, Result};
+use std::io::Result;
 
 use crate::cli::Cmd;
 use crate::wrong_cmd;

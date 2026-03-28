@@ -7,7 +7,7 @@ use std::process::{Child, Command, ExitStatus};
 
 use crate::cli::Cmd;
 use crate::commands::{has_program, io_expect};
-use crate::wrong_cmd;
+use crate::{check_status, wrong_cmd};
 
 pub fn cmd_link(command: &Cmd) -> Result<()> {
 	let Cmd::Link {
@@ -95,9 +95,7 @@ where
 		.spawn()
 		.expect("Couldn't start update-alternatives!");
 	let install_status: ExitStatus = install_child.wait().expect("update-alternatives never started?");
-	if let Some(error) = check_status(install_status) {
-		return Err(error);
-	};
+	check_status!(install_status, "update-alternatives");
 	let mut set_child: Child = Command::new("update-alternatives")
 		.arg("--set")
 		.arg(filename)
@@ -105,21 +103,6 @@ where
 		.spawn()
 		.expect("Couldn't start update-alternatives!");
 	let set_status: ExitStatus = set_child.wait().expect("update-alternatives never started?");
-	if let Some(error) = check_status(set_status) {
-		return Err(error);
-	};
+	check_status!(set_status, "update-alternatives");
 	Ok(())
-}
-
-fn check_status(status: ExitStatus) -> Option<Error> {
-	if !status.success() {
-		Error::other(
-			format!(
-				"update-alternatives failed with exit code: {}",
-				status.code().unwrap_or(1)
-			)
-		).into()
-	} else {
-		None
-	}
 }
