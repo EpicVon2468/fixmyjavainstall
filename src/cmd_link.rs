@@ -7,6 +7,7 @@ use std::process::{Child, Command, ExitStatus};
 
 use crate::cli::Cmd;
 use crate::commands::{has_program, io_expect};
+use crate::wrong_cmd;
 
 pub fn cmd_link(command: &Cmd) -> Result<()> {
 	let Cmd::Link {
@@ -14,12 +15,7 @@ pub fn cmd_link(command: &Cmd) -> Result<()> {
 		link_dir,
 		use_update_alternatives,
 	} = command else {
-		return Err(
-			Error::new(
-				ErrorKind::InvalidInput,
-				"Function cmd_link() had wrong parameter!"
-			)
-		);
+		wrong_cmd!(cmd_link);
 	};
 	for path in paths {
 		link(path, link_dir, *use_update_alternatives).expect(
@@ -117,14 +113,12 @@ where
 
 fn check_status(status: ExitStatus) -> Option<Error> {
 	if !status.success() {
-		Some(
-			Error::other(
-				format!(
-					"update-alternatives failed with exit code: {}",
-					status.code().unwrap_or(1)
-				)
+		Error::other(
+			format!(
+				"update-alternatives failed with exit code: {}",
+				status.code().unwrap_or(1)
 			)
-		)
+		).into()
 	} else {
 		None
 	}

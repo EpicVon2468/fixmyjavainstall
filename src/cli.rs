@@ -23,5 +23,5 @@ pub enum Cmd {
 		#[arg(short, long, default_value = "false")]
 		use_update_alternatives: bool,
 	},
-	Foo {},
+	Manage {},
 }

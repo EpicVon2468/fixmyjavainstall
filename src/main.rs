@@ -1,6 +1,8 @@
 mod commands;
 mod cli;
 mod cmd_link;
+mod cmd_manage;
+mod macros;
 
 use std::env::set_var;
 
@@ -8,6 +10,7 @@ use clap::Parser;
 
 use crate::cli::{Arguments, Cmd};
 use crate::cmd_link::cmd_link;
+use crate::cmd_manage::cmd_manage;
 
 // I'll think about it.
 #[cfg(not(windows))]
@@ -22,7 +25,9 @@ fn main() {
 			Cmd::Link { .. } => {
 				cmd_link(command).unwrap();
 			},
-			Cmd::Foo { .. } => todo!(),
+			Cmd::Manage { .. } => {
+				cmd_manage(command).unwrap();
+			},
 		};
 	};
 }
