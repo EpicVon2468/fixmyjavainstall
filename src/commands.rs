@@ -49,7 +49,7 @@ pub fn download<S: AsRef<OsStr>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> 
 		.arg(url)
 		.arg("-o")
 		.arg(dest.canonicalize()?)
-		.spawn()	
+		.spawn()
 		.expect("Couldn't start cURL!");
 	wait_and_check_status!(child, "cURL");
 	Ok(())
