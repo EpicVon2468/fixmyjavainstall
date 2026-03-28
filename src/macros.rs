@@ -11,12 +11,26 @@ macro_rules! wrong_cmd {
 }
 
 #[macro_export]
+macro_rules! wait_and_check_status {
+    ($child:ident) => {
+		wait_and_check_status!($child, "command");
+	};
+	($child:ident, $name:literal) => {
+		wait_and_check_status!($child, $name, 1);
+	};
+	($child:ident, $name:literal, $substituteCode:literal) => {
+		let exit_status: std::process::ExitStatus = $child.wait().expect(concat!($name, " never started?"));
+		check_status!(exit_status, $name, $substituteCode);
+	}
+}
+
+#[macro_export]
 macro_rules! check_status {
 	($status:ident) => {
-		check_status!($status, "command")
+		check_status!($status, "command");
 	};
     ($status:ident, $name:literal) => {
-		check_status!($status, $name, 1)
+		check_status!($status, $name, 1);
 	};
 	($status:ident, $name:literal, $substituteCode:literal) => {
 		if (!$status.success()) {

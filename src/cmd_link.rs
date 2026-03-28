@@ -3,11 +3,11 @@ use std::fs::remove_file;
 use std::io::{Error, ErrorKind, Result};
 use std::os::unix::fs::symlink;
 use std::path::{Path, PathBuf};
-use std::process::{Child, Command, ExitStatus};
+use std::process::{Child, Command};
 
 use crate::cli::Cmd;
 use crate::commands::{has_program, io_expect};
-use crate::{check_status, wrong_cmd};
+use crate::{check_status, wait_and_check_status, wrong_cmd};
 
 pub fn cmd_link(command: &Cmd) -> Result<()> {
 	let Cmd::Link {
@@ -94,15 +94,13 @@ where
 		.arg("4000")
 		.spawn()
 		.expect("Couldn't start update-alternatives!");
-	let install_status: ExitStatus = install_child.wait().expect("update-alternatives never started?");
-	check_status!(install_status, "update-alternatives");
+	wait_and_check_status!(install_child, "update-alternatives");
 	let mut set_child: Child = Command::new("update-alternatives")
 		.arg("--set")
 		.arg(filename)
 		.arg(file)
 		.spawn()
 		.expect("Couldn't start update-alternatives!");
-	let set_status: ExitStatus = set_child.wait().expect("update-alternatives never started?");
-	check_status!(set_status, "update-alternatives");
+	wait_and_check_status!(set_child, "update-alternatives");
 	Ok(())
 }
