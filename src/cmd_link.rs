@@ -7,7 +7,7 @@ use std::process::{Child, Command};
 
 use crate::cli::Cmd;
 use crate::commands::{has_program, io_expect};
-use crate::{check_status, wait_and_check_status, wrong_cmd};
+use crate::{wait_and_check_status, wrong_cmd};
 
 pub fn cmd_link(command: &Cmd) -> Result<()> {
 	let Cmd::Link {
