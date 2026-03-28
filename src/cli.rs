@@ -23,5 +23,18 @@ pub enum Cmd {
 		#[arg(short, long, default_value = "false")]
 		use_update_alternatives: bool,
 	},
-	Manage {},
+	Manage {
+		#[command(subcommand)]
+		software: Option<Software>,
+	},
+}
+
+#[derive(Subcommand)]
+pub enum Software {
+	JVM {
+	},
+	Kotlin {
+	},
+	KotlinNative {
+	},
 }
