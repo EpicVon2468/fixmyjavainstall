@@ -21,7 +21,7 @@ pub enum Op {
 
 #[derive(ValueEnum, Clone)]
 pub enum Features {
-	/// Java Chromium Embedded Framework - https://github.com/chromiumembedded/java-cef/
+	/// Java Chromium Embedded Framework – https://github.com/chromiumembedded/java-cef/
 	JCEF,
 	/// Minimal (non-SDK) JVM (often referred to as a 'JRE')
 	MINIMAL,
