@@ -25,7 +25,7 @@ pub enum Features {
 	JCEF,
 	/// Minimal (non-SDK) JVM (often referred to as a 'JRE')
 	MINIMAL,
-	/// MUSL libc support - https://musl.libc.org/
+	/// MUSL libc support – https://musl.libc.org/
 	MUSL,
 }
 
@@ -33,6 +33,6 @@ pub enum Features {
 pub enum Vendor {
 	/// Automagically pick the best vendor based on the requested version and features
 	Auto,
-	/// JetBrains Runtime - https://github.com/JetBrains/JetBrainsRuntime/
+	/// JetBrains Runtime – https://github.com/JetBrains/JetBrainsRuntime/
 	JBR,
 }
