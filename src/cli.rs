@@ -31,12 +31,15 @@ pub enum Cmd {
 
 #[derive(Subcommand)]
 pub enum Software {
+	/// Java Virtual Machine – https://www.java.com/
 	JVM {
 		#[command(subcommand)]
 		op: crate::manage_jvm::Op,
 	},
+	/// Kotlin – https://kotlinlang.org/
 	Kotlin {
 	},
+	/// Kotlin/Native – https://kotlinlang.org/docs/native-overview.html
 	KotlinNative {
 	},
 }

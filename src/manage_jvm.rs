@@ -1,3 +1,6 @@
+use std::env::consts::ARCH;
+use std::fmt::{Display, Formatter};
+
 use clap::{Subcommand, ValueEnum};
 
 #[derive(Subcommand)]
@@ -7,7 +10,7 @@ pub enum Op {
 		#[arg(short, long, default_value = "jbr")]
 		vendor: Vendor,
 
-		/// The architecture for the requested JVM
+		/// The architecture for the requested JVM.  Note that not every vendor may support every architecture, and some vendors may not offer certain features for all architectures.  Generally speaking, x64 (amd64) has the highest level of support overall
 		#[arg(short, long, default_value="system")]
 		arch: Arch,
 
@@ -19,8 +22,7 @@ pub enum Op {
 		// #[clap(default_value_t = String::from("latest"))]
 		version: String,
 	},
-	Remove {
-	},
+	Remove,
 }
 
 #[derive(ValueEnum, Clone)]
@@ -29,10 +31,30 @@ pub enum Arch {
 	System,
 	/// 64-bit (amd64)
 	X64,
-	/// 64-bit AArch – https://developer.arm.com/Architectures/A64%20Instruction%20Set%20Architecture
+	/// 64-bit AArch – https://developer.arm.com/Architectures/A64%20Instruction%20Set%20Architecture/
 	Aarch64,
 	/// 64-bit RISC-V – https://riscv.org/
 	Riscv64,
+}
+
+impl Display for Arch {
+
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		write!(
+			f,
+			"{}",
+			match self {
+				Arch::System => match ARCH {
+					"x86_64" => "x64",
+					"arm" => "arm64",
+					_ => ARCH,
+				},
+				Arch::X64 => "x64",
+				Arch::Aarch64 => "aarch64",
+				Arch::Riscv64 => "riscv64",
+			}
+		)
+	}
 }
 
 #[derive(ValueEnum, Clone)]
