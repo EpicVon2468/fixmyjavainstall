@@ -3,6 +3,8 @@ use std::fmt::{Display, Formatter};
 
 use clap::{Subcommand, ValueEnum};
 
+use serde::{Deserialize as Deserialise, Serialize as Serialise};
+
 #[derive(Subcommand)]
 pub enum Op {
 	Install {
@@ -79,4 +81,10 @@ pub enum Vendor {
 	Adoptium,
 	/// GraalVM – https://www.graalvm.org/
 	GraalVM,
+}
+
+#[derive(Serialise, Deserialise)]
+pub struct JavaVersion<'a> {
+	pub major: &'a str,
+	pub revision: &'a str,
 }
