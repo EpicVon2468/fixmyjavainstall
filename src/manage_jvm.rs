@@ -27,16 +27,10 @@ pub enum Op {
 pub enum Arch {
 	/// Automagically determine the system architecture
 	System,
-	/// 32-bit (i386)
-	X86,
 	/// 64-bit (amd64)
 	X64,
-	/// 32-bit AArch – https://developer.arm.com/Architectures/A32%20Instruction%20Set%20Architecture
-	Aarch32,
 	/// 64-bit AArch – https://developer.arm.com/Architectures/A64%20Instruction%20Set%20Architecture
 	Aarch64,
-	/// 32-bit RISC-V – https://riscv.org/
-	Riscv32,
 	/// 64-bit RISC-V – https://riscv.org/
 	Riscv64,
 }
