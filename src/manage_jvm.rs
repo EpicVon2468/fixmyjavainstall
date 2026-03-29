@@ -13,7 +13,7 @@ pub enum Op {
 
 		/// The features for the requested JVM.  Note that not every vendor may support every feature, and some vendors may only offer features for certain versions or with incompatibilities with other features
 		#[arg(short, long)]
-		features: Vec<Features>
+		features: Vec<Features>,
 	},
 	Remove {
 	},
@@ -23,7 +23,7 @@ pub enum Op {
 pub enum Features {
 	/// Java Chromium Embedded Framework – https://github.com/chromiumembedded/java-cef/
 	JCEF,
-	/// Minimal (non-SDK) JVM (often referred to as a 'JRE')
+	/// Minimal (non-SDK/JDK) JVM (often referred to as a 'JRE').  If you don't know what this means & aren't a developer, you probably want this
 	MINIMAL,
 	/// MUSL libc support – https://musl.libc.org/
 	MUSL,
@@ -39,4 +39,6 @@ pub enum Vendor {
 	Oracle,
 	/// Eclipse Adoptium (previously AdoptOpenJDK) – https://adoptium.net/
 	Adoptium,
+	/// GraalVM – https://www.graalvm.org/
+	GraalVM,
 }
