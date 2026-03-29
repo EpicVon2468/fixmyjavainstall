@@ -35,4 +35,8 @@ pub enum Vendor {
 	Auto,
 	/// JetBrains Runtime – https://github.com/JetBrains/JetBrainsRuntime/
 	JBR,
+	/// What is wrong with you?  Seriously, don't use this! – https://www.oracle.com/java/
+	Oracle,
+	/// Eclipse Adoptium (previously AdoptOpenJDK) – https://adoptium.net/
+	Adoptium,
 }
