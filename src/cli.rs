@@ -1,7 +1,5 @@
 use clap::{Parser, Subcommand};
 
-use crate::manage_jvm::Vendor;
-
 #[derive(Parser)]
 #[command(
 	version,
@@ -35,23 +33,10 @@ pub enum Cmd {
 pub enum Software {
 	JVM {
 		#[command(subcommand)]
-		op: Op,
-
-		#[arg(short, long, default_value = "jbr")]
-		vendor: Vendor,
+		op: crate::manage_jvm::Op,
 	},
 	Kotlin {
-		#[command(subcommand)]
-		op: Op,
 	},
 	KotlinNative {
-		#[command(subcommand)]
-		op: Op,
 	},
-}
-
-#[derive(Subcommand)]
-pub enum Op {
-	Install,
-	Remove,
 }
