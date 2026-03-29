@@ -3,6 +3,7 @@ mod cli;
 mod cmd_link;
 mod cmd_manage;
 mod macros;
+mod manage_jvm;
 
 use std::env::set_var;
 
