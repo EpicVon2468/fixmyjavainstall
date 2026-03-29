@@ -2,9 +2,9 @@ use std::ffi::OsStr;
 use std::fs::{remove_file, File};
 use std::io::{Error, ErrorKind, Result};
 use std::path::Path;
-use std::process::{Child, Command, Stdio};
+use std::process::{Child, Command, ExitStatus, Output, Stdio};
 
-use crate::wait_and_check_status;
+use crate::{check_status, wait_and_check_status};
 
 pub fn has_program(name: &str) -> Result<bool> {
 	Ok(command_v(name)?.wait()?.success())
@@ -53,6 +53,20 @@ pub fn download<S: AsRef<OsStr>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> 
 		.expect("Couldn't start cURL!");
 	wait_and_check_status!(child, "cURL");
 	Ok(())
+}
+
+pub fn connect<S: AsRef<OsStr>>(url: S) -> Result<String> {
+	require_program("curl")?;
+	let child: Child = Command::new("curl")
+		.arg("--silent")
+		.arg("-L")
+		.arg(url)
+		.spawn()
+		.expect("Couldn't start cURL!");
+	let output: Output = child.wait_with_output().expect("cURL never started?");
+	let status: ExitStatus = output.status;
+	check_status!(status, "cURL");
+	Ok(String::from_utf8(output.stdout).unwrap())
 }
 
 pub fn io_expect<P: AsRef<Path>, S: AsRef<str>>(dest: P, msg: S) -> String {
