@@ -1,4 +1,4 @@
-GraalVM – https://www.graalvm.org/
+GraalVM by Oracle – https://www.graalvm.org/
 Supported arches:
  - x64
  - aarch64

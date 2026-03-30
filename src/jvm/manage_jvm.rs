@@ -5,21 +5,21 @@ use clap::{Subcommand, ValueEnum};
 use serde::{Deserialize as Deserialise, Serialize as Serialise};
 
 use crate::arch::Arch;
-use crate::jvm::vendor::Vendor;
+use crate::jvm::jdk::JDK;
 
 #[derive(Subcommand)]
 pub enum Op {
 	/// Installs a new JVM
 	Install {
-		/// The vendor for the requested JVM
+		/// The JDK for the requested JVM
 		#[arg(short, long, default_value = "jbr")]
-		vendor: Vendor,
+		jdk: JDK,
 
-		/// The architecture for the requested JVM.  Note that not every vendor may support every architecture, and some vendors may not offer certain features for all architectures.  Generally speaking, x64 (amd64) has the highest level of support overall
+		/// The architecture for the requested JVM.  Note that not every JDK may support every architecture, and some JDKs may not offer certain features for all architectures.  Generally speaking, x64 (amd64) has the highest level of support overall
 		#[arg(short, long, default_value="system")]
 		arch: Arch,
 
-		/// The features for the requested JVM.  Note that not every vendor may support every feature, and some vendors may only offer features for certain versions or with incompatibilities with other features
+		/// The features for the requested JVM.  Note that not every JDK may support every feature, and some JDKs may only offer features for certain versions or with incompatibilities with other features
 		#[arg(short, long)]
 		features: Vec<Feature>,
 

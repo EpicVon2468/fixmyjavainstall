@@ -4,10 +4,10 @@ use clap::builder::PossibleValue;
 use clap::ValueEnum;
 
 #[derive(Clone)]
-pub enum Vendor {
-	/// Automagically pick the best vendor based on the requested version and features
+pub enum JDK {
+	/// Automagically pick the best JDK based on the requested version and features
 	Auto,
-	/// JetBrains Runtime – https://github.com/JetBrains/JetBrainsRuntime/
+	/// JetBrains Runtime by JetBrains – https://github.com/JetBrains/JetBrainsRuntime/
 	///
 	/// <details><summary>Supported arches:</summary>
 	///
@@ -31,7 +31,7 @@ pub enum Vendor {
 	/// * `17`
 	/// </details>
 	JBR,
-	/// What is wrong with you?  Seriously, don't use this! – https://www.oracle.com/java/
+	/// Java Platform, Standard Edition by Oracle – https://www.oracle.com/java/
 	///
 	/// <details><summary>Supported arches:</summary>
 	///
@@ -49,8 +49,8 @@ pub enum Vendor {
 	/// * `25`
 	/// * `21`
 	/// </details>
-	Oracle,
-	/// Eclipse Adoptium/Temurin (previously AdoptOpenJDK) – https://adoptium.net/
+	JavaSE,
+	/// Temurin (previously AdoptOpenJDK) by Eclipse/Adoptium – https://adoptium.net/
 	///
 	/// <details><summary>Supported arches:</summary>
 	///
@@ -72,8 +72,8 @@ pub enum Vendor {
 	/// * `11`
 	/// * `8`
 	/// </details>
-	Adoptium,
-	/// GraalVM – https://www.graalvm.org/
+	Temurin,
+	/// GraalVM by Oracle – https://www.graalvm.org/
 	///
 	/// <details><summary>Supported arches:</summary>
 	///
@@ -93,10 +93,10 @@ pub enum Vendor {
 	GraalVM,
 }
 
-impl ValueEnum for Vendor {
+impl ValueEnum for JDK {
 
 	fn value_variants<'a>() -> &'a [Self] {
-		&[Self::Auto, Self::JBR, Self::Oracle, Self::Adoptium, Self::GraalVM]
+		&[Self::Auto, Self::JBR, Self::JavaSE, Self::Temurin, Self::GraalVM]
 	}
 
 	fn to_possible_value<'a>(&self) -> Option<PossibleValue> {
@@ -107,34 +107,34 @@ impl ValueEnum for Vendor {
     		($name:ident, $suffix:literal) => {
 				PossibleValue::new(self.to_string())
 					.help(concat!(
-						include_str!(concat!("../../doc/vendor/", stringify!($name), ".txt")),
+						include_str!(concat!("../../doc/jdk/", stringify!($name), ".txt")),
 						$suffix
 					))
 			};
 		}
 		match self {
 			Self::Auto => PossibleValue::new("auto")
-				.help("Automagically pick the best vendor based on the requested version and features"),
-			Self::JBR => doc!(JBR),
-			Self::Oracle => doc!(Oracle),
-			Self::Adoptium => doc!(Adoptium).alias("temurin"),
+				.help("Automagically pick the best JDK based on the requested version and features"),
+			Self::JBR => doc!(JBR).alias("jetbrains-runtime"),
+			Self::JavaSE => doc!(JavaSE),
+			Self::Temurin => doc!(Temurin).alias("adoptium"),
 			Self::GraalVM => doc!(GraalVM, ""),
 		}.into()
 	}
 }
 
-impl Display for Vendor {
+impl Display for JDK {
 
 	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
 		write!(
 			f,
 			"{}",
 			match self {
-				Vendor::Auto => todo!("Automagic vendor selection"),
-				Vendor::JBR => "jbr",
-				Vendor::Oracle => "oracle",
-				Vendor::Adoptium => "adoptium",
-				Vendor::GraalVM => "graalvm",
+				JDK::Auto => todo!("Automagic JDK selection"),
+				JDK::JBR => "jbr",
+				JDK::JavaSE => "java-se",
+				JDK::Temurin => "temurin",
+				JDK::GraalVM => "graalvm",
 			}
 		)
 	}

@@ -1,0 +1,9 @@
+Java Platform, Standard Edition by Oracle – https://www.oracle.com/java/
+Supported arches:
+ - x64
+ - aarch64
+
+Supported versions:
+ - 26
+ - 25
+ - 21

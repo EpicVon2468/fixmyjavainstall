@@ -1,4 +1,4 @@
-JetBrains Runtime – https://github.com/JetBrains/JetBrainsRuntime/
+JetBrains Runtime by JetBrains – https://github.com/JetBrains/JetBrainsRuntime/
 Supported arches:
  - x64
  - aarch64

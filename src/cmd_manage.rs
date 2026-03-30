@@ -14,7 +14,7 @@ pub fn cmd_manage(command: &Cmd) -> Result<()> {
 	if let Some(software) = option {
 		if let Software::JVM { op } = software {
 			if let Op::Install {
-				vendor,
+				jdk: vendor,
 				arch,
 				features,
 				version,
