@@ -50,7 +50,7 @@ pub enum Vendor {
 	/// * `21`
 	/// </details>
 	Oracle,
-	/// Eclipse Adoptium (previously AdoptOpenJDK) – https://adoptium.net/
+	/// Eclipse Adoptium/Temurin (previously AdoptOpenJDK) – https://adoptium.net/
 	///
 	/// <details><summary>Supported arches:</summary>
 	///
@@ -110,18 +110,16 @@ impl ValueEnum for Vendor {
 						include_str!(concat!("../../doc/vendor/", stringify!($name), ".txt")),
 						$suffix
 					))
-					.into()
 			};
 		}
 		match self {
 			Self::Auto => PossibleValue::new("auto")
-				.help("Automagically pick the best vendor based on the requested version and features")
-				.into(),
+				.help("Automagically pick the best vendor based on the requested version and features"),
 			Self::JBR => doc!(JBR),
 			Self::Oracle => doc!(Oracle),
-			Self::Adoptium => doc!(Adoptium),
+			Self::Adoptium => doc!(Adoptium).alias("temurin"),
 			Self::GraalVM => doc!(GraalVM, ""),
-		}
+		}.into()
 	}
 }
 

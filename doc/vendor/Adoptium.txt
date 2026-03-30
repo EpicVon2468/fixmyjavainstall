@@ -1,4 +1,4 @@
-Eclipse Adoptium (previously AdoptOpenJDK) – https://adoptium.net/
+Eclipse Adoptium/Temurin (previously AdoptOpenJDK) – https://adoptium.net/
 Supported arches:
  - x64
  - aarch64
