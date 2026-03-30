@@ -9,7 +9,7 @@ use crate::jvm::vendor::Vendor;
 
 #[derive(Subcommand)]
 pub enum Op {
-	/// Install a new JVM
+	/// Installs a new JVM
 	Install {
 		/// The vendor for the requested JVM
 		#[arg(short, long, default_value = "jbr")]
@@ -27,7 +27,7 @@ pub enum Op {
 		// #[clap(default_value_t = String::from("latest"))]
 		version: String,
 	},
-	/// Remove the currently installed JVM (only affects JVMs installed via fuji)
+	/// Removes the currently installed JVM (only affects JVMs installed via fuji)
 	Remove,
 }
 
