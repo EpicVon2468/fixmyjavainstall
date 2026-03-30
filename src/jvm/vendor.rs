@@ -99,22 +99,31 @@ impl ValueEnum for Vendor {
 	}
 
 	fn to_possible_value<'a>(&self) -> Option<PossibleValue> {
+		macro_rules! doc {
+			($name:ident) => {
+				doc!($name, '\n')
+			};
+    		($name:ident, $suffix:literal) => {
+				PossibleValue::new(self.to_string())
+					.help(concat!(
+						include_str!(concat!(
+							"../../doc/vendor/",
+							stringify!($name),
+							".txt"
+						)),
+						$suffix
+					))
+					.into()
+			};
+		}
 		match self {
 			Self::Auto => PossibleValue::new("auto")
 				.help("Automagically pick the best vendor based on the requested version and features")
 				.into(),
-			Self::JBR => PossibleValue::new("jbr")
-				.help(concat!(include_str!("../../doc/vendor/JBR.txt"), '\n'))
-				.into(),
-			Self::Oracle => PossibleValue::new("oracle")
-				.help(concat!(include_str!("../../doc/vendor/Oracle.txt"), '\n'))
-				.into(),
-			Self::Adoptium => PossibleValue::new("adoptium")
-				.help(concat!(include_str!("../../doc/vendor/Adoptium.txt"), '\n'))
-				.into(),
-			Self::GraalVM => PossibleValue::new("graalvm")
-				.help(include_str!("../../doc/vendor/GraalVM.txt"))
-				.into(),
+			Self::JBR => doc!(JBR),
+			Self::Oracle => doc!(Oracle),
+			Self::Adoptium => doc!(Adoptium),
+			Self::GraalVM => doc!(GraalVM, ""),
 		}
 	}
 }
