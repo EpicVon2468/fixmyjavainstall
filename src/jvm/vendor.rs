@@ -18,6 +18,7 @@ pub enum Vendor {
 	/// <details><summary>Supported features:</summary>
 	///
 	/// * `Minimal`
+	/// * `DCEVM`
 	/// * `JCEF`
 	/// * `MUSL`
 	/// </details>
@@ -91,7 +92,6 @@ pub enum Vendor {
 	GraalVM,
 }
 
-#[automatically_derived]
 impl ValueEnum for Vendor {
 
 	fn value_variants<'a>() -> &'a [Self] {
@@ -106,11 +106,7 @@ impl ValueEnum for Vendor {
     		($name:ident, $suffix:literal) => {
 				PossibleValue::new(self.to_string())
 					.help(concat!(
-						include_str!(concat!(
-							"../../doc/vendor/",
-							stringify!($name),
-							".txt"
-						)),
+						include_str!(concat!("../../doc/vendor/", stringify!($name), ".txt")),
 						$suffix
 					))
 					.into()

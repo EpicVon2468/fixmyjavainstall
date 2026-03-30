@@ -5,6 +5,7 @@ Supported arches:
 
 Supported features:
  - Minimal
+ - DCEVM
  - JCEF
  - MUSL
 

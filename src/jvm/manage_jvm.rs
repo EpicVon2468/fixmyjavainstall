@@ -33,8 +33,12 @@ pub enum Op {
 
 #[derive(ValueEnum, Clone, PartialEq)]
 pub enum Feature {
-	/// Minimal (non-SDK/JDK) JVM (often referred to as a 'JRE').  If you don't know what this means & aren't a developer, you probably want this
+	/// Minimal JVM (JRE or no-Javadoc JDK).  If you don't know what this means & aren't a developer, you probably want this
 	MINIMAL,
+	/// Dynamic Code Evolution Virtual Machine (enhanced runtime class redefinition) – https://ssw.jku.at/dcevm/
+	DCEVM,
+	/// JDK Enhancement Proposal 519 (Compact Object Headers) – https://openjdk.org/jeps/519
+	JEP519,
 	/// Java Chromium Embedded Framework – https://github.com/chromiumembedded/java-cef/
 	JCEF,
 	/// MUSL libc support – https://musl.libc.org/
