@@ -9,7 +9,7 @@ pub enum Arch {
 	System,
 	/// 64-bit (amd64)
 	X64,
-	/// 64-bit AArch – https://developer.arm.com/Architectures/A64%20Instruction%20Set%20Architecture/
+	/// 64-bit AArch (arm64) – https://developer.arm.com/Architectures/A64%20Instruction%20Set%20Architecture/
 	Aarch64,
 	/// 64-bit RISC-V – https://riscv.org/
 	Riscv64,
