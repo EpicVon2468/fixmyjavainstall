@@ -6,6 +6,7 @@ Supported arches:
 Supported features:
  - Minimal
  - DCEVM
+ - WLToolkit
  - JCEF
  - MUSL
 

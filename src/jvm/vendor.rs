@@ -19,6 +19,7 @@ pub enum Vendor {
 	///
 	/// * `Minimal`
 	/// * `DCEVM`
+	/// * `WLToolkit`
 	/// * `JCEF`
 	/// * `MUSL`
 	/// </details>

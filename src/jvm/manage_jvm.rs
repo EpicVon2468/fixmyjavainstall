@@ -36,9 +36,17 @@ pub enum Feature {
 	/// Minimal JVM (JRE or no-Javadoc JDK).  If you don't know what this means & aren't a developer, you probably want this
 	MINIMAL,
 	/// Dynamic Code Evolution Virtual Machine (enhanced runtime class redefinition) – https://ssw.jku.at/dcevm/
+	///
+	/// `-XX:+AllowEnhancedClassRedefinition`
 	DCEVM,
 	/// JDK Enhancement Proposal 519 (Compact Object Headers) – https://openjdk.org/jeps/519
+	///
+	/// `-XX:+UseCompactObjectHeaders`
 	JEP519,
+	/// Wayland support (requires Vulkan) – https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype
+	///
+	/// `-Dawt.tookit.name=WLToolkit -Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false`
+	WLToolkit,
 	/// Java Chromium Embedded Framework – https://github.com/chromiumembedded/java-cef/
 	JCEF,
 	/// MUSL libc support – https://musl.libc.org/
