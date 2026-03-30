@@ -1,13 +1,35 @@
 use std::io::Result;
 
-use crate::cli::Cmd;
+use crate::cli::{Cmd, Software};
+use crate::commands::connect;
+use crate::manage_jvm::{download_jbr, JavaVersion, Op};
 use crate::wrong_cmd;
 
 pub fn cmd_manage(command: &Cmd) -> Result<()> {
 	let Cmd::Manage {
-		software: _software
+		software: option,
 	} = command else {
 		wrong_cmd!(cmd_manage);
+	};
+	if let Some(software) = option {
+		if let Software::JVM { op } = software {
+			if let Op::Install {
+				vendor,
+				arch,
+				features,
+				version,
+			} = op {
+				let json: String = connect(
+					format!(
+						"https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{}/{}.json",
+						vendor,
+						version
+					)
+				)?;
+				let java_version: JavaVersion = serde_json::from_str(json.as_str()).expect("JSON failed to parse!");
+				download_jbr(arch, &java_version, features)?;
+			};
+		};
 	};
 	Ok(())
 }

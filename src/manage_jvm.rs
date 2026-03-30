@@ -1,5 +1,6 @@
 use std::env::consts::ARCH;
 use std::fmt::{Display, Formatter};
+use std::io::Result;
 
 use clap::{Subcommand, ValueEnum};
 
@@ -18,9 +19,9 @@ pub enum Op {
 
 		/// The features for the requested JVM.  Note that not every vendor may support every feature, and some vendors may only offer features for certain versions or with incompatibilities with other features
 		#[arg(short, long)]
-		features: Vec<Features>,
+		features: Vec<Feature>,
 
-		/// The requested JVM version.  Any valid string (or 'latest' for the latest available version)
+		/// The requested JVM version.  An integer representing the major version (or 'latest' for the latest available version)
 		// #[clap(default_value_t = String::from("latest"))]
 		version: String,
 	},
@@ -59,8 +60,8 @@ impl Display for Arch {
 	}
 }
 
-#[derive(ValueEnum, Clone)]
-pub enum Features {
+#[derive(ValueEnum, Clone, PartialEq)]
+pub enum Feature {
 	/// Minimal (non-SDK/JDK) JVM (often referred to as a 'JRE').  If you don't know what this means & aren't a developer, you probably want this
 	MINIMAL,
 	/// Java Chromium Embedded Framework – https://github.com/chromiumembedded/java-cef/
@@ -83,8 +84,52 @@ pub enum Vendor {
 	GraalVM,
 }
 
+impl Display for Vendor {
+
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		write!(
+			f,
+			"{}",
+			match self {
+				Vendor::Auto => todo!("Automagic vendor selection"),
+				Vendor::JBR => "jbr",
+				Vendor::Oracle => "oracle",
+				Vendor::Adoptium => "adoptium",
+				Vendor::GraalVM => "graal-vm",
+			}
+		)
+	}
+}
+
 #[derive(Serialise, Deserialise)]
 pub struct JavaVersion<'a> {
 	pub major: &'a str,
 	pub revision: &'a str,
+}
+
+pub fn download_jbr(
+	arch: &Arch,
+	version: &JavaVersion,
+	features: &Vec<Feature>
+) -> Result<()> {
+	let mut url: String = String::with_capacity(100);
+	url.push_str("https://cache-redirector.jetbrains.com/intellij-jbr/jbr");
+	if !features.contains(&Feature::MINIMAL) {
+		url.push_str("sdk");
+	};
+	if features.contains(&Feature::JCEF) {
+		url.push_str("_jcef");
+	};
+	url.push('-');
+	url.push_str(version.major);
+	url.push_str("-linux-");
+	if features.contains(&Feature::MUSL) {
+		url.push_str("musl-");
+	};
+	url.push_str(arch.to_string().as_str());
+	url.push('-');
+	url.push_str(version.revision);
+	url.push_str(".tar.gz");
+	println!("Got URL: {url}");
+	Ok(())
 }

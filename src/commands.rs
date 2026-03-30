@@ -14,7 +14,7 @@ fn command_v(name: &str) -> Result<Child> {
 	Ok(
 		Command::new("which")
 			.arg(name)
-			.stdout(Stdio::null())
+			.stdout(Stdio::piped())
 			.spawn()
 			.expect("Couldn't start which!")
 	)
@@ -61,6 +61,7 @@ pub fn connect<S: AsRef<OsStr>>(url: S) -> Result<String> {
 		.arg("--silent")
 		.arg("-L")
 		.arg(url)
+		.stdout(Stdio::piped())
 		.spawn()
 		.expect("Couldn't start cURL!");
 	let output: Output = child.wait_with_output().expect("cURL never started?");
