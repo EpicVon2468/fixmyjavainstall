@@ -4,6 +4,7 @@ mod cmd_link;
 mod cmd_manage;
 mod macros;
 mod jvm;
+mod arch;
 
 use std::env::set_var;
 
