@@ -23,6 +23,12 @@ pub enum Vendor {
 	/// * `JCEF`
 	/// * `MUSL`
 	/// </details>
+	/// <details><summary>Supported versions:</summary>
+	///
+	/// * `25`
+	/// * `21`
+	/// * `17`
+	/// </details>
 	JBR,
 	/// What is wrong with you?  Seriously, don't use this! – https://www.oracle.com/java/
 	///
@@ -33,6 +39,12 @@ pub enum Vendor {
 	/// </details>
 	/// <details><summary>Supported features:</summary>
 	///
+	/// </details>
+	/// <details><summary>Supported versions:</summary>
+	///
+	/// * `26`
+	/// * `25`
+	/// * `21`
 	/// </details>
 	Oracle,
 	/// Eclipse Adoptium (previously AdoptOpenJDK) – https://adoptium.net/
@@ -48,6 +60,14 @@ pub enum Vendor {
 	///
 	/// * `Minimal`
 	/// </details>
+	/// <details><summary>Supported versions:</summary>
+	///
+	/// * `25`
+	/// * `21`
+	/// * `17`
+	/// * `11`
+	/// * `8`
+	/// </details>
 	Adoptium,
 	/// GraalVM – https://www.graalvm.org/
 	///
@@ -58,6 +78,11 @@ pub enum Vendor {
 	/// </details>
 	/// <details><summary>Supported features:</summary>
 	///
+	/// </details>
+	/// <details><summary>Supported versions:</summary>
+	///
+	/// * `25`
+	/// * `21`
 	/// </details>
 	GraalVM,
 }
