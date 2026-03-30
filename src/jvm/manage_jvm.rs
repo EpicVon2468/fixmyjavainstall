@@ -42,11 +42,22 @@ pub enum Feature {
 	/// JDK Enhancement Proposal 519 (Compact Object Headers) – https://openjdk.org/jeps/519
 	///
 	/// `-XX:+UseCompactObjectHeaders`
+	#[clap(name = "jep-519")]
 	JEP519,
 	/// Wayland support (requires Vulkan) – https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype
 	///
 	/// `-Dawt.tookit.name=WLToolkit -Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false`
+	#[clap(name = "wltoolkit")]
 	WLToolkit,
+	/// OpenGL for AWT/Swing.  This has been bundled in OpenJDK for a long time, but isn't on by default
+	///
+	/// `-Dsun.java2d.opengl=true`
+	#[clap(name = "opengl")]
+	OpenGL,
+	/// Vulkan for AWT/Swing.
+	///
+	/// `-Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false`
+	Vulkan,
 	/// Java Chromium Embedded Framework – https://github.com/chromiumembedded/java-cef/
 	JCEF,
 	/// MUSL libc support – https://musl.libc.org/
