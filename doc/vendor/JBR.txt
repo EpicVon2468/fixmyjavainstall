@@ -1,0 +1,14 @@
+JetBrains Runtime – https://github.com/JetBrains/JetBrainsRuntime/
+Supported arches:
+ - x64
+ - aarch64
+
+Supported features:
+ - Minimal
+ - JCEF
+ - MUSL
+
+Supported versions:
+ - 25
+ - 21
+ - 17

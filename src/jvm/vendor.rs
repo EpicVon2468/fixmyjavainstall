@@ -98,73 +98,22 @@ impl ValueEnum for Vendor {
 		&[Self::Auto, Self::JBR, Self::Oracle, Self::Adoptium, Self::GraalVM]
 	}
 
-	// TODO: concat!(include_str!(...), '\n')
 	fn to_possible_value<'a>(&self) -> Option<PossibleValue> {
 		match self {
 			Self::Auto => PossibleValue::new("auto")
 				.help("Automagically pick the best vendor based on the requested version and features")
 				.into(),
 			Self::JBR => PossibleValue::new("jbr")
-				.help("\
-JetBrains Runtime – https://github.com/JetBrains/JetBrainsRuntime/
-Supported arches:
- - x64
- - aarch64
-
-Supported features:
- - Minimal
- - JCEF
- - MUSL
-
-Supported versions:
- - 25
- - 21
- - 17
- 				")
+				.help(concat!(include_str!("../../doc/vendor/JBR.txt"), '\n'))
 				.into(),
 			Self::Oracle => PossibleValue::new("oracle")
-				.help("\
-What is wrong with you?  Seriously, don't use this! – https://www.oracle.com/java/
-Supported arches:
- - x64
- - aarch64
-
-Supported versions:
- - 26
- - 25
- - 21
- 				")
+				.help(concat!(include_str!("../../doc/vendor/Oracle.txt"), '\n'))
 				.into(),
 			Self::Adoptium => PossibleValue::new("adoptium")
-				.help("\
-Eclipse Adoptium (previously AdoptOpenJDK) – https://adoptium.net/
-Supported arches:
- - x64
- - aarch64
- - riscv64
-
-Supported features:
- - Minimal
-
-Supported versions:
- - 25
- - 21
- - 17
- - 11
- - 8
-				")
+				.help(concat!(include_str!("../../doc/vendor/Adoptium.txt"), '\n'))
 				.into(),
-			Self::GraalVM => PossibleValue::new("graal-vm")
-				.help("\
-GraalVM – https://www.graalvm.org/
-Supported arches:
- - x64
- - aarch64
-
-Supported versions:
- - 25
- - 21\
- 				")
+			Self::GraalVM => PossibleValue::new("graalvm")
+				.help(include_str!("../../doc/vendor/GraalVM.txt"))
 				.into(),
 		}
 	}
@@ -181,7 +130,7 @@ impl Display for Vendor {
 				Vendor::JBR => "jbr",
 				Vendor::Oracle => "oracle",
 				Vendor::Adoptium => "adoptium",
-				Vendor::GraalVM => "graal-vm",
+				Vendor::GraalVM => "graalvm",
 			}
 		)
 	}

@@ -1,0 +1,15 @@
+Eclipse Adoptium (previously AdoptOpenJDK) – https://adoptium.net/
+Supported arches:
+ - x64
+ - aarch64
+ - riscv64
+
+Supported features:
+ - Minimal
+
+Supported versions:
+ - 25
+ - 21
+ - 17
+ - 11
+ - 8
