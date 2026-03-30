@@ -23,6 +23,7 @@ pub enum Vendor {
 	/// * `JCEF`
 	/// * `MUSL`
 	/// </details>
+	///
 	/// <details><summary>Supported versions:</summary>
 	///
 	/// * `25`
@@ -37,9 +38,11 @@ pub enum Vendor {
 	/// * `x64`
 	/// * `aarch64`
 	/// </details>
+	///
 	/// <details><summary>Supported features:</summary>
 	///
 	/// </details>
+	///
 	/// <details><summary>Supported versions:</summary>
 	///
 	/// * `26`
@@ -60,6 +63,7 @@ pub enum Vendor {
 	///
 	/// * `Minimal`
 	/// </details>
+	///
 	/// <details><summary>Supported versions:</summary>
 	///
 	/// * `25`
@@ -76,9 +80,11 @@ pub enum Vendor {
 	/// * `x64`
 	/// * `aarch64`
 	/// </details>
+	///
 	/// <details><summary>Supported features:</summary>
 	///
 	/// </details>
+	///
 	/// <details><summary>Supported versions:</summary>
 	///
 	/// * `25`
