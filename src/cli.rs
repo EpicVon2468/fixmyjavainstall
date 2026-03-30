@@ -34,7 +34,7 @@ pub enum Software {
 	/// Java Virtual Machine – https://www.java.com/
 	JVM {
 		#[command(subcommand)]
-		op: crate::manage_jvm::Op,
+		op: crate::jvm::manage_jvm::Op,
 	},
 	/// Kotlin – https://kotlinlang.org/
 	Kotlin {

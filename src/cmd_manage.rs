@@ -2,7 +2,7 @@ use std::io::Result;
 
 use crate::cli::{Cmd, Software};
 use crate::commands::connect;
-use crate::manage_jvm::{download_jbr, JavaVersion, Op};
+use crate::jvm::manage_jvm::{download_jbr, JavaVersion, Op};
 use crate::wrong_cmd;
 
 pub fn cmd_manage(command: &Cmd) -> Result<()> {
