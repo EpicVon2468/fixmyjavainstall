@@ -3,6 +3,7 @@ use std::fmt::{Display, Formatter};
 use clap::builder::PossibleValue;
 use clap::ValueEnum;
 
+// TODO: https://bell-sw.com/libericajdk/ ?
 #[derive(Clone)]
 pub enum JDK {
 	/// Automagically pick the best JDK based on the requested version and features

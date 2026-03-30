@@ -9,6 +9,7 @@ use crate::jvm::jdk::JDK;
 
 #[derive(Subcommand)]
 pub enum Op {
+	// TODO: L&F?
 	/// Installs a new JVM
 	Install {
 		/// The JDK for the requested JVM
@@ -47,14 +48,14 @@ pub enum Feature {
 	/// Wayland support (requires Vulkan) – https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype
 	///
 	/// `-Dawt.tookit.name=WLToolkit -Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false`
-	#[clap(name = "wltoolkit")]
+	#[clap(name = "wltoolkit", aliases=vec!["wakefield", "wayland"])]
 	WLToolkit,
 	/// OpenGL for AWT/Swing.  This has been bundled in OpenJDK for a long time, but isn't on by default
 	///
 	/// `-Dsun.java2d.opengl=true`
 	#[clap(name = "opengl")]
 	OpenGL,
-	/// Vulkan for AWT/Swing.
+	/// Vulkan for AWT/Swing
 	///
 	/// `-Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false`
 	Vulkan,

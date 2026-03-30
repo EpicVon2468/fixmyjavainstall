@@ -3,6 +3,7 @@ use std::io::Result;
 use crate::cli::{Cmd, Software};
 use crate::commands::connect;
 use crate::jvm::manage_jvm::{download_jbr, JavaVersion, Op};
+use crate::jvm::wrapper::generate_wrapper;
 use crate::wrong_cmd;
 
 pub fn cmd_manage(command: &Cmd) -> Result<()> {
@@ -19,15 +20,17 @@ pub fn cmd_manage(command: &Cmd) -> Result<()> {
 				features,
 				version,
 			} = op {
-				let json: String = connect(
-					format!(
-						"https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{}/{}.json",
-						vendor,
-						version
-					)
-				)?;
-				let java_version: JavaVersion = serde_json::from_str(json.as_str()).expect("JSON failed to parse!");
-				download_jbr(arch, &java_version, features)?;
+				let string = generate_wrapper(features);
+				println!("{string}")
+				// let json: String = connect(
+				// 	format!(
+				// 		"https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{}/{}.json",
+				// 		vendor,
+				// 		version
+				// 	)
+				// )?;
+				// let java_version: JavaVersion = serde_json::from_str(json.as_str()).expect("JSON failed to parse!");
+				// download_jbr(arch, &java_version, features)?;
 			};
 		};
 	};
