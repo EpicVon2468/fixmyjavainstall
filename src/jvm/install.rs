@@ -1,6 +1,7 @@
-use std::fs::{create_dir_all, exists, remove_dir_all, File, OpenOptions, Permissions};
+use std::fs::{create_dir_all, remove_dir_all, File, OpenOptions, Permissions};
 use std::io::{Result, Write};
 use std::os::unix::fs::PermissionsExt;
+use std::path::Path;
 
 use crate::commands::{connect, io_expect};
 use crate::jvm::jdk_jbr::download_jbr;
@@ -27,8 +28,9 @@ pub fn install(op: &Op) -> Result<()> {
 		)
 	)?;
 	let java_version: JavaVersion = serde_json::from_str(json.as_str()).expect("JSON failed to parse!");
-	let output_dir: &String = &format!("/opt/fuji/jvm/{}", java_version.major);
-	if exists(output_dir)? {
+	let base_dir: &String = &format!("/opt/fuji/jvm/{}", java_version.major);
+	let output_dir: &Path = Path::new(base_dir);
+	if output_dir.exists() {
 		remove_dir_all(output_dir).expect(
 			io_expect(output_dir, "remove directory").as_str()
 		);
@@ -37,12 +39,12 @@ pub fn install(op: &Op) -> Result<()> {
 		io_expect(output_dir, "create directory").as_str()
 	);
 	download_jbr(arch, &java_version, features, output_dir)?;
-	let script_file: &String = &format!("{output_dir}/bin/fuji_jvm_wrapper");
+	let script_file: &String = &format!("{base_dir}/bin/fuji_jvm_wrapper");
 	let mut result: File = OpenOptions::new()
 		.write(true)
 		.create_new(true)
 		.open(script_file)
-		.expect(io_expect(script_file, "open").as_str());
+		.expect(io_expect(script_file, "create").as_str());
 	result
 		.write_all(script.as_bytes())
 		.expect(io_expect(script_file, "write").as_str());
