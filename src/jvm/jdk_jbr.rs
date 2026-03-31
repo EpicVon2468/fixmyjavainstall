@@ -19,7 +19,7 @@ pub fn download_jbr<S: AsRef<str>>(
 		url.push_str("_jcef");
 	};
 	url.push('-');
-	url.push_str(version.major);
+	url.push_str(version.specific);
 	url.push_str("-linux-");
 	if features.contains(&Feature::MUSL) {
 		url.push_str("musl-");

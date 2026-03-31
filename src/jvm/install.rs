@@ -7,6 +7,7 @@ use crate::commands::{connect, io_expect};
 use crate::jvm::jdk::JDK;
 use crate::jvm::jdk_java_se::download_java_se;
 use crate::jvm::jdk_jbr::download_jbr;
+use crate::jvm::jdk_temurin::download_temurin;
 use crate::jvm::manage_jvm::{JavaVersion, Op};
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
 use crate::wrong_cmd;
@@ -22,13 +23,18 @@ pub fn install(op: &Op) -> Result<()> {
 	};
 	let script: String = generate_wrapper(features);
 	println!("'''\n{script}\n'''");
-	let json: String = connect(
-		format!(
-			"https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{}/{}.json",
-			jdk,
-			version
-		)
-	)?;
+	// Temurin & Java SE both only need major version, except for 'latest' where we return the latest major from our endpoint
+	let json: String = if (jdk == &JDK::Temurin || jdk == &JDK::JavaSE) && version != "latest" {
+		format!("{{\"major\": \"{version}\", \"specific\":\"\", \"revision\": \"\"}}")
+	} else {
+		connect(
+			format!(
+				"https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{}/{}.json",
+				jdk,
+				version
+			)
+		)?
+	};
 	let java_version: JavaVersion = serde_json::from_str(json.as_str()).expect("JSON failed to parse!");
 	let output_dir: String = format!("/opt/fuji/jvm/{}", java_version.major);
 	if exists(&output_dir)? {
@@ -43,7 +49,7 @@ pub fn install(op: &Op) -> Result<()> {
 		JDK::Auto => {},
 		JDK::JBR => download_jbr(arch, &java_version, features, &output_dir)?,
 		JDK::JavaSE => download_java_se(arch, &java_version, features, &output_dir)?,
-		JDK::Temurin => {},
+		JDK::Temurin => download_temurin(arch, &java_version, features, &output_dir)?,
 		JDK::GraalVM => {},
 	};
 	let script_file: String = install_wrapper(script, &output_dir);

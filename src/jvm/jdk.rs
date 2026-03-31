@@ -4,7 +4,7 @@ use clap::builder::PossibleValue;
 use clap::ValueEnum;
 
 // TODO: https://bell-sw.com/libericajdk/ ?
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum JDK {
 	/// Automagically pick the best JDK based on the requested version and features
 	Auto,
@@ -68,8 +68,15 @@ pub enum JDK {
 	/// <details><summary>Supported versions:</summary>
 	///
 	/// * `25`
+	/// * `24`
+	/// * `23`
+	/// * `22`
 	/// * `21`
+	/// * `20`
+	/// * `19`
+	/// * `18`
 	/// * `17`
+	/// * `16`
 	/// * `11`
 	/// * `8`
 	/// </details>
