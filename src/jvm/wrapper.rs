@@ -5,15 +5,19 @@ use std::os::unix::fs::PermissionsExt;
 use crate::commands::io_expect;
 use crate::jvm::manage_jvm::Feature;
 
-// TODO: $CLASSPATH
 pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 	let mut result: String = String::with_capacity(500);
 	result.push_str("#! /usr/bin/env sh\n\n");
 	macro_rules! fuji_jvm_arg {
-    	($comment:literal, $addition:literal) => {
+    	($comment:literal, $args:literal) => {
 			result.push_str(
-				concat!("# ", $comment, '\n', "FUJI_JVM_ARGS=\"", $addition, " $FUJI_JVM_ARGS\"", '\n', '\n')
+				concat!("# ", $comment, '\n', export!($args), '\n')
 			);
+		};
+	}
+	macro_rules! export {
+    	($args:literal) => {
+			concat!("FUJI_JVM_ARGS=\"", $args, " $FUJI_JVM_ARGS\"", '\n')
 		};
 	}
 	if features.contains(&Feature::DCEVM) {
@@ -63,9 +67,16 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 			"--sun-misc-unsafe-memory-access=allow"
 		);
 	};
+
 	result.push_str("# shellcheck disable=SC2155\n");
 	result.push_str(&format!("export JAVA_HOME=\"{java_home}\"\n\n"));
+
+	result.push_str("if [ -n \"$CLASSPATH\" ]; then\n\t");
+	result.push_str(export!("--classpath \\\"$CLASSPATH\\\""));
+	result.push_str("fi\n\n");
+
 	result.push_str("exec \"$JAVA_HOME/bin/java\" \"$FUJI_JVM_ARGS\" \"$@\"");
+
 	result
 }
 
