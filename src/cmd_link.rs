@@ -18,9 +18,11 @@ pub fn cmd_link(command: &Cmd) -> Result<()> {
 		wrong_cmd!(cmd_link);
 	};
 	for path in paths {
-		link(path, link_dir, *use_update_alternatives).expect(
-			format!("Failed to link '{path}'!").as_str()
-		);
+		link(
+			path,
+			link_dir,
+			*use_update_alternatives
+		).expect(&format!("Failed to link '{path}'!"));
 	};
 	Ok(())
 }
@@ -39,7 +41,7 @@ pub fn link<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alte
 			)
 		);
 	};
-	for entry in bin.read_dir().expect(io_expect(bin, "list directory").as_str()) {
+	for entry in bin.read_dir().expect(&io_expect(bin, "list directory")) {
 		let file: &PathBuf = &entry?.path();
 		println!("\n{}", file.display());
 		if file.is_dir() {
@@ -67,7 +69,7 @@ pub fn symlink_link<P: AsRef<Path>, S: AsRef<OsStr>>(source: P, dest: S) -> Resu
 		let error: Error = result.unwrap_err();
 		if error.kind() == ErrorKind::AlreadyExists {
 			println!("Removing existing file: {}", dest.display());
-			remove_file(dest).expect(io_expect(dest, "remove").as_str());
+			remove_file(dest).expect(&io_expect(dest, "remove"));
 			symlink(source, dest).expect("Symbolic linking failed second time, panicking!");
 		} else {
 			return Err(error);

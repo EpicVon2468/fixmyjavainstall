@@ -15,7 +15,7 @@ pub fn download_temurin<S: AsRef<str>>(
 	url.push_str("https://api.adoptium.net/v3/binary/latest/");
 	url.push_str(version.major);
 	url.push_str("/ga/linux/");
-	url.push_str(arch.to_string().as_str());
+	url.push_str(&arch.to_string());
 	url.push('/');
 	url.push_str(if features.contains(&Feature::MINIMAL) { "jre" } else { "jdk" });
 	url.push_str("/hotspot/normal/eclipse");

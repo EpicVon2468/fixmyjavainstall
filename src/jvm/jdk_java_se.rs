@@ -16,7 +16,7 @@ pub fn download_java_se<S: AsRef<str>>(
 	url.push_str("/latest/jdk-");
 	url.push_str(version.major);
 	url.push_str("_linux-");
-	url.push_str(arch.to_string().as_str());
+	url.push_str(&arch.to_string());
 	url.push_str("_bin.tar.gz");
 	generic_download(url, output_dir)
 }

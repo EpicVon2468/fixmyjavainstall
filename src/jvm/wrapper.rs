@@ -5,31 +5,31 @@ use std::os::unix::fs::PermissionsExt;
 use crate::commands::io_expect;
 use crate::jvm::manage_jvm::Feature;
 
-pub fn generate_wrapper(features: &Vec<Feature>) -> String {
+pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 	let mut result: String = String::with_capacity(500);
 	result.push_str("#! /usr/bin/env sh\n\n");
-	macro_rules! additional_jvm_args {
+	macro_rules! fuji_jvm_arg {
     	($comment:literal, $addition:literal) => {
 			result.push_str(
-				concat!("# ", $comment, '\n', "ADDITIONAL_JVM_ARGS=\"", $addition, " $ADDITIONAL_JVM_ARGS\"", '\n', '\n')
+				concat!("# ", $comment, '\n', "FUJI_JVM_ARGS=\"", $addition, " $FUJI_JVM_ARGS\"", '\n', '\n')
 			);
 		};
 	}
 	if features.contains(&Feature::DCEVM) {
-		additional_jvm_args!(
+		fuji_jvm_arg!(
 			"Dynamic Code Evolution Virtual Machine (enhanced runtime class redefinition) – https://ssw.jku.at/dcevm/",
 			"-XX:+AllowEnhancedClassRedefinition"
 		);
 	};
 	if features.contains(&Feature::JEP519) {
-		additional_jvm_args!(
+		fuji_jvm_arg!(
 			"JDK Enhancement Proposal 519 (Compact Object Headers) – https://openjdk.org/jeps/519",
 			"-XX:+UseCompactObjectHeaders"
 		);
 	};
 	let mut requires_vulkan: bool = false;
 	if features.contains(&Feature::WLToolkit) {
-		additional_jvm_args!(
+		fuji_jvm_arg!(
 			"Wayland support (requires Vulkan) – https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype",
 			"-Dawt.tookit.name=WLToolkit"
 		);
@@ -39,22 +39,20 @@ pub fn generate_wrapper(features: &Vec<Feature>) -> String {
 		if requires_vulkan {
 			panic!("Vulkan required for WLToolkit, but OpenGL was also explicitly requested.  Resolve incompatible args and try again.");
 		};
-		additional_jvm_args!(
+		fuji_jvm_arg!(
 			"OpenGL for AWT/Swing.  This has been bundled in OpenJDK for a long time, but isn't on by default",
 			"-Dsun.java2d.opengl=true"
 		);
 	};
 	if requires_vulkan || features.contains(&Feature::Vulkan) {
-		additional_jvm_args!(
+		fuji_jvm_arg!(
 			"Vulkan for AWT/Swing",
 			"-Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false"
 		);
 	};
-	result.push_str("\
-# shellcheck disable=SC2155
-export JAVA_HOME=\"$(realpath \"..\")\"\n\n\
-	");
-	result.push_str("exec \"$PWD/java\" \"$ADDITIONAL_JVM_ARGS\" \"$@\"");
+	result.push_str("# shellcheck disable=SC2155\n");
+	result.push_str(&format!("export JAVA_HOME=\"{java_home}\"\n\n"));
+	result.push_str("exec \"$JAVA_HOME/bin/java\" \"$FUJI_JVM_ARGS\" \"$@\"");
 	result
 }
 
@@ -64,13 +62,13 @@ pub fn install_wrapper(script: String, output_dir: &String) -> String {
 		.write(true)
 		.create_new(true)
 		.open(&script_file)
-		.expect(io_expect(&script_file, "create").as_str());
+		.expect(&io_expect(&script_file, "create"));
 	result
 		.write_all(script.as_bytes())
-		.expect(io_expect(&script_file, "write").as_str());
+		.expect(&io_expect(&script_file, "write"));
 	// rwxr-xr-x
 	result
 		.set_permissions(Permissions::from_mode(0o755))
-		.expect(io_expect(&script_file, "set permissions for").as_str());
+		.expect(&io_expect(&script_file, "set permissions for"));
 	script_file
 }

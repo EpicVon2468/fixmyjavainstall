@@ -21,8 +21,6 @@ pub fn install(op: &Op) -> Result<()> {
 	} = op else {
 		wrong_cmd!(install);
 	};
-	let script: String = generate_wrapper(features);
-	println!("'''\n{script}\n'''");
 	// Temurin & Java SE both only need major version, except for 'latest' where we return the latest major from our endpoint
 	let json: String = if (jdk == &JDK::Temurin || jdk == &JDK::JavaSE) && version != "latest" {
 		format!("{{\"major\": \"{version}\", \"specific\":\"\", \"revision\": \"\"}}")
@@ -37,14 +35,12 @@ pub fn install(op: &Op) -> Result<()> {
 	};
 	let java_version: JavaVersion = serde_json::from_str(json.as_str()).expect("JSON failed to parse!");
 	let output_dir: String = format!("/opt/fuji/jvm/{}", java_version.major);
+	let script: String = generate_wrapper(&output_dir, features);
+	println!("'''\n{script}\n'''");
 	if exists(&output_dir)? {
-		remove_dir_all(&output_dir).expect(
-			io_expect(&output_dir, "remove directory").as_str()
-		);
+		remove_dir_all(&output_dir).expect(&io_expect(&output_dir, "remove directory"));
 	};
-	create_dir_all(&output_dir).expect(
-		io_expect(&output_dir, "create directory").as_str()
-	);
+	create_dir_all(&output_dir).expect(&io_expect(&output_dir, "create directory"));
 	match jdk {
 		JDK::Auto => {},
 		JDK::JBR => download_jbr(arch, &java_version, features, &output_dir)?,

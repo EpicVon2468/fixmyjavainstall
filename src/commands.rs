@@ -56,11 +56,11 @@ pub fn download<S: AsRef<OsStr>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> 
 	let dest: &Path = dest.as_ref();
 	let mut exists: bool = dest.try_exists()?;
 	if exists && dest.is_dir() {
-		remove_file(dest).expect(io_expect(dest, "delete").as_str());
+		remove_file(dest).expect(&io_expect(dest, "delete"));
 		exists = dest.try_exists()?;
 	};
 	if !exists {
-		File::create(dest).expect(io_expect(dest, "create").as_str());
+		File::create(dest).expect(&io_expect(dest, "create"));
 	};
 	let mut child: Child = Command::new("curl")
 		.arg("-L")

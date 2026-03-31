@@ -24,7 +24,7 @@ pub fn download_jbr<S: AsRef<str>>(
 	if features.contains(&Feature::MUSL) {
 		url.push_str("musl-");
 	};
-	url.push_str(arch.to_string().as_str());
+	url.push_str(&arch.to_string());
 	url.push('-');
 	url.push_str(version.revision);
 	url.push_str(".tar.gz");
