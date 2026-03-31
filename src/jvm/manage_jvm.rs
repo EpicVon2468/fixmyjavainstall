@@ -81,6 +81,14 @@ pub enum Feature {
 	Vulkan,
 	/// Java Chromium Embedded Framework – https://github.com/chromiumembedded/java-cef/
 	JCEF,
+	/// Allows all Java modules to use the (soon to be) restricted native library access
+	///
+	/// `--enable-native-access=ALL-UNNAMED`
+	AllowNative,
+	/// Allows use of the (soon to be) restricted sun.misc.Unsafe API access
+	///
+	/// `--sun-misc-unsafe-memory-access=allow`
+	AllowUnsafe,
 	/// MUSL libc support – https://musl.libc.org/
 	MUSL,
 }

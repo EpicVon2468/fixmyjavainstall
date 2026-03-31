@@ -50,6 +50,18 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 			"-Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false"
 		);
 	};
+	if features.contains(&Feature::AllowNative) {
+		fuji_jvm_arg!(
+			"Allows all Java modules to use the (soon to be) restricted native library access",
+			"--enable-native-access=ALL-UNNAMED"
+		);
+	};
+	if features.contains(&Feature::AllowUnsafe) {
+		fuji_jvm_arg!(
+			"Allows use of the (soon to be) restricted sun.misc.Unsafe API access",
+			"--sun-misc-unsafe-memory-access=allow"
+		);
+	};
 	result.push_str("# shellcheck disable=SC2155\n");
 	result.push_str(&format!("export JAVA_HOME=\"{java_home}\"\n\n"));
 	result.push_str("exec \"$JAVA_HOME/bin/java\" \"$FUJI_JVM_ARGS\" \"$@\"");
