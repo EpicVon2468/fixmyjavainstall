@@ -17,7 +17,7 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 	}
 	macro_rules! export {
     	($args:literal) => {
-			concat!("FUJI_JVM_ARGS=\"", $args, " $FUJI_JVM_ARGS\"", '\n')
+			concat!("set -- ", $args, " \"$@\"\n")
 		};
 	}
 	if features.contains(&Feature::DCEVM) {
@@ -72,10 +72,10 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 	result.push_str(&format!("export JAVA_HOME=\"{java_home}\"\n\n"));
 
 	result.push_str("if [ -n \"$CLASSPATH\" ]; then\n\t");
-	result.push_str(export!("--classpath \\\"$CLASSPATH\\\""));
+	result.push_str(export!("-cp \"$CLASSPATH:.\""));
 	result.push_str("fi\n\n");
 
-	result.push_str("exec \"$JAVA_HOME/bin/java\" \"$FUJI_JVM_ARGS\" \"$@\"");
+	result.push_str("exec \"$JAVA_HOME/bin/java\" \"$@\"");
 
 	result
 }
