@@ -52,6 +52,7 @@ pub fn install(op: &Op) -> Result<()> {
 		JDK::Temurin => download_temurin(arch, &java_version, features, &output_dir)?,
 	};
 	let script_file: String = install_wrapper(script, &output_dir);
+	symlink_link(&output_dir, "/opt/fuji/jvm/latest")?;
 	// link all of $JAVA_HOME/bin
 	cmd_link(
 		&Cmd::Link {
