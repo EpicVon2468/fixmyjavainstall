@@ -2,7 +2,8 @@ use std::io::Result;
 
 use crate::cli::{Cmd, Software};
 use crate::commands::connect;
-use crate::jvm::manage_jvm::{download_jbr, JavaVersion, Op};
+use crate::jvm::manage_jvm::{JavaVersion, Op};
+use crate::jvm::jdk_jbr::download_jbr;
 use crate::jvm::wrapper::generate_wrapper;
 use crate::wrong_cmd;
 

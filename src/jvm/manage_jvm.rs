@@ -1,5 +1,3 @@
-use std::io::Result;
-
 use clap::{Subcommand, ValueEnum};
 
 use serde::{Deserialize as Deserialise, Serialize as Serialise};
@@ -53,11 +51,12 @@ pub enum Feature {
 	/// OpenGL for AWT/Swing.  This has been bundled in OpenJDK for a long time, but isn't on by default
 	///
 	/// `-Dsun.java2d.opengl=true`
-	#[clap(name = "opengl")]
+	#[clap(name = "opengl", alias="gl")]
 	OpenGL,
 	/// Vulkan for AWT/Swing
 	///
 	/// `-Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false`
+	#[clap(alias="vk")]
 	Vulkan,
 	/// Java Chromium Embedded Framework – https://github.com/chromiumembedded/java-cef/
 	JCEF,
@@ -69,31 +68,4 @@ pub enum Feature {
 pub struct JavaVersion<'a> {
 	pub major: &'a str,
 	pub revision: &'a str,
-}
-
-pub fn download_jbr(
-	arch: &Arch,
-	version: &JavaVersion,
-	features: &Vec<Feature>
-) -> Result<()> {
-	let mut url: String = String::with_capacity(100);
-	url.push_str("https://cache-redirector.jetbrains.com/intellij-jbr/jbr");
-	if !features.contains(&Feature::MINIMAL) {
-		url.push_str("sdk");
-	};
-	if features.contains(&Feature::JCEF) {
-		url.push_str("_jcef");
-	};
-	url.push('-');
-	url.push_str(version.major);
-	url.push_str("-linux-");
-	if features.contains(&Feature::MUSL) {
-		url.push_str("musl-");
-	};
-	url.push_str(arch.to_string().as_str());
-	url.push('-');
-	url.push_str(version.revision);
-	url.push_str(".tar.gz");
-	println!("Got URL: {url}");
-	Ok(())
 }
