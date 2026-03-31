@@ -7,6 +7,7 @@ use crate::commands::{connect, io_expect};
 use crate::jvm::jdk::JDK;
 use crate::jvm::jdk_java_se::download_java_se;
 use crate::jvm::jdk_jbr::download_jbr;
+use crate::jvm::jdk_liberica::download_liberica;
 use crate::jvm::jdk_temurin::download_temurin;
 use crate::jvm::manage_jvm::{JavaVersion, Op};
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
@@ -47,6 +48,7 @@ pub fn install(op: &Op) -> Result<()> {
 		JDK::JBR => download_jbr(arch, &java_version, features, &output_dir)?,
 		JDK::JavaSE => download_java_se(arch, &java_version, features, &output_dir)?,
 		JDK::Temurin => download_temurin(arch, &java_version, features, &output_dir)?,
+		JDK::Liberica => download_liberica(arch, &java_version, features, &output_dir)?,
 	};
 	let script_file: String = install_wrapper(script, &output_dir);
 	symlink_link(&output_dir, "/opt/fuji/jvm/latest")?;
