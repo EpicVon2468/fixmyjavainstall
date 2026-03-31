@@ -17,7 +17,7 @@ pub enum Op {
 	/// Installs a new JVM
 	Install {
 		/// The JDK for the requested JVM
-		#[arg(short, long, default_value = "jbr")]
+		#[arg(short, long = "java-dev-kit", default_value = "jbr")]
 		jdk: JDK,
 
 		/// The architecture for the requested JVM.  Note that not every JDK may support every architecture, and some JDKs may not offer certain features for all architectures.  Generally speaking, x64 (amd64) has the highest level of support overall

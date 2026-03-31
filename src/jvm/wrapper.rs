@@ -75,12 +75,12 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 	result.push_str(export!("-cp \"$CLASSPATH:.\""));
 	result.push_str("fi\n\n");
 
-	result.push_str("exec \"$JAVA_HOME/bin/java\" \"$@\"");
+	result.push_str("exec \"$JAVA_HOME/bin/java.bak\" \"$@\"");
 
 	result
 }
 
-pub fn install_wrapper(script: String, output_dir: &String) -> String {
+pub fn install_wrapper(script: String, output_dir: &str) -> String {
 	let script_file: String = format!("{output_dir}/bin/fuji_jvm_wrapper");
 	let mut result: File = OpenOptions::new()
 		.write(true)
