@@ -59,7 +59,7 @@ pub fn link<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alte
 	Ok(())
 }
 
-fn symlink_link<P: AsRef<Path>, S: AsRef<OsStr>>(source: P, dest: S) -> Result<()> {
+pub fn symlink_link<P: AsRef<Path>, S: AsRef<OsStr>>(source: P, dest: S) -> Result<()> {
 	let source: &Path = source.as_ref();
 	let dest: &OsStr = dest.as_ref();
 	let result: Result<()> = symlink(source, dest);
@@ -76,7 +76,7 @@ fn symlink_link<P: AsRef<Path>, S: AsRef<OsStr>>(source: P, dest: S) -> Result<(
 	Ok(())
 }
 
-fn debian_link<P, S, S2>(file: P, filename: S, dest: S2) -> Result<()>
+pub fn debian_link<P, S, S2>(file: P, filename: S, dest: S2) -> Result<()>
 where
 	P: AsRef<Path>,
 	S: AsRef<OsStr>,

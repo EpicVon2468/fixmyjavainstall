@@ -1,3 +1,8 @@
+use std::fs::{File, OpenOptions, Permissions};
+use std::io::Write;
+use std::os::unix::fs::PermissionsExt;
+
+use crate::commands::io_expect;
 use crate::jvm::manage_jvm::Feature;
 
 pub fn generate_wrapper(features: &Vec<Feature>) -> String {
@@ -51,4 +56,21 @@ export JAVA_HOME=\"$(realpath \"..\")\"\n\n\
 	");
 	result.push_str("exec \"$PWD/java\" \"$ADDITIONAL_JVM_ARGS\" \"$@\"");
 	result
+}
+
+pub fn install_wrapper(script: String, output_dir: &String) -> String {
+	let script_file: String = format!("{output_dir}/bin/fuji_jvm_wrapper");
+	let mut result: File = OpenOptions::new()
+		.write(true)
+		.create_new(true)
+		.open(&script_file)
+		.expect(io_expect(&script_file, "create").as_str());
+	result
+		.write_all(script.as_bytes())
+		.expect(io_expect(&script_file, "write").as_str());
+	// rwxr-xr-x
+	result
+		.set_permissions(Permissions::from_mode(0o755))
+		.expect(io_expect(&script_file, "set permissions for").as_str());
+	script_file
 }
