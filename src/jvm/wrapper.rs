@@ -5,6 +5,7 @@ use std::os::unix::fs::PermissionsExt;
 use crate::commands::io_expect;
 use crate::jvm::manage_jvm::Feature;
 
+// TODO: $CLASSPATH
 pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 	let mut result: String = String::with_capacity(500);
 	result.push_str("#! /usr/bin/env sh\n\n");

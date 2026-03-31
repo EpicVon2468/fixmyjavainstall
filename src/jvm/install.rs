@@ -17,6 +17,7 @@ pub fn install(op: &Op) -> Result<()> {
 		jdk,
 		arch,
 		features,
+		include_kotlin: _include_kotlin,
 		version,
 	} = op else {
 		wrong_cmd!(install);

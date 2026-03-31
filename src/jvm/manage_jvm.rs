@@ -21,12 +21,16 @@ pub enum Op {
 		jdk: JDK,
 
 		/// The architecture for the requested JVM.  Note that not every JDK may support every architecture, and some JDKs may not offer certain features for all architectures.  Generally speaking, x64 (amd64) has the highest level of support overall
-		#[arg(short, long, default_value="system")]
+		#[arg(short, long, default_value = "system")]
 		arch: Arch,
 
 		/// The features for the requested JVM.  Note that not every JDK may support every feature, and some JDKs may only offer features for certain versions or with incompatibilities with other features
 		#[arg(short, long)]
 		features: Vec<Feature>,
+
+		/// Whether to bundle Kotlin with the requested JVM
+		#[arg(short = 'k', long)]
+		include_kotlin: bool,
 
 		/// The requested JVM version.  An integer representing the major version (or 'latest' for the latest available version)
 		// #[clap(default_value_t = String::from("latest"))]
