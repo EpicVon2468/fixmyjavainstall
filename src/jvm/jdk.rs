@@ -81,30 +81,12 @@ pub enum JDK {
 	/// * `8`
 	/// </details>
 	Temurin,
-	/// GraalVM by Oracle – https://www.graalvm.org/
-	///
-	/// <details><summary>Supported arches:</summary>
-	///
-	/// * `x64`
-	/// * `aarch64`
-	/// </details>
-	///
-	/// <details><summary>Supported features:</summary>
-	///
-	/// </details>
-	///
-	/// <details><summary>Supported versions:</summary>
-	///
-	/// * `25`
-	/// * `21`
-	/// </details>
-	GraalVM,
 }
 
 impl ValueEnum for JDK {
 
 	fn value_variants<'a>() -> &'a [Self] {
-		&[Self::Auto, Self::JBR, Self::JavaSE, Self::Temurin, Self::GraalVM]
+		&[Self::Auto, Self::JBR, Self::JavaSE, Self::Temurin]
 	}
 
 	fn to_possible_value<'a>(&self) -> Option<PossibleValue> {
@@ -125,8 +107,7 @@ impl ValueEnum for JDK {
 				.help("Automagically pick the best JDK based on the requested version and features"),
 			Self::JBR => doc!(JBR).alias("jetbrains-runtime"),
 			Self::JavaSE => doc!(JavaSE),
-			Self::Temurin => doc!(Temurin).alias("adoptium"),
-			Self::GraalVM => doc!(GraalVM, ""),
+			Self::Temurin => doc!(Temurin, "").alias("adoptium"),
 		}.into()
 	}
 }
@@ -142,7 +123,6 @@ impl Display for JDK {
 				JDK::JBR => "jbr",
 				JDK::JavaSE => "java-se",
 				JDK::Temurin => "temurin",
-				JDK::GraalVM => "graalvm",
 			}
 		)
 	}

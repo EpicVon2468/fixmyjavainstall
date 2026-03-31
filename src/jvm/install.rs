@@ -50,7 +50,6 @@ pub fn install(op: &Op) -> Result<()> {
 		JDK::JBR => download_jbr(arch, &java_version, features, &output_dir)?,
 		JDK::JavaSE => download_java_se(arch, &java_version, features, &output_dir)?,
 		JDK::Temurin => download_temurin(arch, &java_version, features, &output_dir)?,
-		JDK::GraalVM => {},
 	};
 	let script_file: String = install_wrapper(script, &output_dir);
 	// link all of $JAVA_HOME/bin
