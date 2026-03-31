@@ -3,3 +3,4 @@ pub mod jdk;
 pub mod wrapper;
 pub mod jdk_jbr;
 pub mod install;
+pub mod jdk_generic;
