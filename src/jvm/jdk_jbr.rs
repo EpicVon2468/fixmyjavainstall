@@ -1,11 +1,15 @@
+use std::path::Path;
+
 use crate::arch::Arch;
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
 
-pub fn download_jbr(
+pub fn download_jbr<T: AsRef<Path>>(
 	arch: &Arch,
 	version: &JavaVersion,
-	features: &Vec<Feature>
+	features: &Vec<Feature>,
+	output_dir: T
 ) -> std::io::Result<()> {
+	let output_dir: &Path = output_dir.as_ref();
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://cache-redirector.jetbrains.com/intellij-jbr/jbr");
 	if !features.contains(&Feature::MINIMAL) {
