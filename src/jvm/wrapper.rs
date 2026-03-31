@@ -45,6 +45,7 @@ pub fn generate_wrapper(features: &Vec<Feature>) -> String {
 			"-Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false"
 		);
 	};
+	result.push_str("export JAVA_HOME=\"/opt/fuji/jvm/latest\"\n\n");
 	result.push_str("exec /opt/fuji/jvm/latest/bin/java \"$ADDITIONAL_JVM_ARGS\" \"$@\"");
 	result
 }
