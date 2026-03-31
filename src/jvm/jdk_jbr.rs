@@ -24,6 +24,6 @@ pub fn download_jbr(
 	url.push('-');
 	url.push_str(version.revision);
 	url.push_str(".tar.gz");
-	println!("Got URL: {url}");
+	println!("Downloading JDK: {url}...");
 	Ok(())
 }

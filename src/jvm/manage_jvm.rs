@@ -1,9 +1,14 @@
+use std::io::Result;
+
 use clap::{Subcommand, ValueEnum};
 
 use serde::{Deserialize as Deserialise, Serialize as Serialise};
 
 use crate::arch::Arch;
+use crate::cli::Software;
+use crate::jvm::install::install;
 use crate::jvm::jdk::JDK;
+use crate::wrong_cmd;
 
 #[derive(Subcommand)]
 pub enum Op {
@@ -30,6 +35,21 @@ pub enum Op {
 	Remove,
 }
 
+pub fn manage_jvm(software: &Software) -> Result<()> {
+	let Software::JVM {
+		op
+	} = software else {
+		wrong_cmd!(manage_jvm);
+	};
+	match op {
+		Op::Install { .. } => {
+			return install(op);
+		},
+		Op::Remove => {},
+	};
+	Ok(())
+}
+
 #[derive(ValueEnum, Clone, PartialEq)]
 pub enum Feature {
 	/// Minimal JVM (JRE or no-Javadoc JDK).  If you don't know what this means & aren't a developer, you probably want this
@@ -41,7 +61,7 @@ pub enum Feature {
 	/// JDK Enhancement Proposal 519 (Compact Object Headers) – https://openjdk.org/jeps/519
 	///
 	/// `-XX:+UseCompactObjectHeaders`
-	#[clap(name = "jep-519")]
+	#[clap(name = "jep-519", alias="compact-object-headers")]
 	JEP519,
 	/// Wayland support (requires Vulkan) – https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype
 	///
