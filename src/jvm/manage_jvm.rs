@@ -13,6 +13,7 @@ use crate::wrong_cmd;
 #[derive(Subcommand)]
 pub enum Op {
 	// TODO: L&F?
+	// TODO: --dry-run
 	/// Installs a new JVM
 	Install {
 		/// The JDK for the requested JVM

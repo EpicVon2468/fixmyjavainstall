@@ -4,6 +4,8 @@ use std::io::Result;
 use crate::cli::Cmd;
 use crate::cmd_link::{cmd_link, symlink_link};
 use crate::commands::{connect, io_expect};
+use crate::jvm::jdk::JDK;
+use crate::jvm::jdk_java_se::download_java_se;
 use crate::jvm::jdk_jbr::download_jbr;
 use crate::jvm::manage_jvm::{JavaVersion, Op};
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
@@ -37,7 +39,13 @@ pub fn install(op: &Op) -> Result<()> {
 	create_dir_all(&output_dir).expect(
 		io_expect(&output_dir, "create directory").as_str()
 	);
-	download_jbr(arch, &java_version, features, &output_dir)?;
+	match jdk {
+		JDK::Auto => {},
+		JDK::JBR => download_jbr(arch, &java_version, features, &output_dir)?,
+		JDK::JavaSE => download_java_se(arch, &java_version, features, &output_dir)?,
+		JDK::Temurin => {},
+		JDK::GraalVM => {},
+	};
 	let script_file: String = install_wrapper(script, &output_dir);
 	// link all of $JAVA_HOME/bin
 	cmd_link(
