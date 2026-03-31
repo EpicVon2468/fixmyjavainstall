@@ -33,6 +33,24 @@ pub fn require_program(name: &str) -> Result<()> {
 	}
 }
 
+// https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
+// sudo tar --strip-components 1 -xvf 25.0.2.tar.gz -C 25.0.2
+pub fn untar_jdk<S: AsRef<OsStr>, P: AsRef<Path>>(archive: S, dest: P) -> Result<()> {
+	require_program("tar")?;
+	let mut child: Child = Command::new("tar")
+		.arg("--strip-components")
+		.arg("1")
+		.arg("-xvf")
+		.arg(archive)
+		.arg("-C")
+		.arg(dest.as_ref().canonicalize()?)
+		.stdout(Stdio::null())
+		.spawn()
+		.expect("Couldn't start tar!");
+	wait_and_check_status!(child, "tar");
+	Ok(())
+}
+
 pub fn download<S: AsRef<OsStr>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 	require_program("curl")?;
 	let dest: &Path = dest.as_ref();
