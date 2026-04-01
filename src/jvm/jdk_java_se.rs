@@ -6,7 +6,7 @@ use crate::jvm::manage_jvm::{Feature, JavaVersion};
 
 pub fn download_java_se<S: AsRef<str>>(
 	arch: &Arch,
-	version: &JavaVersion,
+	version: JavaVersion,
 	_features: &Vec<Feature>,
 	output_dir: S
 ) -> Result<()> {

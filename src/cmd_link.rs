@@ -51,7 +51,7 @@ pub fn link<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alte
 			println!("Filename was none! '{}'", file.display());
 			continue;
 		};
-		let dest: String = format!("{}/{}", link_dir.as_ref(), filename.display());
+		let dest: &str = &format!("{}/{}", link_dir.as_ref(), filename.display());
 		if can_use_update_alternatives {
 			debian_link(file, filename, dest).expect("Couldn't link with update-alternatives!");
 		} else {

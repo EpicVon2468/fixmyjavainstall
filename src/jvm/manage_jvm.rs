@@ -13,7 +13,6 @@ use crate::wrong_cmd;
 #[derive(Subcommand)]
 pub enum Op {
 	// TODO: L&F?
-	// TODO: --dry-run
 	/// Installs a new JVM
 	Install {
 		/// The JDK for the requested JVM
@@ -31,6 +30,10 @@ pub enum Op {
 		/// Whether to bundle Kotlin with the requested JVM
 		#[arg(short = 'k', long)]
 		include_kotlin: bool,
+
+		/// Show execution path without actually installing the JVM
+		#[arg(long)]
+		dry_run: bool,
 
 		/// The requested JVM version.  An integer representing the major version (or 'latest' for the latest available version)
 		// #[clap(default_value_t = String::from("latest"))]
@@ -93,6 +96,10 @@ pub enum Feature {
 	///
 	/// `--sun-misc-unsafe-memory-access=allow`
 	AllowUnsafe,
+	/// Enables AWT font antialiasing.  This can improve readability and quality of text
+	///
+	/// `-Dawt.useSystemAAFontSettings=on`
+	FontAntiAliasing,
 	/// MUSL libc support – https://musl.libc.org/
 	MUSL,
 }

@@ -11,11 +11,11 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 	macro_rules! fuji_jvm_arg {
     	($comment:literal, $args:literal) => {
 			result.push_str(
-				concat!("# ", $comment, '\n', export!($args), '\n')
+				concat!("# ", $comment, '\n', self_arg!($args), '\n')
 			);
 		};
 	}
-	macro_rules! export {
+	macro_rules! self_arg {
     	($args:literal) => {
 			concat!("set -- ", $args, " \"$@\"\n")
 		};
@@ -67,12 +67,18 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 			"--sun-misc-unsafe-memory-access=allow"
 		);
 	};
+	if features.contains(&Feature::FontAntiAliasing) {
+		fuji_jvm_arg!(
+			"Enables AWT font antialiasing.  This can improve readability and quality of text",
+			"-Dawt.useSystemAAFontSettings=on"
+		);
+	};
 
 	result.push_str("# shellcheck disable=SC2155\n");
 	result.push_str(&format!("export JAVA_HOME=\"{java_home}\"\n\n"));
 
 	result.push_str("if [ -n \"$CLASSPATH\" ]; then\n\t");
-	result.push_str(export!("-cp \"$CLASSPATH:.\""));
+	result.push_str(self_arg!("-cp \"$CLASSPATH:.\""));
 	result.push_str("fi\n\n");
 
 	result.push_str("exec \"$JAVA_HOME/bin/java.bak\" \"$@\"");

@@ -19,6 +19,7 @@ pub fn install(op: &Op) -> Result<()> {
 		arch,
 		features,
 		include_kotlin: _include_kotlin,
+		dry_run: _dry_run,
 		version,
 	} = op else {
 		wrong_cmd!(install);
@@ -45,10 +46,10 @@ pub fn install(op: &Op) -> Result<()> {
 	create_dir_all(output_dir).expect(&io_expect(output_dir, "create directory"));
 	match jdk {
 		JDK::Auto => {},
-		JDK::JBR => download_jbr(arch, &java_version, features, output_dir)?,
-		JDK::JavaSE => download_java_se(arch, &java_version, features, output_dir)?,
-		JDK::Temurin => download_temurin(arch, &java_version, features, output_dir)?,
-		JDK::Liberica => download_liberica(arch, &java_version, features, output_dir)?,
+		JDK::JBR => download_jbr(arch, java_version, features, output_dir)?,
+		JDK::JavaSE => download_java_se(arch, java_version, features, output_dir)?,
+		JDK::Temurin => download_temurin(arch, java_version, features, output_dir)?,
+		JDK::Liberica => download_liberica(arch, java_version, features, output_dir)?,
 	};
 	let script_file: String = install_wrapper(script, output_dir);
 	let java_executable: &str = &format!("{output_dir}/bin/java");

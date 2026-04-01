@@ -7,7 +7,7 @@ use crate::jvm::manage_jvm::{Feature, JavaVersion};
 // https://github.com/adoptium/api.adoptium.net/blob/main/docs/cookbook.adoc
 pub fn download_temurin<S: AsRef<str>>(
 	arch: &Arch,
-	version: &JavaVersion,
+	version: JavaVersion,
 	features: &Vec<Feature>,
 	output_dir: S
 ) -> Result<()> {
