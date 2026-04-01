@@ -8,7 +8,8 @@ pub fn download_jbr<S: AsRef<str>>(
 	arch: &Arch,
 	version: JavaVersion,
 	features: &Vec<Feature>,
-	output_dir: S
+	output_dir: S,
+	dry_run: bool
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://cache-redirector.jetbrains.com/intellij-jbr/jbr");
@@ -28,5 +29,5 @@ pub fn download_jbr<S: AsRef<str>>(
 	url.push('-');
 	url.push_str(version.revision);
 	url.push_str(".tar.gz");
-	generic_download(url, output_dir)
+	generic_download(url, output_dir, dry_run)
 }

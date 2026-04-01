@@ -6,17 +6,21 @@ use crate::commands::{download, untar_jdk};
 
 pub fn generic_download<S: AsRef<OsStr>, P: AsRef<str>>(
 	url: S,
-	output_dir: P
+	output_dir: P,
+	dry_run: bool
 ) -> Result<()> {
 	let url: &OsStr = url.as_ref();
 	let output_dir: &str = output_dir.as_ref();
-	let archive: String = format!("{output_dir}.tar.gz");
+	let archive: &str = &format!("{output_dir}.tar.gz");
 
 	println!("Downloading JDK: {}...", url.display());
-	download(url, &archive).expect("Couldn't download JDK!");
+	if dry_run {
+		return Ok(());
+	};
+	download(url, archive).expect("Couldn't download JDK!");
 
 	println!("Untaring JDK...");
-	untar_jdk(&archive, output_dir).expect("Couldn't untar JDK!");
+	untar_jdk(archive, output_dir).expect("Couldn't untar JDK!");
 
 	println!("Removing JDK tar...");
 	remove_file(archive).expect("Couldn't delete JDK tar!");

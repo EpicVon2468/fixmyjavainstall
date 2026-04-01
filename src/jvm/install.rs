@@ -19,7 +19,7 @@ pub fn install(op: &Op) -> Result<()> {
 		arch,
 		features,
 		include_kotlin: _include_kotlin,
-		dry_run: _dry_run,
+		dry_run,
 		version,
 	} = op else {
 		wrong_cmd!(install);
@@ -40,16 +40,21 @@ pub fn install(op: &Op) -> Result<()> {
 	let output_dir: &str = &format!("/opt/fuji/jvm/{}", java_version.major);
 	let script: String = generate_wrapper(output_dir, features);
 	println!("'''\n{script}\n'''");
-	if exists(output_dir)? {
-		remove_dir_all(output_dir).expect(&io_expect(output_dir, "remove directory"));
+	if !dry_run {
+		if exists(output_dir)? {
+			remove_dir_all(output_dir).expect(&io_expect(output_dir, "remove directory"));
+		};
+		create_dir_all(output_dir).expect(&io_expect(output_dir, "create directory"));
 	};
-	create_dir_all(output_dir).expect(&io_expect(output_dir, "create directory"));
 	match jdk {
 		JDK::Auto => {},
-		JDK::JBR => download_jbr(arch, java_version, features, output_dir)?,
-		JDK::JavaSE => download_java_se(arch, java_version, features, output_dir)?,
-		JDK::Temurin => download_temurin(arch, java_version, features, output_dir)?,
-		JDK::Liberica => download_liberica(arch, java_version, features, output_dir)?,
+		JDK::JBR => download_jbr(arch, java_version, features, output_dir, *dry_run)?,
+		JDK::JavaSE => download_java_se(arch, java_version, features, output_dir, *dry_run)?,
+		JDK::Temurin => download_temurin(arch, java_version, features, output_dir, *dry_run)?,
+		JDK::Liberica => download_liberica(arch, java_version, features, output_dir, *dry_run)?,
+	};
+	if *dry_run {
+		return Ok(());
 	};
 	let script_file: String = install_wrapper(script, output_dir);
 	let java_executable: &str = &format!("{output_dir}/bin/java");
