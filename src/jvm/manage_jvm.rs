@@ -8,6 +8,7 @@ use crate::arch::Arch;
 use crate::cli::Software;
 use crate::jvm::install::install;
 use crate::jvm::jdk::JDK;
+use crate::os::OS;
 use crate::wrong_cmd;
 
 #[derive(Subcommand)]
@@ -22,6 +23,9 @@ pub enum Op {
 		/// The architecture for the requested JVM.  Note that not every JDK may support every architecture, and some JDKs may not offer certain features for all architectures.  Generally speaking, x64 (amd64) has the highest level of support overall
 		#[arg(short, long, default_value = "system")]
 		arch: Arch,
+
+		#[arg(short, long, alias = "os", default_value = "linux")]
+		operating_system: OS,
 
 		/// The features for the requested JVM.  Note that not every JDK may support every feature, and some JDKs may only offer features for certain versions or with incompatibilities with other features
 		#[arg(short, long)]

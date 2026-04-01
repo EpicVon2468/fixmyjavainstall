@@ -4,12 +4,12 @@ use crate::arch::Arch;
 use crate::jvm::jdk_generic::generic_download;
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
 
-pub fn download_liberica<S: AsRef<str>>(
+pub fn download_liberica(
 	arch: &Arch,
 	version: JavaVersion,
 	features: &Vec<Feature>,
-	output_dir: S,
-	dry_run: bool
+	output_dir: &str,
+	dry_run: &bool
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://download.bell-sw.com/java/");

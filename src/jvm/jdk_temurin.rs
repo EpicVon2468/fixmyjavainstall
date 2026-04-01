@@ -5,12 +5,12 @@ use crate::jvm::jdk_generic::generic_download;
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
 
 // https://github.com/adoptium/api.adoptium.net/blob/main/docs/cookbook.adoc
-pub fn download_temurin<S: AsRef<str>>(
+pub fn download_temurin(
 	arch: &Arch,
 	version: JavaVersion,
 	features: &Vec<Feature>,
-	output_dir: S,
-	dry_run: bool
+	output_dir: &str,
+	dry_run: &bool
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://api.adoptium.net/v3/binary/latest/");

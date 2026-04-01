@@ -5,6 +5,7 @@ use crate::cli::Cmd;
 use crate::cmd_link::{cmd_link, symlink_link};
 use crate::commands::{connect, io_expect};
 use crate::jvm::jdk::JDK;
+use crate::jvm::jdk_generic::DownloadJdkFn;
 use crate::jvm::jdk_java_se::download_java_se;
 use crate::jvm::jdk_jbr::download_jbr;
 use crate::jvm::jdk_liberica::download_liberica;
@@ -17,6 +18,7 @@ pub fn install(op: &Op) -> Result<()> {
 	let Op::Install {
 		jdk,
 		arch,
+		operating_system: _operating_system,
 		features,
 		include_kotlin: _include_kotlin,
 		dry_run,
@@ -46,13 +48,14 @@ pub fn install(op: &Op) -> Result<()> {
 		};
 		create_dir_all(output_dir).expect(&io_expect(output_dir, "create directory"));
 	};
-	match jdk {
-		JDK::Auto => {},
-		JDK::JBR => download_jbr(arch, java_version, features, output_dir, *dry_run)?,
-		JDK::JavaSE => download_java_se(arch, java_version, features, output_dir, *dry_run)?,
-		JDK::Temurin => download_temurin(arch, java_version, features, output_dir, *dry_run)?,
-		JDK::Liberica => download_liberica(arch, java_version, features, output_dir, *dry_run)?,
+	let download_jdk: DownloadJdkFn = match jdk {
+		JDK::Auto => todo!(),
+		JDK::JBR => download_jbr,
+		JDK::JavaSE => download_java_se,
+		JDK::Temurin => download_temurin,
+		JDK::Liberica => download_liberica,
 	};
+	download_jdk(arch, java_version, features, output_dir, dry_run)?;
 	if *dry_run {
 		return Ok(());
 	};

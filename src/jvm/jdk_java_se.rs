@@ -4,12 +4,12 @@ use crate::arch::Arch;
 use crate::jvm::jdk_generic::generic_download;
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
 
-pub fn download_java_se<S: AsRef<str>>(
+pub fn download_java_se(
 	arch: &Arch,
 	version: JavaVersion,
 	_features: &Vec<Feature>,
-	output_dir: S,
-	dry_run: bool
+	output_dir: &str,
+	dry_run: &bool
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://download.oracle.com/java/");

@@ -6,6 +6,7 @@ mod macros;
 mod jvm;
 mod arch;
 mod kotlin;
+mod os;
 
 use std::env::set_var;
 
