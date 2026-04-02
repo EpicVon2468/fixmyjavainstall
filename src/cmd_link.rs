@@ -26,6 +26,10 @@ pub fn cmd_link(command: &Cmd) -> Result<()> {
 	Ok(())
 }
 
+// TODO:
+// 	https://stackoverflow.com/questions/79701236/what-is-the-recommended-way-to-append-a-path-to-windows-path-environment-vari
+// 	https://stackoverflow.com/questions/8358265/how-can-i-update-the-path-variable-permanently-from-the-windows-command-line
+// 	https://learn.microsoft.com/en-gb/windows/win32/procthread/environment-variables
 pub fn link<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alternatives: bool) -> Result<()> {
 	let path: &Path = path.as_ref();
 	println!("Linking path: {}", path.display());
