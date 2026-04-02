@@ -4,9 +4,15 @@ use std::io::Write;
 use crate::commands::io_expect;
 use crate::jvm::manage_jvm::Feature;
 
+// PowerShell is NOT an option. '-XX:+UseCompactObjectHeaders' is forcibly split into '-XX' and '+UseCompactObjectHeaders'.  With and without escapes & quotations & brackets.
+// https://stackoverflow.com/questions/25122484/how-do-i-emulate-a-wrapper-script-on-windows
+// https://superuser.com/questions/1500272/equivalent-of-export-command-in-windows
+// https://stackoverflow.com/questions/12990480/shift-doesn-t-affect
+// Oh dear...
+// https://serverfault.com/questions/315077/is-there-a-windows-cmd-equivalent-of-unix-shells-exec
 pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 	let mut result: String = String::with_capacity(500);
-	result.push_str("#! /usr/bin/env sh\n\n");
+
 	macro_rules! fuji_jvm_arg {
     	($comment:literal, $args:literal) => {
 			result.push_str(
@@ -14,11 +20,33 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 			);
 		};
 	}
+
 	macro_rules! self_arg {
     	($args:literal) => {
 			concat!("set -- ", $args, " \"$@\"\n")
 		};
 	}
+
+	#[cfg(unix)]
+	macro_rules! export {
+    	($var:literal) => {
+			concat!("export ", $var)
+		};
+	}
+	#[cfg(windows)]
+	macro_rules! export {
+		($var:literal) => {
+			concat!("set ", $var)
+		};
+	}
+
+	#[cfg(unix)]
+	result.push_str("#! /usr/bin/env sh\n\n");
+	#[cfg(windows)] {
+		result.push_str("@echo off\r\n\r\n");
+		result.push_str("setlocal enableextensions\r\n\r\n");
+	};
+
 	if features.contains(&Feature::DCEVM) {
 		fuji_jvm_arg!(
 			"Dynamic Code Evolution Virtual Machine (enhanced runtime class redefinition) – https://ssw.jku.at/dcevm/",
@@ -86,40 +114,32 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 	};
 	#[cfg(any(target_os = "linux", feature = "multi_os"))]
 	if features.contains(&Feature::NVIDIAFixes) {
-		result.push_str("# General fixes for NVIDIA GPUs on Linux\n");
-		result.push_str("export __GL_THREADED_OPTIMIZATIONS=0\n\n");
+		result.push_str("# General fixes for NVIDIA GPUs on Linux");
+		#[cfg(windows)] result.push('\r');
+		result.push_str(&format!("\n{}=0", export!("__GL_THREADED_OPTIMIZATIONS")));
+		#[cfg(windows)] result.push('\r');
+		result.push('\n');
+		#[cfg(windows)] result.push('\r');
+		result.push('\n');
 	};
 
 	result.push_str("# shellcheck disable=SC2155\n");
-	result.push_str(&format!("export JAVA_HOME=\"{java_home}\"\n\n"));
+	result.push_str(&format!("{}=\"{java_home}\"\n\n", export!("JAVA_HOME")));
 
-	result.push_str("if [ -n \"$CLASSPATH\" ]; then\n\t");
-	result.push_str(self_arg!("-cp \"$CLASSPATH:.\""));
-	result.push_str("fi\n\n");
+	#[cfg(unix)] {
+		result.push_str("if [ -n \"$CLASSPATH\" ]; then\n\t");
+		result.push_str(self_arg!("-cp \"$CLASSPATH:.\""));
+		result.push_str("fi\n\n");
+	};
+	#[cfg(windows)] {
+		result.push_str("if defined CLASSPATH (\r\n");
+		result.push_str("\tset FUJI_CLASSPATH_ARG=\"%CLASSPATH%;.\"\r\n");
+		result.push_str(")\r\n\r\n");
+	};
 
+	#[cfg(unix)]
 	result.push_str("exec \"$JAVA_HOME/bin/java.bak\" \"$@\"");
-
-	result
-}
-
-// PowerShell is NOT an option. '-XX:+UseCompactObjectHeaders' is forcibly split into '-XX' and '+UseCompactObjectHeaders'.  With and without escapes & quotations & brackets.
-// https://stackoverflow.com/questions/25122484/how-do-i-emulate-a-wrapper-script-on-windows
-// https://superuser.com/questions/1500272/equivalent-of-export-command-in-windows
-// https://stackoverflow.com/questions/12990480/shift-doesn-t-affect
-// Oh dear...
-// https://serverfault.com/questions/315077/is-there-a-windows-cmd-equivalent-of-unix-shells-exec
-#[cfg(windows)]
-fn wrapper_impl(java_home: &str, features: &Vec<Feature>) -> String {
-	let mut result: String = String::with_capacity(500);
-	result.push_str("@echo off\r\n\r\n");
-	result.push_str("setlocal enableextensions\r\n\r\n");
-
-	result.push_str(&format!("set JAVA_HOME=\"{java_home}\"\r\n\r\n"));
-
-	result.push_str("if defined CLASSPATH (\r\n");
-	result.push_str("\tset FUJI_CLASSPATH_ARG=\"%CLASSPATH%;.\"\r\n");
-	result.push_str(")\r\n\r\n");
-
+	#[cfg(windows)]
 	result.push_str("start /b /wait \"\" \"%JAVA_HOME%\\bin\\java.exe\" \"$FUJI_CLASSPATH_ARG\" %*");
 
 	result

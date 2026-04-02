@@ -9,10 +9,7 @@ use which::which;
 use crate::{check_status, wait_and_check_status};
 
 pub fn has_program(name: &str) -> bool {
-	match which(name) {
-		Ok(_) => true,
-		Err(_) => false,
-	}
+	which(name).is_ok()
 }
 
 pub fn require_program(name: &str) -> Result<()> {
