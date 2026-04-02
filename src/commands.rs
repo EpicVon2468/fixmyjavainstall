@@ -4,28 +4,19 @@ use std::io::{Error, ErrorKind, Result};
 use std::path::Path;
 use std::process::{Child, Command, ExitStatus, Output, Stdio};
 
+use which::which;
+
 use crate::{check_status, wait_and_check_status};
 
-pub fn has_program(name: &str) -> Result<bool> {
-	Ok(command_v(name)?.wait()?.success())
-}
-
-fn command_v(name: &str) -> Result<Child> {
-	#[cfg(unix)]
-	let command_v: &str = "which";
-	#[cfg(windows)]
-	let command_v: &str = "where.exe";
-	Ok(
-		Command::new(command_v)
-			.arg(name)
-			.stdout(Stdio::piped())
-			.spawn()
-			.expect(&format!("Couldn't start {command_v}!"))
-	)
+pub fn has_program(name: &str) -> bool {
+	match which(name) {
+		Ok(_) => true,
+		Err(_) => false,
+	}
 }
 
 pub fn require_program(name: &str) -> Result<()> {
-	if !has_program(name)? {
+	if !has_program(name) {
 		Err(
 			Error::new(
 				ErrorKind::NotFound,
