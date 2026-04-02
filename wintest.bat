@@ -1,6 +1,6 @@
 @echo off
 
-set JAVA_HOME="/Program Files/fuji/jvm/25"
+setlocal enableextensions
 
 if defined CLASSPATH (
 	echo foo
@@ -8,4 +8,4 @@ if defined CLASSPATH (
 	echo bar
 )
 
-start /b "" "%JAVA_HOME%/bin/javaw.exe" %*
+start /b /wait "" "%JAVA_HOME%\bin\java.exe" %*

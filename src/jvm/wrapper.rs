@@ -102,6 +102,7 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 	result
 }
 
+// PowerShell is NOT an option. '-XX:+UseCompactObjectHeaders' is forcibly split into '-XX' and '+UseCompactObjectHeaders'.  With and without escapes & quotations & brackets.
 // https://stackoverflow.com/questions/25122484/how-do-i-emulate-a-wrapper-script-on-windows
 // https://superuser.com/questions/1500272/equivalent-of-export-command-in-windows
 // https://stackoverflow.com/questions/12990480/shift-doesn-t-affect
@@ -120,7 +121,7 @@ fn wrapper_impl(java_home: &str, features: &Vec<Feature>) -> String {
 	result.push_str("\tset FUJI_CLASSPATH_ARG=\"%CLASSPATH%;.\"\r\n");
 	result.push_str(")\r\n\r\n");
 
-	result.push_str("start /b \"\" \"%JAVA_HOME%/bin/java.exe\"");
+	result.push_str("start /b /wait \"\" \"%JAVA_HOME%\\bin\\java.exe\"");
 
 	result
 }
