@@ -41,6 +41,7 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 		);
 		requires_vulkan = true;
 	};
+	// https://docs.oracle.com/en/java/javase/25/troubleshoot/java-2d-properties.html
 	if features.contains(&Feature::OpenGL) {
 		if requires_vulkan {
 			panic!("Vulkan required for WLToolkit, but OpenGL was also explicitly requested.  Resolve incompatible args and try again.");
@@ -48,6 +49,16 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 		fuji_jvm_arg!(
 			"OpenGL for AWT/Swing.  This has been bundled in OpenJDK for a long time, but isn't on by default",
 			"-Dsun.java2d.opengl=true"
+		);
+	};
+	#[cfg(any(target_os = "macos", feature = "multi_os"))]
+	if features.contains(&Feature::Metal) {
+		if requires_vulkan {
+			panic!("Vulkan required for WLToolkit, but Metal was also explicitly requested.  Resolve incompatible args and try again.");
+		};
+		fuji_jvm_arg!(
+			"Metal support for AWT/Swing (macOS).  If you're on macOS, use this instead of OpenGL (Apple has deprecated OpenGL on macOS)",
+			"-Dsun.java2d.metal=true"
 		);
 	};
 	if requires_vulkan || features.contains(&Feature::Vulkan) {

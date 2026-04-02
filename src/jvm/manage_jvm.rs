@@ -24,7 +24,13 @@ pub enum Op {
 		#[arg(short, long, default_value = crate::arch::system())]
 		arch: Arch,
 
-		#[arg(short, long, alias = "os", default_value = crate::os::system())]
+		#[arg(
+			short,
+			long,
+			alias = "os",
+			default_value = crate::os::system(),
+			hide = cfg!(not(feature = "multi_os")))
+		]
 		operating_system: OS,
 
 		/// The features for the requested JVM.  Note that not every JDK may support every feature, and some JDKs may only offer features for certain versions or with incompatibilities with other features
@@ -86,6 +92,11 @@ pub enum Feature {
 	/// `-Dsun.java2d.opengl=true`
 	#[clap(name = "opengl", alias="gl")]
 	OpenGL,
+	/// Metal support for AWT/Swing (macOS).  If you're on macOS, use this instead of OpenGL (Apple has deprecated OpenGL on macOS)
+	///
+	/// `-Dsun.java2d.metal=true`
+	#[cfg(any(target_os = "macos", feature = "multi_os"))]
+	Metal,
 	/// Vulkan for AWT/Swing
 	///
 	/// `-Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false`
