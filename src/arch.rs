@@ -1,12 +1,10 @@
-use std::env::consts::ARCH;
-use std::fmt::{Display, Formatter};
+use std::fmt::{Display, Formatter, Result};
 
+use clap::builder::OsStr;
 use clap::ValueEnum;
 
 #[derive(ValueEnum, Clone)]
 pub enum Arch {
-	/// Automagically determine the system architecture
-	System,
 	/// 64-bit (amd64)
 	X64,
 	/// 64-bit AArch (arm64) – https://developer.arm.com/Architectures/A64%20Instruction%20Set%20Architecture/
@@ -15,22 +13,33 @@ pub enum Arch {
 	Riscv64,
 }
 
+impl From<Arch> for OsStr {
+
+	fn from(value: Arch) -> Self {
+		value.to_string().into()
+	}
+}
+
 impl Display for Arch {
 
-	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+	fn fmt(&self, f: &mut Formatter<'_>) -> Result {
 		write!(
 			f,
 			"{}",
 			match self {
-				Arch::System => match ARCH {
-					"x86_64" => "x64",
-					"arm" => "arm64",
-					_ => ARCH,
-				},
 				Arch::X64 => "x64",
 				Arch::Aarch64 => "aarch64",
 				Arch::Riscv64 => "riscv64",
 			}
 		)
 	}
+}
+
+pub fn system() -> Arch {
+	#[cfg(target_arch = "x86_64")]
+	return Arch::X64;
+	#[cfg(any(target_arch = "arm", target_arch = "aarch64"))]
+	return Arch::Aarch64;
+	#[cfg(target_arch = "riscv64")]
+	return Arch::Riscv64;
 }
