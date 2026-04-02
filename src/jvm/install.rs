@@ -18,7 +18,7 @@ pub fn install(op: &Op) -> Result<()> {
 	let Op::Install {
 		jdk,
 		arch,
-		operating_system: _operating_system,
+		operating_system,
 		features,
 		include_kotlin: _include_kotlin,
 		dry_run,
@@ -55,7 +55,7 @@ pub fn install(op: &Op) -> Result<()> {
 		JDK::Temurin => download_temurin,
 		JDK::Liberica => download_liberica,
 	};
-	download_jdk(arch, java_version, features, output_dir, dry_run)?;
+	download_jdk(arch, java_version, features, operating_system, output_dir, dry_run)?;
 	if *dry_run {
 		return Ok(());
 	};

@@ -5,9 +5,11 @@ use std::io::Result;
 use crate::arch::Arch;
 use crate::commands::{download, untar_jdk};
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
+use crate::os::OS;
 
-pub type DownloadJdkFn = fn(&Arch, JavaVersion, &Vec<Feature>, &str, &bool) -> Result<()>;
+pub type DownloadJdkFn = fn(&Arch, JavaVersion, &Vec<Feature>, &OS, &str, &bool) -> Result<()>;
 
+// TODO: fix windows downloads returning .zip
 pub fn generic_download<S: AsRef<OsStr>, P: AsRef<str>>(
 	url: S,
 	output_dir: P,

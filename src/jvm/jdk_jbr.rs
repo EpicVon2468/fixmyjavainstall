@@ -3,11 +3,13 @@ use std::io::Result;
 use crate::arch::Arch;
 use crate::jvm::jdk_generic::generic_download;
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
+use crate::os::OS;
 
 pub fn download_jbr(
 	arch: &Arch,
 	version: JavaVersion,
 	features: &Vec<Feature>,
+	os: &OS,
 	output_dir: &str,
 	dry_run: &bool
 ) -> Result<()> {
@@ -21,7 +23,9 @@ pub fn download_jbr(
 	};
 	url.push('-');
 	url.push_str(version.specific);
-	url.push_str("-linux-");
+	url.push('-');
+	url.push_str(&os.to_string());
+	url.push('-');
 	if features.contains(&Feature::MUSL) {
 		url.push_str("musl-");
 	};
