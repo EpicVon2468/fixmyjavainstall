@@ -1,7 +1,6 @@
 use std::ffi::OsStr;
 use std::fs::remove_file;
 use std::io::{Error, ErrorKind, Result};
-use std::os::unix::fs::symlink;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command};
 
@@ -31,7 +30,7 @@ pub fn link<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alte
 	let path: &Path = path.as_ref();
 	println!("Linking path: {}", path.display());
 	let bin: PathBuf = path.join("bin");
-	let can_use_update_alternatives: bool = use_update_alternatives && has_program("update-alternatives")?;
+	let can_use_update_alternatives: bool = cfg!(target_os = "linux") && use_update_alternatives && has_program("update-alternatives")?;
 	if !can_use_update_alternatives && use_update_alternatives {
 		println!("Couldn't find update-alternatives on system when explicitly requested!");
 		return Err(
@@ -64,18 +63,34 @@ pub fn link<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alte
 pub fn symlink_link<P: AsRef<Path>, S: AsRef<OsStr>>(source: P, dest: S) -> Result<()> {
 	let source: &Path = source.as_ref();
 	let dest: &OsStr = dest.as_ref();
-	let result: Result<()> = symlink(source, dest);
+	let result: Result<()> = symlink_impl(source, dest);
 	if result.is_err() {
 		let error: Error = result.unwrap_err();
 		if error.kind() == ErrorKind::AlreadyExists {
 			println!("Removing existing file: {}", dest.display());
 			remove_file(dest).expect(&io_expect(dest, "remove"));
-			symlink(source, dest).expect("Symbolic linking failed second time, panicking!");
+			symlink_impl(source, dest).expect("Symbolic linking failed second time, panicking!");
 		} else {
 			return Err(error);
 		};
 	};
 	Ok(())
+}
+
+fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Result<()> {
+	#[cfg(unix)] {
+		use std::os::unix::fs::symlink;
+		return symlink(original, link);
+	}
+	// TODO: test this
+	#[cfg(windows)] {
+		use std::os::windows::fs::{symlink_file, symlink_dir};
+		return if original.as_ref().is_dir() {
+			symlink_dir(original, link)
+		} else {
+			symlink_file(original, link)
+		}
+	}
 }
 
 pub fn debian_link<P, S, S2>(file: P, filename: S, dest: S2) -> Result<()>

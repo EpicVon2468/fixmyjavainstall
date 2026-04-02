@@ -60,6 +60,7 @@ pub fn install(op: &Op) -> Result<()> {
 		return Ok(());
 	};
 	let script_file: String = install_wrapper(script, output_dir);
+	// TODO: probably important: https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
 	let java_executable: &str = &format!("{output_dir}/bin/java");
 	// move $JAVA_HOME/bin/java to a 'backup' file so that programs which try to run $JAVA_HOME/bin/java literally can't skip the run script
 	rename(java_executable, format!("{java_executable}.bak"))?;

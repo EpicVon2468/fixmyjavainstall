@@ -26,7 +26,7 @@ pub fn download_jbr(
 	url.push('-');
 	url.push_str(&os.to_string());
 	url.push('-');
-	#[cfg(any(not(windows), feature = "multi_os"))]
+	#[cfg(any(unix, feature = "multi_os"))]
 	if features.contains(&Feature::MUSL) {
 		url.push_str("musl-");
 	};

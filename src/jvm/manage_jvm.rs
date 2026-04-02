@@ -29,8 +29,8 @@ pub enum Op {
 			long,
 			alias = "os",
 			default_value = crate::os::system(),
-			hide = cfg!(not(feature = "multi_os")))
-		]
+			hide = cfg!(not(feature = "multi_os"))
+		)]
 		operating_system: OS,
 
 		/// The features for the requested JVM.  Note that not every JDK may support every feature, and some JDKs may only offer features for certain versions or with incompatibilities with other features
@@ -122,7 +122,7 @@ pub enum Feature {
 	#[cfg(any(target_os = "linux", feature = "multi_os"))]
 	NVIDIAFixes,
 	/// MUSL libc support – https://musl.libc.org/
-	#[cfg(any(not(windows), feature = "multi_os"))]
+	#[cfg(any(unix, feature = "multi_os"))]
 	MUSL,
 }
 
