@@ -1,6 +1,5 @@
 use std::fs::{File, OpenOptions, Permissions};
 use std::io::Write;
-use std::os::unix::fs::PermissionsExt;
 
 use crate::commands::io_expect;
 use crate::jvm::manage_jvm::Feature;
@@ -114,8 +113,11 @@ pub fn install_wrapper(script: String, output_dir: &str) -> String {
 		.write_all(script.as_bytes())
 		.expect(&io_expect(&script_file, "write"));
 	// rwxr-xr-x
-	result
-		.set_permissions(Permissions::from_mode(0o755))
-		.expect(&io_expect(&script_file, "set permissions for"));
+	#[cfg(unix)] {
+		use std::os::unix::fs::PermissionsExt;
+		result
+			.set_permissions(Permissions::from_mode(0o755))
+			.expect(&io_expect(&script_file, "set permissions for"));
+	};
 	script_file
 }

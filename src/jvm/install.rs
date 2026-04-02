@@ -38,7 +38,7 @@ pub fn install(op: &Op) -> Result<()> {
 			)
 		)?
 	};
-	let java_version: JavaVersion = serde_json::from_str(json.as_str()).expect("JSON failed to parse!");
+	let java_version: JavaVersion = serde_json::from_str(&json).expect("JSON failed to parse!");
 	let output_dir: &str = &format!("{FUJI_DIR}/jvm/{}", java_version.major);
 	let script: String = generate_wrapper(output_dir, features);
 	println!("'''\n{script}\n'''");
@@ -59,13 +59,23 @@ pub fn install(op: &Op) -> Result<()> {
 	if *dry_run {
 		return Ok(());
 	};
+	// TODO: will need to create a .bat version of this + make one for java.exe & one for javaw.exe
 	let script_file: String = install_wrapper(script, output_dir);
-	// TODO: probably important: https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
-	let java_executable: &str = &format!("{output_dir}/bin/java");
-	// move $JAVA_HOME/bin/java to a 'backup' file so that programs which try to run $JAVA_HOME/bin/java literally can't skip the run script
-	rename(java_executable, format!("{java_executable}.bak"))?;
-	// link $JAVA_HOME/bin/java to $JAVA_HOME/bin/fuji_jvm_wrapper
-	symlink_link(script_file, java_executable)?;
+	// https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
+	let java_executables: Vec<String> = vec![
+		#[cfg(unix)]
+		format!("{output_dir}/bin/java"),
+		#[cfg(windows)]
+		format!("{output_dir}/bin/java.exe"),
+		#[cfg(windows)]
+		format!("{output_dir}/bin/javaw.exe"),
+	];
+	for java_executable in &java_executables {
+		// move $JAVA_HOME/bin/java(w)(.exe) to a 'backup' file so that programs which try to run $JAVA_HOME/bin/java(w)(.exe) literally can't skip the run script
+		rename(java_executable, format!("{java_executable}.bak"))?;
+		// link $JAVA_HOME/bin/java(w)(.exe) to $JAVA_HOME/bin/fuji_jvm_wrapper
+		symlink_link(&script_file, java_executable)?;
+	};
 	// make FUJI_DIR/jvm/latest point to output_dir
 	symlink_link(output_dir, format!("{FUJI_DIR}/jvm/latest"))?;
 	// link all of $JAVA_HOME/bin
