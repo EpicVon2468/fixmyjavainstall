@@ -16,6 +16,8 @@ use crate::cli::{Arguments, Cmd};
 use crate::cmd_link::cmd_link;
 use crate::cmd_manage::cmd_manage;
 
+pub const FUJI_DIR: &str = if cfg!(windows) { "\\Program Files\\fuji" } else { "/opt/fuji" };
+
 // Windows isn't ready yet
 #[cfg(not(windows))]
 fn main() {

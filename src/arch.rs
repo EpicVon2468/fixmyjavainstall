@@ -35,11 +35,9 @@ impl Display for Arch {
 	}
 }
 
-pub fn system() -> Arch {
-	#[cfg(target_arch = "x86_64")]
-	return Arch::X64;
-	#[cfg(any(target_arch = "arm", target_arch = "aarch64"))]
-	return Arch::Aarch64;
-	#[cfg(target_arch = "riscv64")]
-	return Arch::Riscv64;
-}
+#[cfg(target_arch = "x86_64")]
+pub const SYSTEM: Arch = Arch::X64;
+#[cfg(any(target_arch = "aarch64", target_arch = "arm"))]
+pub const SYSTEM: Arch = Arch::Aarch64;
+#[cfg(target_arch = "riscv64")]
+pub const SYSTEM: Arch = Arch::Riscv64;

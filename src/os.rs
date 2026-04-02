@@ -36,11 +36,9 @@ impl Display for OS {
 	}
 }
 
-pub fn system() -> OS {
-	#[cfg(target_os = "linux")]
-	return OS::Linux;
-	#[cfg(target_os = "macos")]
-	return OS::OSX;
-	#[cfg(target_os = "windows")]
-	return OS::Windows;
-}
+#[cfg(target_os = "linux")]
+pub const SYSTEM: OS = OS::Linux;
+#[cfg(target_os = "macos")]
+pub const SYSTEM: OS = OS::OSX;
+#[cfg(target_os = "windows")]
+pub const SYSTEM: OS = OS::Windows;

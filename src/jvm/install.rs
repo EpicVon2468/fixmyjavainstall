@@ -12,7 +12,7 @@ use crate::jvm::jdk_liberica::download_liberica;
 use crate::jvm::jdk_temurin::download_temurin;
 use crate::jvm::manage_jvm::{JavaVersion, Op};
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
-use crate::wrong_cmd;
+use crate::{wrong_cmd, FUJI_DIR};
 
 pub fn install(op: &Op) -> Result<()> {
 	let Op::Install {
@@ -39,7 +39,7 @@ pub fn install(op: &Op) -> Result<()> {
 		)?
 	};
 	let java_version: JavaVersion = serde_json::from_str(json.as_str()).expect("JSON failed to parse!");
-	let output_dir: &str = &format!("/opt/fuji/jvm/{}", java_version.major);
+	let output_dir: &str = &format!("{FUJI_DIR}/jvm/{}", java_version.major);
 	let script: String = generate_wrapper(output_dir, features);
 	println!("'''\n{script}\n'''");
 	if !dry_run {
@@ -66,12 +66,13 @@ pub fn install(op: &Op) -> Result<()> {
 	rename(java_executable, format!("{java_executable}.bak"))?;
 	// link $JAVA_HOME/bin/java to $JAVA_HOME/bin/fuji_jvm_wrapper
 	symlink_link(script_file, java_executable)?;
-	symlink_link(output_dir, "/opt/fuji/jvm/latest")?;
+	// make FUJI_DIR/jvm/latest point to output_dir
+	symlink_link(output_dir, format!("{FUJI_DIR}/jvm/latest"))?;
 	// link all of $JAVA_HOME/bin
 	cmd_link(
 		&Cmd::Link {
 			paths: vec![output_dir.to_string()],
-			link_dir: String::from("/usr/bin"),
+			link_dir: if cfg!(windows) { "" } else { "/usr/bin" }.into(),
 			use_update_alternatives: false
 		}
 	)

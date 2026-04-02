@@ -21,14 +21,14 @@ pub enum Op {
 		jdk: JDK,
 
 		/// The architecture for the requested JVM.  Note that not every JDK may support every architecture, and some JDKs may not offer certain features for all architectures.  Generally speaking, x64 (amd64) has the highest level of support overall
-		#[arg(short, long, default_value = crate::arch::system())]
+		#[arg(short, long, default_value = crate::arch::SYSTEM)]
 		arch: Arch,
 
 		#[arg(
 			short,
 			long,
 			alias = "os",
-			default_value = crate::os::system(),
+			default_value = crate::os::SYSTEM,
 			hide = cfg!(not(feature = "multi_os"))
 		)]
 		operating_system: OS,
