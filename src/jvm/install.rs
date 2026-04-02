@@ -39,7 +39,11 @@ pub fn install(op: &Op) -> Result<()> {
 		)?
 	};
 	let java_version: JavaVersion = serde_json::from_str(&json).expect("JSON failed to parse!");
-	let output_dir: &str = &format!("{FUJI_DIR}/jvm/{}", java_version.major);
+	#[cfg(unix)]
+	let slash: char = '/';
+	#[cfg(windows)]
+	let slash: char = '\\';
+	let output_dir: &str = &format!("{FUJI_DIR}{slash}jvm{slash}{}", java_version.major);
 	let script: String = generate_wrapper(output_dir, features);
 	println!("'''\n{script}\n'''");
 	if !dry_run {
@@ -66,9 +70,9 @@ pub fn install(op: &Op) -> Result<()> {
 		#[cfg(unix)]
 		format!("{output_dir}/bin/java"),
 		#[cfg(windows)]
-		format!("{output_dir}/bin/java.exe"),
+		format!("{output_dir}\\bin\\java.exe"),
 		#[cfg(windows)]
-		format!("{output_dir}/bin/javaw.exe"),
+		format!("{output_dir}\\bin\\javaw.exe"),
 	];
 	for java_executable in &java_executables {
 		// move $JAVA_HOME/bin/java(w)(.exe) to a 'backup' file so that programs which try to run $JAVA_HOME/bin/java(w)(.exe) literally can't skip the run script
@@ -77,7 +81,7 @@ pub fn install(op: &Op) -> Result<()> {
 		symlink_link(&script_file, java_executable)?;
 	};
 	// make FUJI_DIR/jvm/latest point to output_dir
-	symlink_link(output_dir, format!("{FUJI_DIR}/jvm/latest"))?;
+	symlink_link(output_dir, format!("{FUJI_DIR}{slash}jvm{slash}latest"))?;
 	// link all of $JAVA_HOME/bin
 	cmd_link(
 		&Cmd::Link {

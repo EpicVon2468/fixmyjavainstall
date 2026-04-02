@@ -112,8 +112,7 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 fn wrapper_impl(java_home: &str, features: &Vec<Feature>) -> String {
 	let mut result: String = String::with_capacity(500);
 	result.push_str("@echo off\r\n\r\n");
-
-
+	result.push_str("setlocal enableextensions\r\n\r\n");
 
 	result.push_str(&format!("set JAVA_HOME=\"{java_home}\"\r\n\r\n"));
 
@@ -121,7 +120,7 @@ fn wrapper_impl(java_home: &str, features: &Vec<Feature>) -> String {
 	result.push_str("\tset FUJI_CLASSPATH_ARG=\"%CLASSPATH%;.\"\r\n");
 	result.push_str(")\r\n\r\n");
 
-	result.push_str("start /b /wait \"\" \"%JAVA_HOME%\\bin\\java.exe\"");
+	result.push_str("start /b /wait \"\" \"%JAVA_HOME%\\bin\\java.exe\" \"$FUJI_CLASSPATH_ARG\" %*");
 
 	result
 }
