@@ -82,12 +82,13 @@ fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Result<
 		use std::os::unix::fs::symlink;
 		return symlink(original, link);
 	}
-	// TODO: test this
 	#[cfg(windows)] {
-		use std::os::windows::fs::{symlink_file, symlink_dir};
+		use std::os::windows::fs::{symlink_dir, symlink_file};
 		return if original.as_ref().is_dir() {
+			// https://doc.rust-lang.org/std/os/windows/fs/fn.symlink_dir.html
 			symlink_dir(original, link)
 		} else {
+			// https://doc.rust-lang.org/std/os/windows/fs/fn.symlink_file.html
 			symlink_file(original, link)
 		}
 	}

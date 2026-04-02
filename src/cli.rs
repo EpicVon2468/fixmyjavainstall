@@ -19,7 +19,12 @@ pub enum Cmd {
 		paths: Vec<String>,
 
 		/// Directory to link files into.  Does nothing on Windows
-		#[arg(short, long, value_name = "DIR", default_value = "/usr/bin")]
+		#[arg(
+			short,
+			long,
+			value_name = "DIR",
+			default_value = if cfg!(windows) { "" } else { "/usr/bin" }
+		)]
 		link_dir: String,
 
 		/// Whether to use update-alternatives for install.
