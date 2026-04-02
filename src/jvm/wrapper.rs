@@ -87,10 +87,8 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 	};
 	#[cfg(any(target_os = "linux", feature = "multi_os"))]
 	if features.contains(&Feature::NVIDIAFixes) {
-		fuji_jvm_arg!(
-			"General fixes for NVIDIA GPUs",
-			"__GL_THREADED_OPTIMIZATIONS=0"
-		);
+		result.push_str("# General fixes for NVIDIA GPUs\n");
+		result.push_str("export __GL_THREADED_OPTIMIZATIONS=0\n\n");
 	};
 
 	result.push_str("# shellcheck disable=SC2155\n");

@@ -85,7 +85,7 @@ pub enum Feature {
 	///
 	/// `-Dawt.tookit.name=WLToolkit -Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false`
 	#[cfg(any(target_os = "linux", feature = "multi_os"))]
-	#[clap(name = "wltoolkit", aliases=vec!["wakefield", "wayland"])]
+	#[clap(name = "wltoolkit", aliases=vec!["wakefield", "wayland", "wl"])]
 	WLToolkit,
 	/// OpenGL for AWT/Swing.  This has been bundled in OpenJDK for a long time, but isn't on by default
 	///
