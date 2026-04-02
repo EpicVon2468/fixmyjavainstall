@@ -11,7 +11,7 @@ pub fn has_program(name: &str) -> Result<bool> {
 }
 
 fn command_v(name: &str) -> Result<Child> {
-	#[cfg(not(windows))]
+	#[cfg(unix)]
 	let command_v: &str = "which";
 	#[cfg(windows)]
 	let command_v: &str = "where.exe";

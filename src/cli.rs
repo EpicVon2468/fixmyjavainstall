@@ -13,6 +13,7 @@ pub struct Arguments {
 
 #[derive(Subcommand)]
 pub enum Cmd {
+	#[clap(hide = cfg!(windows))]
 	Link {
 		// #[arg(long, value_name = "PATHS", trailing_var_arg = true, num_args = 1..)]
 		/// Input directories.  Note that on UNIX, the `/bin` suffix will be appended for each of these by the program

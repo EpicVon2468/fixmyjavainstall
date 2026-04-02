@@ -102,6 +102,29 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 	result
 }
 
+// https://stackoverflow.com/questions/25122484/how-do-i-emulate-a-wrapper-script-on-windows
+// https://superuser.com/questions/1500272/equivalent-of-export-command-in-windows
+// https://stackoverflow.com/questions/12990480/shift-doesn-t-affect
+// Oh dear...
+// https://serverfault.com/questions/315077/is-there-a-windows-cmd-equivalent-of-unix-shells-exec
+#[cfg(windows)]
+fn wrapper_impl(java_home: &str, features: &Vec<Feature>) -> String {
+	let mut result: String = String::with_capacity(500);
+	result.push_str("@echo off\r\n\r\n");
+
+
+
+	result.push_str(&format!("set JAVA_HOME=\"{java_home}\"\r\n\r\n"));
+
+	result.push_str("if defined CLASSPATH (\r\n");
+	result.push_str("\tset FUJI_CLASSPATH_ARG=\"%CLASSPATH%;.\"\r\n");
+	result.push_str(")\r\n\r\n");
+
+	result.push_str("start /b \"\" \"%JAVA_HOME%/bin/java.exe\"");
+
+	result
+}
+
 pub fn install_wrapper(script: String, output_dir: &str) -> String {
 	let script_file: String = format!("{output_dir}/bin/fuji_jvm_wrapper");
 	let mut result: File = OpenOptions::new()
