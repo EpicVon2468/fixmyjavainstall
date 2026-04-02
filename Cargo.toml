@@ -6,6 +6,9 @@ edition = "2024"
 repository = "https://github.com/EpicVon2468/fixmyjavainstall"
 homepage = "https://github.com/EpicVon2468/fixmyjavainstall"
 
+[features]
+multi_os = []
+
 [[bin]]
 name = "fuji"
 path = "src/main.rs"

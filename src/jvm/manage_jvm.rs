@@ -78,6 +78,7 @@ pub enum Feature {
 	/// Wayland support (requires Vulkan) – https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype
 	///
 	/// `-Dawt.tookit.name=WLToolkit -Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false`
+	#[cfg(any(target_os = "linux", feature = "multi_os"))]
 	#[clap(name = "wltoolkit", aliases=vec!["wakefield", "wayland"])]
 	WLToolkit,
 	/// OpenGL for AWT/Swing.  This has been bundled in OpenJDK for a long time, but isn't on by default
@@ -104,7 +105,13 @@ pub enum Feature {
 	///
 	/// `-Dawt.useSystemAAFontSettings=on`
 	FontAntiAliasing,
+	/// General fixes for NVIDIA GPUs
+	///
+	/// `__GL_THREADED_OPTIMIZATIONS=0`
+	#[cfg(any(target_os = "linux", feature = "multi_os"))]
+	NVIDIAFixes,
 	/// MUSL libc support – https://musl.libc.org/
+	#[cfg(any(not(windows), feature = "multi_os"))]
 	MUSL,
 }
 

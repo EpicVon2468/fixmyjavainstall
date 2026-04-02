@@ -11,12 +11,16 @@ pub fn has_program(name: &str) -> Result<bool> {
 }
 
 fn command_v(name: &str) -> Result<Child> {
+	#[cfg(not(windows))]
+	let command_v: &str = "which";
+	#[cfg(windows)]
+	let command_v: &str = "where.exe";
 	Ok(
-		Command::new("which")
+		Command::new(command_v)
 			.arg(name)
 			.stdout(Stdio::piped())
 			.spawn()
-			.expect("Couldn't start which!")
+			.expect(&format!("Couldn't start {command_v}!"))
 	)
 }
 

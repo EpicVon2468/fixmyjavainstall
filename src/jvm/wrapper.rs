@@ -33,6 +33,7 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 		);
 	};
 	let mut requires_vulkan: bool = false;
+	#[cfg(any(target_os = "linux", feature = "multi_os"))]
 	if features.contains(&Feature::WLToolkit) {
 		fuji_jvm_arg!(
 			"Wayland support (requires Vulkan) – https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype",
@@ -71,6 +72,13 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 		fuji_jvm_arg!(
 			"Enables AWT font antialiasing.  This can improve readability and quality of text",
 			"-Dawt.useSystemAAFontSettings=on"
+		);
+	};
+	#[cfg(any(target_os = "linux", feature = "multi_os"))]
+	if features.contains(&Feature::NVIDIAFixes) {
+		fuji_jvm_arg!(
+			"General fixes for NVIDIA GPUs",
+			"__GL_THREADED_OPTIMIZATIONS=0"
 		);
 	};
 
