@@ -39,6 +39,7 @@ pub fn require_program(name: &str) -> Result<()> {
 
 // https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
 // sudo tar --strip-components 1 -xvf 25.0.2.tar.gz -C 25.0.2
+// macOS & Linux both have tar, but not Windows
 pub fn untar_jdk<S: AsRef<OsStr>, P: AsRef<Path>>(archive: S, dest: P) -> Result<()> {
 	require_program("tar")?;
 	let mut child: Child = Command::new("tar")
@@ -54,6 +55,8 @@ pub fn untar_jdk<S: AsRef<OsStr>, P: AsRef<Path>>(archive: S, dest: P) -> Result
 	wait_and_check_status!(child, "tar");
 	Ok(())
 }
+
+// TODO: https://curl.se/windows/ && https://curl.se/windows/latest.cgi?p=win64-mingw.zip
 
 pub fn download<S: AsRef<OsStr>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 	require_program("curl")?;

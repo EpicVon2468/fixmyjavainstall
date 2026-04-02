@@ -16,7 +16,7 @@ use crate::cli::{Arguments, Cmd};
 use crate::cmd_link::cmd_link;
 use crate::cmd_manage::cmd_manage;
 
-// I'll think about it.
+// Windows isn't ready yet
 #[cfg(not(windows))]
 fn main() {
 	// Doing this when trying to run the binary didn't work

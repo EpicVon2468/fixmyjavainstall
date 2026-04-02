@@ -116,7 +116,7 @@ pub enum Feature {
 	///
 	/// `-Dawt.useSystemAAFontSettings=on`
 	FontAntiAliasing,
-	/// General fixes for NVIDIA GPUs
+	/// General fixes for NVIDIA GPUs on Linux
 	///
 	/// `__GL_THREADED_OPTIMIZATIONS=0`
 	#[cfg(any(target_os = "linux", feature = "multi_os"))]

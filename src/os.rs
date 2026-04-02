@@ -8,6 +8,7 @@ pub enum OS {
 	/// Anything running the Linux kernel
 	Linux,
 	/// macOS by Apple
+	#[clap(aliases = vec!["mac", "macos"])]
 	OSX,
 	/// Windows by Microslop
 	Windows,
