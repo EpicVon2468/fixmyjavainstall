@@ -7,6 +7,8 @@ mod jvm;
 mod arch;
 mod kotlin;
 mod os;
+#[cfg(windows)]
+mod win_link;
 
 use std::env::set_var;
 

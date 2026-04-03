@@ -1,7 +1,7 @@
-use std::path::MAIN_SEPARATOR;
 use std::ffi::OsStr;
 use std::fs::remove_file;
 use std::io::{Error, ErrorKind, Result};
+use std::path::MAIN_SEPARATOR;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command};
 
@@ -31,14 +31,14 @@ pub fn cmd_link(command: &Cmd) -> Result<()> {
 	Ok(())
 }
 
-// TODO:
-// 	https://stackoverflow.com/questions/79701236/what-is-the-recommended-way-to-append-a-path-to-windows-path-environment-vari
-// 	https://stackoverflow.com/questions/8358265/how-can-i-update-the-path-variable-permanently-from-the-windows-command-line
-// 	https://learn.microsoft.com/en-gb/windows/win32/procthread/environment-variables
 pub fn link_impl<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alternatives: bool) -> Result<()> {
 	let path: &Path = path.as_ref();
 	println!("Linking path: {}", path.display());
 	let bin: PathBuf = path.join("bin");
+
+	#[cfg(windows)]
+	return crate::win_link::win_link(bin);
+
 	let can_use_update_alternatives: bool = cfg!(target_os = "linux") && use_update_alternatives && has_program("update-alternatives");
 	if !can_use_update_alternatives && use_update_alternatives {
 		println!("Couldn't find update-alternatives on system when explicitly requested!");
@@ -51,6 +51,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update
 	};
 	for entry in bin.read_dir().expect(&io_expect(bin, "list directory")) {
 		let file: &PathBuf = &entry?.path();
+		// TODO: '--quiet'
 		println!("\n{}", file.display());
 		if file.is_dir() {
 			continue;
