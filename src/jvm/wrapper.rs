@@ -164,8 +164,11 @@ fn gen_features(
 	};
 }
 
-pub fn install_wrapper(script: String, java_home: &str, bin_suffix: &str) -> String {
-	let script_file: String = format!("{java_home}/bin/fuji_jvm_wrapper{bin_suffix}");
+pub fn install_wrapper(script: String, java_home: &str, bin_suffix: &str, is_win: bool) -> String {
+	let script_file: String = format!(
+		"{java_home}/bin/fuji_jvm_wrapper{bin_suffix}{}",
+		if is_win { ".bat" } else { "" }
+	);
 	let mut result: File = OpenOptions::new()
 		.write(true)
 		.create_new(true)

@@ -93,7 +93,7 @@ pub fn install(op: &Op) -> Result<()> {
 		};
 		// move $JAVA_HOME/bin/java(w)(.exe) to a 'backup' file so that programs which try to run $JAVA_HOME/bin/java(w)(.exe) literally can't skip the run script
 		rename(&java_executable, format!("{java_executable}.bak"))?;
-		let script_file: String = install_wrapper(script, java_home, suffix);
+		let script_file: String = install_wrapper(script, java_home, suffix, is_win);
 		// link $JAVA_HOME/bin/java(w)(.exe) to $JAVA_HOME/bin/fuji_jvm_wrapper
 		symlink_link(&script_file, java_executable)?;
 	};
