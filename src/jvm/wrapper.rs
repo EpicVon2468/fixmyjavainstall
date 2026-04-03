@@ -108,6 +108,7 @@ fn gen_features(
 			"-XX:+UseCompactObjectHeaders"
 		);
 	};
+	#[allow(unused_mut)]
 	let mut requires_vulkan: bool = false;
 	#[cfg(any(target_os = "linux", feature = "multi_os"))]
 	if features.contains(&Feature::WLToolkit) {

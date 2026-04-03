@@ -5,6 +5,7 @@ use crate::jvm::manage_jvm::manage_jvm;
 use crate::wrong_cmd;
 
 pub fn cmd_manage(command: &Cmd) -> Result<()> {
+	#[allow(irrefutable_let_patterns)]
 	let Cmd::Manage {
 		software: option,
 	} = command else {
