@@ -101,6 +101,7 @@ pub fn install(op: &Op) -> Result<()> {
 		return Ok(());
 	};
 	// make FUJI_DIR/jvm/latest point to output_dir
+	#[cfg(not(windows))]
 	symlink_link(
 		java_home,
 		format!("{FUJI_DIR}{MAIN_SEPARATOR}jvm{MAIN_SEPARATOR}latest")
