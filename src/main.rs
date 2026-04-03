@@ -21,8 +21,6 @@ use crate::cmd_manage::cmd_manage;
 
 pub const FUJI_DIR: &str = if cfg!(windows) { "\\Program Files\\fuji" } else { "/opt/fuji" };
 
-// Windows isn't ready yet
-#[cfg(not(windows))]
 fn main() {
 	// Doing this when trying to run the binary didn't work
 	unsafe {

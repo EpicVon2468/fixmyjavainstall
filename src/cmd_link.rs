@@ -31,6 +31,7 @@ pub fn cmd_link(command: &Cmd) -> Result<()> {
 	Ok(())
 }
 
+#[allow(unused_variables)]
 pub fn link_impl<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alternatives: bool) -> Result<()> {
 	let path: &Path = path.as_ref();
 	println!("Linking path: {}", path.display());
@@ -39,6 +40,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update
 	#[cfg(windows)]
 	return crate::win_link::win_link(bin);
 
+	#[allow(unreachable_code)]
 	let can_use_update_alternatives: bool = cfg!(target_os = "linux") && use_update_alternatives && has_program("update-alternatives");
 	if !can_use_update_alternatives && use_update_alternatives {
 		println!("Couldn't find update-alternatives on system when explicitly requested!");
