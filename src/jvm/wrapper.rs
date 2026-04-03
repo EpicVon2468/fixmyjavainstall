@@ -4,6 +4,12 @@ use std::io::Write;
 use crate::commands::io_expect;
 use crate::jvm::manage_jvm::Feature;
 
+macro_rules! self_arg {
+	($args:literal) => {
+		concat!("set -- ", $args, " \"$@\"\n")
+	};
+}
+
 // TODO: this is in severe need of a rewrite
 pub fn generate_wrapper(
 	java_home: &str,
@@ -16,20 +22,6 @@ pub fn generate_wrapper(
 	};
 	let mut result: String = String::with_capacity(500);
 
-	macro_rules! fuji_jvm_arg {
-    	($comment:literal, $args:literal) => {
-			result.push_str(
-				concat!("# ", $comment, '\n', self_arg!($args), '\n')
-			);
-		};
-	}
-
-	macro_rules! self_arg {
-    	($args:literal) => {
-			concat!("set -- ", $args, " \"$@\"\n")
-		};
-	}
-
 	result.push_str("#! /usr/bin/env sh\n\n");
 
 	result.push_str("# shellcheck disable=SC2155\n");
@@ -38,6 +30,24 @@ pub fn generate_wrapper(
 	result.push_str("if [ -n \"$CLASSPATH\" ]; then\n\t");
 	result.push_str(self_arg!("-cp \"$CLASSPATH:.\""));
 	result.push_str("fi\n\n");
+
+	gen_features(&mut result, features);
+
+	result.push_str("exec \"$JAVA_HOME/bin/java");
+	result.push_str(bin_suffix);
+	result.push_str("\" \"$@\"");
+
+	result
+}
+
+fn gen_features(result: &mut String, features: &Vec<Feature>) {
+	macro_rules! fuji_jvm_arg {
+    	($comment:literal, $args:literal) => {
+			result.push_str(
+				concat!("# ", $comment, '\n', self_arg!($args), '\n')
+			);
+		};
+	}
 
 	if features.contains(&Feature::DCEVM) {
 		fuji_jvm_arg!(
@@ -109,12 +119,6 @@ pub fn generate_wrapper(
 		result.push_str("# General fixes for NVIDIA GPUs on Linux\n");
 		result.push_str("export __GL_THREADED_OPTIMIZATIONS=0\n\n");
 	};
-
-	result.push_str("exec \"$JAVA_HOME/bin/java");
-	result.push_str(bin_suffix);
-	result.push_str("\" \"$@\"");
-
-	result
 }
 
 // PowerShell is NOT an option. '-XX:+UseCompactObjectHeaders' is forcibly split into '-XX' and '+UseCompactObjectHeaders'.  With and without escapes & quotations & brackets.
