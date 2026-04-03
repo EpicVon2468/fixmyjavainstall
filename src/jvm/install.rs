@@ -14,6 +14,7 @@ use crate::jvm::jdk_temurin::download_temurin;
 use crate::jvm::manage_jvm::{JavaVersion, Op};
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
 use crate::{wrong_cmd, FUJI_DIR};
+use crate::os::OS;
 
 pub fn install(op: &Op) -> Result<()> {
 	let Op::Install {
@@ -42,7 +43,12 @@ pub fn install(op: &Op) -> Result<()> {
 	let java_version: JavaVersion = serde_json::from_str(&json).expect("JSON failed to parse!");
 	// FUJI_DIR/jvm/{version}
 	let output_dir: &str = &format!("{FUJI_DIR}{MAIN_SEPARATOR}jvm{MAIN_SEPARATOR}{}", java_version.major);
-	let script: String = generate_wrapper(output_dir, features);
+	let script: String = generate_wrapper(
+		output_dir,
+		features,
+		operating_system == &OS::Windows,
+		".bak"
+	);
 	println!("'''\n{script}\n'''");
 	if !dry_run {
 		if exists(output_dir)? {

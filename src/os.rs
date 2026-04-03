@@ -3,7 +3,7 @@ use std::fmt::{Display, Formatter, Result};
 use clap::builder::OsStr;
 use clap::ValueEnum;
 
-#[derive(ValueEnum, Clone)]
+#[derive(ValueEnum, Clone, PartialEq)]
 pub enum OS {
 	/// Anything running the Linux kernel
 	Linux,

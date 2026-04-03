@@ -5,13 +5,15 @@ use crate::commands::io_expect;
 use crate::jvm::manage_jvm::Feature;
 
 // TODO: this is in severe need of a rewrite
-// PowerShell is NOT an option. '-XX:+UseCompactObjectHeaders' is forcibly split into '-XX' and '+UseCompactObjectHeaders'.  With and without escapes & quotations & brackets.
-// https://stackoverflow.com/questions/25122484/how-do-i-emulate-a-wrapper-script-on-windows
-// https://superuser.com/questions/1500272/equivalent-of-export-command-in-windows
-// https://stackoverflow.com/questions/12990480/shift-doesn-t-affect
-// Oh dear...
-// https://serverfault.com/questions/315077/is-there-a-windows-cmd-equivalent-of-unix-shells-exec
-pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
+pub fn generate_wrapper(
+	java_home: &str,
+	features: &Vec<Feature>,
+	is_win: bool,
+	bin_suffix: &str
+) -> String {
+	if is_win {
+		return generate_wrapper_win(java_home, features, bin_suffix);
+	};
 	let mut result: String = String::with_capacity(500);
 
 	macro_rules! fuji_jvm_arg {
@@ -28,11 +30,14 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 		};
 	}
 
-	#[cfg(unix)] result.push_str("#! /usr/bin/env sh\n\n");
-	#[cfg(windows)] {
-		result.push_str("@echo off\r\n\r\n");
-		result.push_str("setlocal enableextensions\r\n\r\n");
-	};
+	result.push_str("#! /usr/bin/env sh\n\n");
+
+	result.push_str("# shellcheck disable=SC2155\n");
+	result.push_str(&format!("export JAVA_HOME=\"{java_home}\"\n\n"));
+
+	result.push_str("if [ -n \"$CLASSPATH\" ]; then\n\t");
+	result.push_str(self_arg!("-cp \"$CLASSPATH:.\""));
+	result.push_str("fi\n\n");
 
 	if features.contains(&Feature::DCEVM) {
 		fuji_jvm_arg!(
@@ -105,30 +110,38 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 		result.push_str("export __GL_THREADED_OPTIMIZATIONS=0\n\n");
 	};
 
-	#[cfg(unix)] result.push_str("# shellcheck disable=SC2155\n");
-	#[cfg(unix)] result.push_str("export");
-	#[cfg(windows)] result.push_str("set");
-	result.push_str(&format!(" JAVA_HOME=\"{java_home}\""));
-	#[cfg(windows)] result.push('\r');
-	result.push('\n');
-	#[cfg(windows)] result.push('\r');
-	result.push('\n');
+	result.push_str("exec \"$JAVA_HOME/bin/java");
+	result.push_str(bin_suffix);
+	result.push_str("\" \"$@\"");
 
-	#[cfg(unix)] {
-		result.push_str("if [ -n \"$CLASSPATH\" ]; then\n\t");
-		result.push_str(self_arg!("-cp \"$CLASSPATH:.\""));
-		result.push_str("fi\n\n");
-	};
-	#[cfg(windows)] {
-		result.push_str("if defined CLASSPATH (\r\n");
-		result.push_str("\tset FUJI_CLASSPATH_ARG=\"%CLASSPATH%;.\"\r\n");
-		result.push_str(")\r\n\r\n");
-	};
+	result
+}
 
-	#[cfg(unix)]
-	result.push_str("exec \"$JAVA_HOME/bin/java.bak\" \"$@\"");
-	#[cfg(windows)]
-	result.push_str("start /b /wait \"\" \"%JAVA_HOME%\\bin\\java.exe\" \"$FUJI_CLASSPATH_ARG\" %*");
+// PowerShell is NOT an option. '-XX:+UseCompactObjectHeaders' is forcibly split into '-XX' and '+UseCompactObjectHeaders'.  With and without escapes & quotations & brackets.
+// https://stackoverflow.com/questions/25122484/how-do-i-emulate-a-wrapper-script-on-windows
+// https://superuser.com/questions/1500272/equivalent-of-export-command-in-windows
+// https://stackoverflow.com/questions/12990480/shift-doesn-t-affect
+// Oh dear...
+// https://serverfault.com/questions/315077/is-there-a-windows-cmd-equivalent-of-unix-shells-exec
+pub fn generate_wrapper_win(
+	java_home: &str,
+	features: &Vec<Feature>,
+	bin_suffix: &str
+) -> String {
+	let mut result: String = String::with_capacity(500);
+
+	result.push_str("@echo off\r\n\r\n");
+	result.push_str("setlocal enableextensions\r\n\r\n");
+
+	result.push_str(&format!("set JAVA_HOME=\"{java_home}\"\r\n\r\n"));
+
+	result.push_str("if defined CLASSPATH (\r\n");
+	result.push_str("\tset FUJI_CLASSPATH_ARG=\"%CLASSPATH%;.\"\r\n");
+	result.push_str(")\r\n\r\n");
+
+	result.push_str("start /b /wait \"\" \"%JAVA_HOME%\\bin\\java");
+	result.push_str(bin_suffix);
+	result.push_str("\" \"$FUJI_CLASSPATH_ARG\" %*");
 
 	result
 }
