@@ -68,7 +68,7 @@ pub fn install(op: &Op) -> Result<()> {
 		return Ok(());
 	};
 	// TODO: will need to create a .bat version of this + make one for java.exe & one for javaw.exe
-	let script_file: String = install_wrapper(script, output_dir);
+	let script_file: String = install_wrapper(script, output_dir, "");
 	// https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
 	let java_executables: Vec<String> = vec![
 		#[cfg(unix)]

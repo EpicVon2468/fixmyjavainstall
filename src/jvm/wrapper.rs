@@ -4,7 +4,6 @@ use std::io::Write;
 use crate::commands::io_expect;
 use crate::jvm::manage_jvm::Feature;
 
-// TODO: this is in severe need of a rewrite
 pub fn generate_wrapper(
 	java_home: &str,
 	features: &Vec<Feature>,
@@ -12,8 +11,50 @@ pub fn generate_wrapper(
 	bin_suffix: &str
 ) -> String {
 	if is_win {
-		return generate_wrapper_win(java_home, features, bin_suffix);
-	};
+		generate_wrapper_win(java_home, features, bin_suffix)
+	} else {
+		generate_wrapper_unix(java_home, features, bin_suffix)
+	}
+}
+
+// PowerShell is NOT an option. '-XX:+UseCompactObjectHeaders' is forcibly split into '-XX' and '+UseCompactObjectHeaders'.  With and without escapes & quotations & brackets.
+// https://stackoverflow.com/questions/25122484/how-do-i-emulate-a-wrapper-script-on-windows
+// https://superuser.com/questions/1500272/equivalent-of-export-command-in-windows
+// https://stackoverflow.com/questions/12990480/shift-doesn-t-affect
+// Oh dear...
+// https://serverfault.com/questions/315077/is-there-a-windows-cmd-equivalent-of-unix-shells-exec
+pub fn generate_wrapper_win(
+	java_home: &str,
+	features: &Vec<Feature>,
+	bin_suffix: &str
+) -> String {
+	let mut result: String = String::with_capacity(500);
+
+	result.push_str("@echo off\r\n\r\n");
+	result.push_str("setlocal enableextensions\r\n\r\n");
+
+	result.push_str(&format!("set JAVA_HOME=\"{java_home}\"\r\n\r\n"));
+
+	result.push_str("if defined CLASSPATH (\r\n");
+	result.push_str("\tset FUJI_CLASSPATH_ARG=\"-cp %CLASSPATH%;.\"\r\n");
+	result.push_str(")\r\n\r\n");
+
+	result.push_str("start /b /wait \"\" \"%JAVA_HOME%\\bin\\java");
+	result.push_str(bin_suffix);
+	result.push_str("\" ");
+	gen_features(
+		&mut result,
+		features,
+		&|_, args: &str| {
+			format!("{args} ")
+		}
+	);
+	result.push_str("\"$FUJI_CLASSPATH_ARG\" %*");
+
+	result
+}
+
+fn generate_wrapper_unix(java_home: &str, features: &Vec<Feature>, bin_suffix: &str) -> String {
 	let mut result: String = String::with_capacity(500);
 
 	result.push_str("#! /usr/bin/env sh\n\n");
@@ -21,8 +62,8 @@ pub fn generate_wrapper(
 	result.push_str("# shellcheck disable=SC2155\n");
 	result.push_str(&format!("export JAVA_HOME=\"{java_home}\"\n\n"));
 
-	result.push_str("if [ -n \"$CLASSPATH\" ]; then\n\t");
-	result.push_str("set -- -cp \"$CLASSPATH:.\" \"$@\"\n");
+	result.push_str("if [ -n \"$CLASSPATH\" ]; then\n");
+	result.push_str("\tset -- -cp \"$CLASSPATH:.\" \"$@\"\n");
 	result.push_str("fi\n\n");
 
 	gen_features(
@@ -122,37 +163,8 @@ fn gen_features(
 	};
 }
 
-// PowerShell is NOT an option. '-XX:+UseCompactObjectHeaders' is forcibly split into '-XX' and '+UseCompactObjectHeaders'.  With and without escapes & quotations & brackets.
-// https://stackoverflow.com/questions/25122484/how-do-i-emulate-a-wrapper-script-on-windows
-// https://superuser.com/questions/1500272/equivalent-of-export-command-in-windows
-// https://stackoverflow.com/questions/12990480/shift-doesn-t-affect
-// Oh dear...
-// https://serverfault.com/questions/315077/is-there-a-windows-cmd-equivalent-of-unix-shells-exec
-pub fn generate_wrapper_win(
-	java_home: &str,
-	features: &Vec<Feature>,
-	bin_suffix: &str
-) -> String {
-	let mut result: String = String::with_capacity(500);
-
-	result.push_str("@echo off\r\n\r\n");
-	result.push_str("setlocal enableextensions\r\n\r\n");
-
-	result.push_str(&format!("set JAVA_HOME=\"{java_home}\"\r\n\r\n"));
-
-	result.push_str("if defined CLASSPATH (\r\n");
-	result.push_str("\tset FUJI_CLASSPATH_ARG=\"%CLASSPATH%;.\"\r\n");
-	result.push_str(")\r\n\r\n");
-
-	result.push_str("start /b /wait \"\" \"%JAVA_HOME%\\bin\\java");
-	result.push_str(bin_suffix);
-	result.push_str("\" \"$FUJI_CLASSPATH_ARG\" %*");
-
-	result
-}
-
-pub fn install_wrapper(script: String, output_dir: &str) -> String {
-	let script_file: String = format!("{output_dir}/bin/fuji_jvm_wrapper");
+pub fn install_wrapper(script: String, output_dir: &str, bin_suffix: &str) -> String {
+	let script_file: String = format!("{output_dir}/bin/fuji_jvm_wrapper{bin_suffix}");
 	let mut result: File = OpenOptions::new()
 		.write(true)
 		.create_new(true)
