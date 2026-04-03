@@ -11,7 +11,7 @@ pub fn download_temurin(
 	version: JavaVersion,
 	features: &Vec<Feature>,
 	os: &OS,
-	output_dir: &str,
+	java_home: &str,
 	dry_run: &bool
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
@@ -31,5 +31,5 @@ pub fn download_temurin(
 	url.push_str(if features.contains(&Feature::MINIMAL) { "jre" } else { "jdk" });
 	// returns a .zip instead of a .tar.gz for windows
 	url.push_str("/hotspot/normal/eclipse");
-	generic_download(url, output_dir, dry_run)
+	generic_download(url, java_home, dry_run)
 }

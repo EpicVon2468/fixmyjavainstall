@@ -8,6 +8,7 @@ use crate::arch::Arch;
 use crate::cli::Software;
 use crate::jvm::install::install;
 use crate::jvm::jdk::JDK;
+#[cfg(feature = "multi_os")]
 use crate::os::OS;
 use crate::wrong_cmd;
 
@@ -28,12 +29,13 @@ pub enum Op {
 		)]
 		arch: Arch,
 
+		/// The OS for the requested JVM
+		#[cfg(feature = "multi_os")]
 		#[arg(
 			short,
 			long,
 			alias = "os",
-			default_value = crate::os::SYSTEM,
-			hide = cfg!(not(feature = "multi_os"))
+			default_value = crate::os::SYSTEM
 		)]
 		operating_system: OS,
 

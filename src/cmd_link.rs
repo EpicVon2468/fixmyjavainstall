@@ -9,16 +9,20 @@ use crate::cli::Cmd;
 use crate::commands::{has_program, io_expect};
 use crate::{wait_and_check_status, wrong_cmd};
 
+#[cfg(any(not(windows), feature = "multi_os"))]
 pub fn cmd_link(command: &Cmd) -> Result<()> {
 	let Cmd::Link {
 		paths,
 		link_dir,
+		#[cfg(any(target_os = "linux", feature = "multi_os"))]
 		use_update_alternatives,
 	} = command else {
 		wrong_cmd!(cmd_link);
 	};
+	#[cfg(all(not(target_os = "linux"), not(feature = "multi_os")))]
+	let use_update_alternatives: &bool = &true;
 	for path in paths {
-		link(
+		link_impl(
 			path,
 			link_dir,
 			*use_update_alternatives
@@ -31,7 +35,7 @@ pub fn cmd_link(command: &Cmd) -> Result<()> {
 // 	https://stackoverflow.com/questions/79701236/what-is-the-recommended-way-to-append-a-path-to-windows-path-environment-vari
 // 	https://stackoverflow.com/questions/8358265/how-can-i-update-the-path-variable-permanently-from-the-windows-command-line
 // 	https://learn.microsoft.com/en-gb/windows/win32/procthread/environment-variables
-pub fn link<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alternatives: bool) -> Result<()> {
+pub fn link_impl<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alternatives: bool) -> Result<()> {
 	let path: &Path = path.as_ref();
 	println!("Linking path: {}", path.display());
 	let bin: PathBuf = path.join("bin");

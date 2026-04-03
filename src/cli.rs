@@ -13,7 +13,7 @@ pub struct Arguments {
 
 #[derive(Subcommand)]
 pub enum Cmd {
-	#[clap(hide = cfg!(windows))]
+	#[cfg(any(not(windows), feature = "multi_os"))]
 	Link {
 		// #[arg(long, value_name = "PATHS", trailing_var_arg = true, num_args = 1..)]
 		/// Input directories.  Note that on UNIX, the `/bin` suffix will be appended for each of these by the program
@@ -29,12 +29,8 @@ pub enum Cmd {
 		link_dir: String,
 
 		/// Whether to use update-alternatives for install.
-		#[arg(
-			short,
-			long,
-			default_value = "false",
-			hide = cfg!(not(target_os = "linux"))
-		)]
+		#[cfg(any(target_os = "linux", feature = "multi_os"))]
+		#[arg(short, long, default_value = "false")]
 		use_update_alternatives: bool,
 	},
 	Manage {

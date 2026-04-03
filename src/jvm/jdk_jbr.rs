@@ -10,7 +10,7 @@ pub fn download_jbr(
 	version: JavaVersion,
 	features: &Vec<Feature>,
 	os: &OS,
-	output_dir: &str,
+	java_home: &str,
 	dry_run: &bool
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
@@ -34,5 +34,5 @@ pub fn download_jbr(
 	url.push('-');
 	url.push_str(version.revision);
 	url.push_str(".tar.gz");
-	generic_download(url, output_dir, dry_run)
+	generic_download(url, java_home, dry_run)
 }

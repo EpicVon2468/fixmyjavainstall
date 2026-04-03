@@ -10,7 +10,7 @@ pub fn download_liberica(
 	version: JavaVersion,
 	features: &Vec<Feature>,
 	os: &OS,
-	output_dir: &str,
+	java_home: &str,
 	dry_run: &bool
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
@@ -38,5 +38,5 @@ pub fn download_liberica(
 	);
 	// doesn't have a .tar.gz for windows
 	url.push_str(".tar.gz");
-	generic_download(url, output_dir, dry_run)
+	generic_download(url, java_home, dry_run)
 }

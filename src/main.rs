@@ -13,6 +13,7 @@ use std::env::set_var;
 use clap::Parser;
 
 use crate::cli::{Arguments, Cmd};
+#[cfg(any(not(windows), feature = "multi_os"))]
 use crate::cmd_link::cmd_link;
 use crate::cmd_manage::cmd_manage;
 
@@ -28,12 +29,9 @@ fn main() {
 	let arguments: Arguments = Arguments::parse();
 	if let Some(command) = &arguments.command {
 		match command {
-			Cmd::Link { .. } => {
-				cmd_link(command).unwrap();
-			},
-			Cmd::Manage { .. } => {
-				cmd_manage(command).unwrap();
-			},
+			#[cfg(any(not(windows), feature = "multi_os"))]
+			Cmd::Link { .. } => cmd_link(command).unwrap(),
+			Cmd::Manage { .. } => cmd_manage(command).unwrap(),
 		};
 	};
 }
