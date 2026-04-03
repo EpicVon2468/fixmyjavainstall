@@ -14,7 +14,14 @@ pub fn win_link<P: AsRef<Path>>(bin_dir: P) -> Result<()> {
 		.read()
 		.write()
 		.open("Environment")
-		.expect("Couldn't get Environment for HKEY_LOCAL_MACHINE");
+		.unwrap_or(|| {
+			windows_registry::CURRENT_USER
+				.options()
+				.read()
+				.write()
+				.open("Environment")
+				.expect("Couldn't get Environment for HKEY_LOCAL_MACHINE or HKEY_CURRENT_USER")
+		});
 	let prev_path = key.get_string("PATH").expect("Couldn't get PATH");
 	// technically I'm supposed to broadcast a message about this, but uh... no.
 	key.set_string("PATH", format!("{prev_path};{}", bin_dir.display())).expect("Couldn't set PATH");
