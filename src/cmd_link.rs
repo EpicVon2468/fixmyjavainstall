@@ -1,3 +1,4 @@
+use std::path::MAIN_SEPARATOR;
 use std::ffi::OsStr;
 use std::fs::remove_file;
 use std::io::{Error, ErrorKind, Result};
@@ -54,7 +55,7 @@ pub fn link<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alte
 			println!("Filename was none! '{}'", file.display());
 			continue;
 		};
-		let dest: &str = &format!("{}/{}", link_dir.as_ref(), filename.display());
+		let dest: String = format!("{}{MAIN_SEPARATOR}{}", link_dir.as_ref(), filename.display());
 		if can_use_update_alternatives {
 			debian_link(file, filename, dest).expect("Couldn't link with update-alternatives!");
 		} else {

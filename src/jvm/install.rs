@@ -1,5 +1,6 @@
 use std::fs::{create_dir_all, exists, remove_dir_all, rename};
 use std::io::Result;
+use std::path::MAIN_SEPARATOR;
 
 use crate::cli::Cmd;
 use crate::cmd_link::{cmd_link, symlink_link};
@@ -39,11 +40,8 @@ pub fn install(op: &Op) -> Result<()> {
 		)?
 	};
 	let java_version: JavaVersion = serde_json::from_str(&json).expect("JSON failed to parse!");
-	#[cfg(unix)]
-	let slash: char = '/';
-	#[cfg(windows)]
-	let slash: char = '\\';
-	let output_dir: &str = &format!("{FUJI_DIR}{slash}jvm{slash}{}", java_version.major);
+	// FUJI_DIR/jvm/{version}
+	let output_dir: &str = &format!("{FUJI_DIR}{MAIN_SEPARATOR}jvm{MAIN_SEPARATOR}{}", java_version.major);
 	let script: String = generate_wrapper(output_dir, features);
 	println!("'''\n{script}\n'''");
 	if !dry_run {
@@ -81,7 +79,10 @@ pub fn install(op: &Op) -> Result<()> {
 		symlink_link(&script_file, java_executable)?;
 	};
 	// make FUJI_DIR/jvm/latest point to output_dir
-	symlink_link(output_dir, format!("{FUJI_DIR}{slash}jvm{slash}latest"))?;
+	symlink_link(
+		output_dir,
+		format!("{FUJI_DIR}{MAIN_SEPARATOR}jvm{MAIN_SEPARATOR}latest")
+	)?;
 	// link all of $JAVA_HOME/bin
 	cmd_link(
 		&Cmd::Link {

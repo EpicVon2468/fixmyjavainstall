@@ -4,6 +4,7 @@ use std::io::Write;
 use crate::commands::io_expect;
 use crate::jvm::manage_jvm::Feature;
 
+// TODO: this is in severe need of a rewrite
 // PowerShell is NOT an option. '-XX:+UseCompactObjectHeaders' is forcibly split into '-XX' and '+UseCompactObjectHeaders'.  With and without escapes & quotations & brackets.
 // https://stackoverflow.com/questions/25122484/how-do-i-emulate-a-wrapper-script-on-windows
 // https://superuser.com/questions/1500272/equivalent-of-export-command-in-windows
@@ -27,21 +28,7 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 		};
 	}
 
-	#[cfg(unix)]
-	macro_rules! export {
-    	($var:literal) => {
-			concat!("export ", $var)
-		};
-	}
-	#[cfg(windows)]
-	macro_rules! export {
-		($var:literal) => {
-			concat!("set ", $var)
-		};
-	}
-
-	#[cfg(unix)]
-	result.push_str("#! /usr/bin/env sh\n\n");
+	#[cfg(unix)] result.push_str("#! /usr/bin/env sh\n\n");
 	#[cfg(windows)] {
 		result.push_str("@echo off\r\n\r\n");
 		result.push_str("setlocal enableextensions\r\n\r\n");
@@ -114,17 +101,18 @@ pub fn generate_wrapper(java_home: &str, features: &Vec<Feature>) -> String {
 	};
 	#[cfg(any(target_os = "linux", feature = "multi_os"))]
 	if features.contains(&Feature::NVIDIAFixes) {
-		result.push_str("# General fixes for NVIDIA GPUs on Linux");
-		#[cfg(windows)] result.push('\r');
-		result.push_str(&format!("\n{}=0", export!("__GL_THREADED_OPTIMIZATIONS")));
-		#[cfg(windows)] result.push('\r');
-		result.push('\n');
-		#[cfg(windows)] result.push('\r');
-		result.push('\n');
+		result.push_str("# General fixes for NVIDIA GPUs on Linux\n");
+		result.push_str("export __GL_THREADED_OPTIMIZATIONS=0\n\n");
 	};
 
-	result.push_str("# shellcheck disable=SC2155\n");
-	result.push_str(&format!("{}=\"{java_home}\"\n\n", export!("JAVA_HOME")));
+	#[cfg(unix)] result.push_str("# shellcheck disable=SC2155\n");
+	#[cfg(unix)] result.push_str("export");
+	#[cfg(windows)] result.push_str("set");
+	result.push_str(&format!(" JAVA_HOME=\"{java_home}\""));
+	#[cfg(windows)] result.push('\r');
+	result.push('\n');
+	#[cfg(windows)] result.push('\r');
+	result.push('\n');
 
 	#[cfg(unix)] {
 		result.push_str("if [ -n \"$CLASSPATH\" ]; then\n\t");
