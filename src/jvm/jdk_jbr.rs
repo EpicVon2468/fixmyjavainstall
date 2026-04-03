@@ -11,7 +11,8 @@ pub fn download_jbr(
 	features: &Vec<Feature>,
 	os: &OS,
 	java_home: &str,
-	dry_run: &bool
+	dry_run: &bool,
+	is_win: bool
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://cache-redirector.jetbrains.com/intellij-jbr/jbr");
@@ -33,6 +34,6 @@ pub fn download_jbr(
 	url.push_str(&arch.to_string());
 	url.push('-');
 	url.push_str(version.revision);
-	url.push_str(".tar.gz");
-	generic_download(url, java_home, dry_run)
+	url.push_str(if is_win { ".zip" } else { ".tar.gz" });
+	generic_download(url, java_home, dry_run, is_win)
 }

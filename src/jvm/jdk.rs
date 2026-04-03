@@ -1,4 +1,4 @@
-use std::fmt::{Display, Formatter};
+use std::fmt::{Display, Formatter, Result};
 
 use clap::builder::PossibleValue;
 use clap::ValueEnum;
@@ -149,12 +149,12 @@ impl ValueEnum for JDK {
 
 impl Display for JDK {
 
-	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+	fn fmt(&self, f: &mut Formatter<'_>) -> Result {
 		write!(
 			f,
 			"{}",
 			match self {
-				JDK::Auto => todo!("Automagic JDK selection"),
+				JDK::Auto => "auto",
 				JDK::JBR => "jbr",
 				JDK::JavaSE => "java-se",
 				JDK::Temurin => "temurin",

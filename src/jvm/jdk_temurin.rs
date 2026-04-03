@@ -12,7 +12,8 @@ pub fn download_temurin(
 	features: &Vec<Feature>,
 	os: &OS,
 	java_home: &str,
-	dry_run: &bool
+	dry_run: &bool,
+	is_win: bool
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://api.adoptium.net/v3/binary/latest/");
@@ -31,5 +32,5 @@ pub fn download_temurin(
 	url.push_str(if features.contains(&Feature::MINIMAL) { "jre" } else { "jdk" });
 	// returns a .zip instead of a .tar.gz for windows
 	url.push_str("/hotspot/normal/eclipse");
-	generic_download(url, java_home, dry_run)
+	generic_download(url, java_home, dry_run, is_win)
 }

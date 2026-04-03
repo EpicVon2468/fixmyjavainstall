@@ -59,7 +59,15 @@ pub fn install(op: &Op) -> Result<()> {
 		JDK::Temurin => download_temurin,
 		JDK::Liberica => download_liberica,
 	};
-	download_jdk(arch, java_version, features, operating_system, java_home, dry_run)?;
+	download_jdk(
+		arch,
+		java_version,
+		features,
+		operating_system,
+		java_home,
+		dry_run,
+		is_win
+	)?;
 	println!();
 	// https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
 	let mut executable_suffixes: Vec<&str> = vec![""];

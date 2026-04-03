@@ -11,7 +11,8 @@ pub fn download_java_se(
 	_features: &Vec<Feature>,
 	os: &OS,
 	java_home: &str,
-	dry_run: &bool
+	dry_run: &bool,
+	is_win: bool
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://download.oracle.com/java/");
@@ -28,7 +29,7 @@ pub fn download_java_se(
 	);
 	url.push('-');
 	url.push_str(&arch.to_string());
-	// doesn't have a .tar.gz for windows
-	url.push_str("_bin.tar.gz");
-	generic_download(url, java_home, dry_run)
+	url.push_str("_bin.");
+	url.push_str(if is_win { "zip" } else { "tar.gz" });
+	generic_download(url, java_home, dry_run, is_win)
 }

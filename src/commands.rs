@@ -27,13 +27,13 @@ pub fn require_program(name: &str) -> Result<()> {
 
 // https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
 // sudo tar --strip-components 1 -xvf 25.0.2.tar.gz -C 25.0.2
-// macOS & Linux both have tar, but not Windows
-pub fn untar_jdk<S: AsRef<OsStr>, P: AsRef<Path>>(archive: S, dest: P) -> Result<()> {
+// macOS & Linux both come with tar, and Windows versions from 2017 and onwards have it bundled
+pub fn untar_jdk<S: AsRef<OsStr>, P: AsRef<Path>>(archive: S, dest: P, is_zip: bool) -> Result<()> {
 	require_program("tar")?;
 	let mut child: Child = Command::new("tar")
 		.arg("--strip-components")
 		.arg("1")
-		.arg("-xvf")
+		.arg(if is_zip { "-zxvf" } else { "-xvf" })
 		.arg(archive)
 		.arg("-C")
 		.arg(dest.as_ref().canonicalize()?)
@@ -44,8 +44,7 @@ pub fn untar_jdk<S: AsRef<OsStr>, P: AsRef<Path>>(archive: S, dest: P) -> Result
 	Ok(())
 }
 
-// TODO: https://curl.se/windows/ && https://curl.se/windows/latest.cgi?p=win64-mingw.zip
-
+// Turns out curl is bundled with Windows since 2017: https://curl.se/windows/microsoft.html
 pub fn download<S: AsRef<OsStr>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 	require_program("curl")?;
 	let dest: &Path = dest.as_ref();
