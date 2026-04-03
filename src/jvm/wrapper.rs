@@ -4,12 +4,6 @@ use std::io::Write;
 use crate::commands::io_expect;
 use crate::jvm::manage_jvm::Feature;
 
-macro_rules! self_arg {
-	($args:literal) => {
-		concat!("set -- ", $args, " \"$@\"\n")
-	};
-}
-
 // TODO: this is in severe need of a rewrite
 pub fn generate_wrapper(
 	java_home: &str,
@@ -28,10 +22,22 @@ pub fn generate_wrapper(
 	result.push_str(&format!("export JAVA_HOME=\"{java_home}\"\n\n"));
 
 	result.push_str("if [ -n \"$CLASSPATH\" ]; then\n\t");
-	result.push_str(self_arg!("-cp \"$CLASSPATH:.\""));
+	result.push_str("set -- -cp \"$CLASSPATH:.\" \"$@\"\n");
 	result.push_str("fi\n\n");
 
-	gen_features(&mut result, features);
+	gen_features(
+		&mut result,
+		features,
+		&|comment: &str, args: &str| {
+			format!("# {comment}\nset -- {args} \"$@\"\n\n")
+		}
+	);
+
+	#[cfg(any(target_os = "linux", feature = "multi_os"))]
+	if features.contains(&Feature::NVIDIAFixes) {
+		result.push_str("# General fixes for NVIDIA GPUs on Linux\n");
+		result.push_str("export __GL_THREADED_OPTIMIZATIONS=0\n\n");
+	};
 
 	result.push_str("exec \"$JAVA_HOME/bin/java");
 	result.push_str(bin_suffix);
@@ -40,23 +46,23 @@ pub fn generate_wrapper(
 	result
 }
 
-fn gen_features(result: &mut String, features: &Vec<Feature>) {
-	macro_rules! fuji_jvm_arg {
-    	($comment:literal, $args:literal) => {
-			result.push_str(
-				concat!("# ", $comment, '\n', self_arg!($args), '\n')
-			);
-		};
-	}
+fn gen_features(
+	result: &mut String,
+	features: &Vec<Feature>,
+	transform: &dyn Fn(&str, &str) -> String
+) {
+	let mut fuji_jvm_arg = |comment: &str, args: &str| {
+		result.push_str(&transform(comment, args));
+	};
 
 	if features.contains(&Feature::DCEVM) {
-		fuji_jvm_arg!(
+		fuji_jvm_arg(
 			"Dynamic Code Evolution Virtual Machine (enhanced runtime class redefinition) – https://ssw.jku.at/dcevm/",
 			"-XX:+AllowEnhancedClassRedefinition"
 		);
 	};
 	if features.contains(&Feature::JEP519) {
-		fuji_jvm_arg!(
+		fuji_jvm_arg(
 			"JDK Enhancement Proposal 519 (Compact Object Headers) – https://openjdk.org/jeps/519",
 			"-XX:+UseCompactObjectHeaders"
 		);
@@ -64,7 +70,7 @@ fn gen_features(result: &mut String, features: &Vec<Feature>) {
 	let mut requires_vulkan: bool = false;
 	#[cfg(any(target_os = "linux", feature = "multi_os"))]
 	if features.contains(&Feature::WLToolkit) {
-		fuji_jvm_arg!(
+		fuji_jvm_arg(
 			"Wayland support (requires Vulkan) – https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype",
 			"-Dawt.tookit.name=WLToolkit"
 		);
@@ -75,7 +81,7 @@ fn gen_features(result: &mut String, features: &Vec<Feature>) {
 		if requires_vulkan {
 			panic!("Vulkan required for WLToolkit, but OpenGL was also explicitly requested.  Resolve incompatible args and try again.");
 		};
-		fuji_jvm_arg!(
+		fuji_jvm_arg(
 			"OpenGL for AWT/Swing.  This has been bundled in OpenJDK for a long time, but isn't on by default",
 			"-Dsun.java2d.opengl=true"
 		);
@@ -85,39 +91,34 @@ fn gen_features(result: &mut String, features: &Vec<Feature>) {
 		if requires_vulkan {
 			panic!("Vulkan required for WLToolkit, but Metal was also explicitly requested.  Resolve incompatible args and try again.");
 		};
-		fuji_jvm_arg!(
+		fuji_jvm_arg(
 			"Metal support for AWT/Swing (macOS).  If you're on macOS, use this instead of OpenGL (Apple has deprecated OpenGL on macOS)",
 			"-Dsun.java2d.metal=true"
 		);
 	};
 	if requires_vulkan || features.contains(&Feature::Vulkan) {
-		fuji_jvm_arg!(
+		fuji_jvm_arg(
 			"Vulkan for AWT/Swing",
 			"-Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false"
 		);
 	};
 	if features.contains(&Feature::AllowNative) {
-		fuji_jvm_arg!(
+		fuji_jvm_arg(
 			"Allows all Java modules to use the (soon to be) restricted native library access",
 			"--enable-native-access=ALL-UNNAMED"
 		);
 	};
 	if features.contains(&Feature::AllowUnsafe) {
-		fuji_jvm_arg!(
+		fuji_jvm_arg(
 			"Allows use of the (soon to be) restricted sun.misc.Unsafe API access",
 			"--sun-misc-unsafe-memory-access=allow"
 		);
 	};
 	if features.contains(&Feature::FontAntiAliasing) {
-		fuji_jvm_arg!(
+		fuji_jvm_arg(
 			"Enables AWT font antialiasing.  This can improve readability and quality of text",
 			"-Dawt.useSystemAAFontSettings=on"
 		);
-	};
-	#[cfg(any(target_os = "linux", feature = "multi_os"))]
-	if features.contains(&Feature::NVIDIAFixes) {
-		result.push_str("# General fixes for NVIDIA GPUs on Linux\n");
-		result.push_str("export __GL_THREADED_OPTIMIZATIONS=0\n\n");
 	};
 }
 
