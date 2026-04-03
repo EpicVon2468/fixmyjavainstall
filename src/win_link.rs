@@ -14,7 +14,7 @@ pub fn win_link<P: AsRef<Path>>(bin_dir: P) -> Result<()> {
 		.read()
 		.write()
 		.open("Environment")
-		.unwrap_or_else(|| {
+		.unwrap_or_else(|_| {
 			windows_registry::CURRENT_USER
 				.options()
 				.read()
