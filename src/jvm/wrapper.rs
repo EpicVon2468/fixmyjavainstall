@@ -23,7 +23,7 @@ pub fn generate_wrapper(
 // https://stackoverflow.com/questions/12990480/shift-doesn-t-affect
 // Oh dear...
 // https://serverfault.com/questions/315077/is-there-a-windows-cmd-equivalent-of-unix-shells-exec
-pub fn generate_wrapper_win(
+fn generate_wrapper_win(
 	java_home: &str,
 	features: &Vec<Feature>,
 	bin_suffix: &str
@@ -41,7 +41,7 @@ pub fn generate_wrapper_win(
 
 	result.push_str("start /b /wait \"\" \"%JAVA_HOME%\\bin\\java");
 	result.push_str(bin_suffix);
-	result.push_str("\" ");
+	result.push_str(".bak\" ");
 	gen_features(
 		&mut result,
 		features,
@@ -82,7 +82,7 @@ fn generate_wrapper_unix(java_home: &str, features: &Vec<Feature>, bin_suffix: &
 
 	result.push_str("exec \"$JAVA_HOME/bin/java");
 	result.push_str(bin_suffix);
-	result.push_str("\" \"$@\"");
+	result.push_str(".bak\" \"$@\"");
 
 	result
 }

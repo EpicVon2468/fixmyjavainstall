@@ -43,13 +43,6 @@ pub fn install(op: &Op) -> Result<()> {
 	let java_version: JavaVersion = serde_json::from_str(&json).expect("JSON failed to parse!");
 	// FUJI_DIR/jvm/{version}
 	let output_dir: &str = &format!("{FUJI_DIR}{MAIN_SEPARATOR}jvm{MAIN_SEPARATOR}{}", java_version.major);
-	let script: String = generate_wrapper(
-		output_dir,
-		features,
-		operating_system == &OS::Windows,
-		".bak"
-	);
-	println!("'''\n{script}\n'''");
 	if !dry_run {
 		if exists(output_dir)? {
 			remove_dir_all(output_dir).expect(&io_expect(output_dir, "remove directory"));
@@ -64,25 +57,36 @@ pub fn install(op: &Op) -> Result<()> {
 		JDK::Liberica => download_liberica,
 	};
 	download_jdk(arch, java_version, features, operating_system, output_dir, dry_run)?;
-	if *dry_run {
-		return Ok(());
-	};
-	// TODO: will need to create a .bat version of this + make one for java.exe & one for javaw.exe
-	let script_file: String = install_wrapper(script, output_dir, "");
+	println!();
 	// https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
-	let java_executables: Vec<String> = vec![
-		#[cfg(unix)]
-		format!("{output_dir}/bin/java"),
-		#[cfg(windows)]
-		format!("{output_dir}\\bin\\java.exe"),
-		#[cfg(windows)]
-		format!("{output_dir}\\bin\\javaw.exe"),
-	];
-	for java_executable in &java_executables {
+	let is_win: bool = operating_system == &OS::Windows;
+	let mut executable_suffixes: Vec<&str> = vec![""];
+	if is_win {
+		executable_suffixes.push("w");
+	};
+	for suffix in executable_suffixes {
+		let suffix: &str = if is_win {
+			&format!("{suffix}.exe")
+		} else {
+			suffix
+		};
+		// $JAVA_HOME/bin/java(w)(.exe)
+		let java_executable: String = format!("{output_dir}{MAIN_SEPARATOR}bin{MAIN_SEPARATOR}java{suffix}");
+		let script: String = generate_wrapper(output_dir, features, is_win, suffix);
+		println!("Writing script to {java_executable}...");
+		println!("'''\n{script}\n'''");
+		println!();
+		if *dry_run {
+			continue;
+		};
 		// move $JAVA_HOME/bin/java(w)(.exe) to a 'backup' file so that programs which try to run $JAVA_HOME/bin/java(w)(.exe) literally can't skip the run script
-		rename(java_executable, format!("{java_executable}.bak"))?;
+		rename(&java_executable, format!("{java_executable}.bak"))?;
+		let script_file = install_wrapper(script, output_dir, suffix);
 		// link $JAVA_HOME/bin/java(w)(.exe) to $JAVA_HOME/bin/fuji_jvm_wrapper
 		symlink_link(&script_file, java_executable)?;
+	};
+	if *dry_run {
+		return Ok(());
 	};
 	// make FUJI_DIR/jvm/latest point to output_dir
 	symlink_link(
