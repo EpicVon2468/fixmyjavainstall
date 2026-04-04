@@ -51,7 +51,7 @@ pub enum Op {
 		#[arg(long)]
 		dry_run: bool,
 
-		/// The requested JVM version.  An integer representing the major version (or 'latest' for the latest available version)
+		/// The requested JVM version.  One of the following: [A number representing the major JVM version; 'latest' for the latest JVM version; 'lts' for the latest Long Term Support version]
 		// #[clap(default_value_t = String::from("latest"))]
 		version: String,
 	},
@@ -61,7 +61,7 @@ pub enum Op {
 
 pub fn manage_jvm(software: Software) -> Result<()> {
 	let Software::JVM {
-		op
+		op,
 	} = software else {
 		wrong_cmd!(manage_jvm);
 	};
