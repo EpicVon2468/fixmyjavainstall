@@ -5,12 +5,12 @@ use clap::ValueEnum;
 
 #[derive(ValueEnum, Clone, PartialEq)]
 pub enum OS {
-	/// Anything running the Linux kernel
+	/// Anything running the Linux kernel – <https://kernel.org/>
 	Linux,
-	/// macOS by Apple
+	/// macOS by Apple – <https://www.apple.com/uk/os/macos/>
 	#[clap(aliases = vec!["mac", "macos"])]
 	OSX,
-	/// Windows by Microslop
+	/// Windows by Microslop – <https://www.microsoft.com/en-gb/windows/>
 	Windows,
 }
 
