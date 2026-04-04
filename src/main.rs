@@ -1,3 +1,4 @@
+#![allow(clippy::tabs_in_doc_comments)]
 pub mod commands;
 pub mod cli;
 pub mod cmd_link;

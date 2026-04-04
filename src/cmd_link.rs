@@ -89,8 +89,7 @@ pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Resul
 	let source: &Path = source.as_ref();
 	let dest: &Path = dest.as_ref();
 	let result: Result<()> = symlink_impl(source, dest);
-	if result.is_err() {
-		let error: Error = result.unwrap_err();
+	if let Err(error) = result {
 		if error.kind() == ErrorKind::AlreadyExists {
 			println!("Removing existing path: {}", dest.display());
 
@@ -119,7 +118,7 @@ pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Resul
 pub fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Result<()> {
 	#[cfg(unix)] {
 		use std::os::unix::fs::symlink;
-		return symlink(original, link);
+		symlink(original, link)
 	}
 	#[cfg(windows)] {
 		use std::os::windows::fs::{symlink_dir, symlink_file};
