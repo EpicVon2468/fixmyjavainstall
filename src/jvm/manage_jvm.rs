@@ -1,9 +1,4 @@
-use std::fmt::{Display, Formatter};
-use std::str::FromStr;
-
-use clap::{Arg, Command, Error, Subcommand, ValueEnum};
-use clap::builder::TypedValueParser;
-use clap::error::ErrorKind;
+use clap::{Subcommand, ValueEnum};
 
 use serde::{Deserialize as Deserialise, Serialize as Serialise};
 
@@ -11,6 +6,7 @@ use crate::arch::Arch;
 use crate::cli::Software;
 use crate::jvm::install::install;
 use crate::jvm::jdk::JDK;
+use crate::jvm::major_version::{MajorVersion, MajorVersionParser};
 #[cfg(feature = "multi_os")]
 use crate::os::OS;
 use crate::wrong_cmd;
@@ -62,70 +58,6 @@ pub enum Op {
 	Remove,
 }
 
-#[derive(Clone, PartialEq)]
-pub enum MajorVersion {
-	Number(u32),
-	/// Latest
-	Latest,
-	/// Long Term Support
-	LTS,
-}
-
-impl Display for MajorVersion {
-
-	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		write!(
-			f,
-			"{}",
-			match self {
-				MajorVersion::Number(value) => value.to_string(),
-				MajorVersion::Latest => "latest".into(),
-				MajorVersion::LTS => "lts".into(),
-			}
-		)
-	}
-}
-
-#[derive(Clone)]
-struct MajorVersionParser;
-
-impl TypedValueParser for MajorVersionParser {
-
-	type Value = MajorVersion;
-
-	fn parse_ref(
-		&self,
-		_cmd: &Command,
-		_arg: Option<&Arg>,
-		value: &std::ffi::OsStr
-	) -> Result<Self::Value, Error> {
-		<MajorVersion as FromStr>::from_str(
-			value
-				.to_str()
-				.unwrap()
-				.to_lowercase()
-				.as_str()
-		)
-	}
-}
-
-// https://stackoverflow.com/questions/73658377/how-to-have-number-or-string-as-a-cli-argument-in-clap
-impl FromStr for MajorVersion {
-
-	type Err = Error;
-
-	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		match s.parse::<u32>() {
-			Ok(num) => Ok(MajorVersion::Number(num)),
-			Err(_) => match s {
-				"latest" => Ok(MajorVersion::Latest),
-				"lts" => Ok(MajorVersion::LTS),
-				_ => Err(Error::new(ErrorKind::InvalidValue)),
-			},
-		}
-	}
-}
-
 pub fn manage_jvm(software: Software) -> std::io::Result<()> {
 	let Software::JVM {
 		op,
@@ -150,18 +82,18 @@ pub enum Feature {
 	/// JDK Enhancement Proposal 519 (Compact Object Headers) – <https://openjdk.org/jeps/519>
 	///
 	/// `-XX:+UseCompactObjectHeaders`
-	#[clap(name = "jep-519", alias="compact-object-headers")]
+	#[clap(name = "jep-519", alias = "compact-object-headers")]
 	JEP519,
 	/// Wayland support (requires Vulkan) – <https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype>
 	///
 	/// `-Dawt.tookit.name=WLToolkit -Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false`
 	#[cfg(any(target_os = "linux", feature = "multi_os"))]
-	#[clap(name = "wltoolkit", aliases=vec!["wakefield", "wayland", "wl"])]
+	#[clap(name = "wltoolkit", aliases = vec!["wakefield", "wayland", "wl"])]
 	WLToolkit,
 	/// OpenGL for AWT/Swing.  This has been bundled in OpenJDK for a long time, but isn't on by default
 	///
 	/// `-Dsun.java2d.opengl=true`
-	#[clap(name = "opengl", alias="gl")]
+	#[clap(name = "opengl", alias = "gl")]
 	OpenGL,
 	/// Metal support for AWT/Swing (macOS).  If you're on macOS, use this instead of OpenGL (Apple has deprecated OpenGL on macOS)
 	///
@@ -171,7 +103,7 @@ pub enum Feature {
 	/// Vulkan for AWT/Swing
 	///
 	/// `-Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false`
-	#[clap(alias="vk")]
+	#[clap(alias = "vk")]
 	Vulkan,
 	/// Java Chromium Embedded Framework – <https://github.com/chromiumembedded/java-cef/>
 	JCEF,

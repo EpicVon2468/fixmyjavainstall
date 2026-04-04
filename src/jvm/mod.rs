@@ -7,3 +7,4 @@ pub mod jdk_generic;
 pub mod jdk_java_se;
 pub mod jdk_temurin;
 pub mod jdk_liberica;
+pub mod major_version;
