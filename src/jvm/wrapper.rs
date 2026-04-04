@@ -6,7 +6,7 @@ use crate::jvm::manage_jvm::Feature;
 
 pub fn generate_wrapper(
 	java_home: &str,
-	features: &Vec<Feature>,
+	features: &[Feature],
 	is_win: bool,
 	bin_suffix: &str
 ) -> String {
@@ -25,7 +25,7 @@ pub fn generate_wrapper(
 // https://serverfault.com/questions/315077/is-there-a-windows-cmd-equivalent-of-unix-shells-exec
 fn generate_wrapper_win(
 	java_home: &str,
-	features: &Vec<Feature>,
+	features: &[Feature],
 	bin_suffix: &str
 ) -> String {
 	let mut result: String = String::with_capacity(500);
@@ -54,7 +54,7 @@ fn generate_wrapper_win(
 	result
 }
 
-fn generate_wrapper_unix(java_home: &str, features: &Vec<Feature>, bin_suffix: &str) -> String {
+fn generate_wrapper_unix(java_home: &str, features: &[Feature], bin_suffix: &str) -> String {
 	let mut result: String = String::with_capacity(500);
 
 	result.push_str("#! /usr/bin/env sh\n\n");
@@ -89,7 +89,7 @@ fn generate_wrapper_unix(java_home: &str, features: &Vec<Feature>, bin_suffix: &
 
 fn gen_features(
 	result: &mut String,
-	features: &Vec<Feature>,
+	features: &[Feature],
 	transform: &dyn Fn(&str, &str) -> String
 ) {
 	let mut fuji_jvm_arg = |comment: &str, args: &str| {
@@ -173,16 +173,16 @@ pub fn install_wrapper(script: String, java_home: &str, bin_suffix: &str, is_win
 		.write(true)
 		.create_new(true)
 		.open(&script_file)
-		.expect(&io_expect(&script_file, "create"));
+		.unwrap_or_else(|_| { panic!("{}", io_expect(&script_file, "create")) });
 	result
 		.write_all(script.as_bytes())
-		.expect(&io_expect(&script_file, "write"));
+		.unwrap_or_else(|_| { panic!("{}", io_expect(&script_file, "write")) });
 	// rwxr-xr-x
 	#[cfg(unix)] {
 		use std::os::unix::fs::PermissionsExt;
 		result
 			.set_permissions(Permissions::from_mode(0o755))
-			.expect(&io_expect(&script_file, "set permissions for"));
+			.unwrap_or_else(|_| { panic!("{}", io_expect(&script_file, "set permissions for")) });
 	};
 	script_file
 }

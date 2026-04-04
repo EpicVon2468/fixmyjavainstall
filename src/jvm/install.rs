@@ -48,9 +48,9 @@ pub fn install(op: Op) -> Result<()> {
 	let java_home: &str = &format!("{FUJI_DIR}{MAIN_SEPARATOR}jvm{MAIN_SEPARATOR}{}", java_version.major);
 	if !dry_run {
 		if exists(java_home)? {
-			remove_dir_all(java_home).expect(&io_expect(java_home, "remove directory"));
+			remove_dir_all(java_home).unwrap_or_else(|_| { panic!("{}", io_expect(java_home, "remove directory")) });
 		};
-		create_dir_all(java_home).expect(&io_expect(java_home, "create directory"));
+		create_dir_all(java_home).unwrap_or_else(|_| { panic!("{}", io_expect(java_home, "create directory")) });
 	};
 	let is_win: bool = operating_system == OS::Windows;
 	let download_jdk: DownloadJdkFn = match jdk {

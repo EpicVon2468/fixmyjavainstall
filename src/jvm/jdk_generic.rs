@@ -10,7 +10,7 @@ use crate::os::OS;
 pub type DownloadJdkFn = fn(
 	arch: Arch,
 	version: JavaVersion,
-	features: &Vec<Feature>,
+	features: &[Feature],
 	os: OS,
 	java_home: &str,
 	dry_run: bool,

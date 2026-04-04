@@ -8,7 +8,7 @@ use crate::os::OS;
 pub fn download_java_se(
 	arch: Arch,
 	version: JavaVersion,
-	_features: &Vec<Feature>,
+	_features: &[Feature],
 	os: OS,
 	java_home: &str,
 	dry_run: bool,
