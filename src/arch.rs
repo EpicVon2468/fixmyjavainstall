@@ -3,6 +3,7 @@ use std::fmt::{Display, Formatter, Result};
 use clap::builder::OsStr;
 use clap::ValueEnum;
 
+/// An enumeration of CPU Architectures
 #[derive(ValueEnum, Clone)]
 pub enum Arch {
 	/// 64-bit (amd64)

@@ -1,5 +1,5 @@
 use std::ffi::OsStr;
-use std::fs::remove_file;
+use std::fs::{remove_dir_all, remove_file};
 use std::io::{Error, ErrorKind, Result};
 use std::path::MAIN_SEPARATOR;
 use std::path::{Path, PathBuf};
@@ -13,12 +13,15 @@ use crate::{wait_and_check_status, wrong_cmd};
 pub fn cmd_link(command: &Cmd) -> Result<()> {
 	let Cmd::Link {
 		paths,
+		#[cfg(any(not(windows), feature = "multi_os"))]
 		link_dir,
 		#[cfg(any(target_os = "linux", feature = "multi_os"))]
 		use_update_alternatives,
 	} = command else {
 		wrong_cmd!(cmd_link);
 	};
+	#[cfg(all(windows, not(feature = "multi_os")))]
+	let link_dir: &str = "";
 	#[cfg(all(not(target_os = "linux"), not(feature = "multi_os")))]
 	let use_update_alternatives: &bool = &false;
 	for path in paths {
@@ -72,15 +75,32 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update
 	Ok(())
 }
 
-pub fn symlink_link<P: AsRef<Path>, S: AsRef<OsStr>>(source: P, dest: S) -> Result<()> {
+/// Attempts to symbolically link `dest` to `source`.
+///
+/// Implementation notes:
+///
+/// * if `dest` already exists, it will be removed and [`symlink_impl`] will be called again.
+/// 	* `dest` is not eagerly removed ([`symlink_impl`] is called without checking if `dest` exists already).
+/// 	* If the delegate of [`symlink_impl`] doesn't fail with [`ErrorKind::AlreadyExists`], `dest` is not deleted.
+/// 	* If `dest` exists and is a directory, [`remove_dir_all`] is used.
+/// 	* If `dest` exists and is a file, [`remove_file`] is used.
+/// 	* if [`symlink_impl`] fails a second time, this function panics.
+pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Result<()> {
 	let source: &Path = source.as_ref();
-	let dest: &OsStr = dest.as_ref();
+	let dest: &Path = dest.as_ref();
 	let result: Result<()> = symlink_impl(source, dest);
 	if result.is_err() {
 		let error: Error = result.unwrap_err();
 		if error.kind() == ErrorKind::AlreadyExists {
-			println!("Removing existing file: {}", dest.display());
-			remove_file(dest).expect(&io_expect(dest, "remove"));
+			println!("Removing existing path: {}", dest.display());
+
+			let remove: Result<()> = if dest.is_file() {
+				remove_file(dest)
+			} else {
+				remove_dir_all(dest)
+			};
+			remove.expect(&io_expect(dest, "remove"));
+
 			symlink_impl(source, dest).expect("Symbolic linking failed second time, panicking!");
 		} else {
 			return Err(error);
@@ -89,7 +109,14 @@ pub fn symlink_link<P: AsRef<Path>, S: AsRef<OsStr>>(source: P, dest: S) -> Resu
 	Ok(())
 }
 
-fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Result<()> {
+/// Cross-platform function for symbolic linking.
+///
+/// Platform-specific behaviour:
+///
+/// * UNIX-likes: Delegates to [`std::os::unix::fs::symlink`].
+/// * Windows: Checks if `original` is a directory.  If `true`, delegates to [`std::os::windows::fs::symlink_dir`], else [`std::os::windows::fs::symlink_file`].
+#[allow(rustdoc::broken_intra_doc_links)]
+pub fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Result<()> {
 	#[cfg(unix)] {
 		use std::os::unix::fs::symlink;
 		return symlink(original, link);
@@ -106,12 +133,12 @@ fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Result<
 	}
 }
 
-pub fn debian_link<P, S, S2>(file: P, filename: S, dest: S2) -> Result<()>
-where
-	P: AsRef<Path>,
-	S: AsRef<OsStr>,
-	S2: AsRef<OsStr>
-{
+/// <https://man7.org/linux/man-pages/man1/update-alternatives.1.html>
+pub fn debian_link<P: AsRef<Path>, S: AsRef<OsStr>, S2: AsRef<OsStr>>(
+	file: P,
+	filename: S,
+	dest: S2
+) -> Result<()> {
 	let file: &Path = file.as_ref();
 	let filename: &OsStr = filename.as_ref();
 	let mut install_child: Child = Command::new("update-alternatives")

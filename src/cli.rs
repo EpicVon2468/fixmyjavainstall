@@ -20,6 +20,7 @@ pub enum Cmd {
 		paths: Vec<String>,
 
 		/// Directory to link files into.  Does nothing on Windows
+		#[cfg(any(not(windows), feature = "multi_os"))]
 		#[arg(
 			short,
 			long,
