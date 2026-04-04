@@ -59,14 +59,12 @@ pub enum Op {
 }
 
 pub fn manage_jvm(software: Software) -> std::io::Result<()> {
-	let Software::JVM {
-		op,
-	} = software else {
+	let Software::JVM { op } = software else {
 		wrong_cmd!(manage_jvm);
 	};
 	match op {
 		Op::Install { .. } => return install(op),
-		Op::Remove => {},
+		Op::Remove => {}
 	};
 	Ok(())
 }

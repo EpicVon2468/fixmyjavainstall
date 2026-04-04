@@ -1,7 +1,7 @@
 use std::fmt::{Display, Formatter, Result};
 
-use clap::builder::PossibleValue;
 use clap::ValueEnum;
+use clap::builder::PossibleValue;
 
 #[derive(Clone, PartialEq)]
 pub enum JDK {
@@ -118,9 +118,14 @@ pub enum JDK {
 }
 
 impl ValueEnum for JDK {
-
 	fn value_variants<'a>() -> &'a [Self] {
-		&[Self::Auto, Self::JBR, Self::JavaSE, Self::Temurin, Self::Liberica]
+		&[
+			Self::Auto,
+			Self::JBR,
+			Self::JavaSE,
+			Self::Temurin,
+			Self::Liberica,
+		]
 	}
 
 	fn to_possible_value<'a>(&self) -> Option<PossibleValue> {
@@ -128,27 +133,27 @@ impl ValueEnum for JDK {
 			($name:ident) => {
 				doc!($name, '\n')
 			};
-    		($name:ident, $suffix:literal) => {
-				PossibleValue::new(self.to_string())
-					.help(concat!(
-						include_str!(concat!("../../doc/jdk/", stringify!($name), ".txt")),
-						$suffix
-					))
+			($name:ident, $suffix:literal) => {
+				PossibleValue::new(self.to_string()).help(concat!(
+					include_str!(concat!("../../doc/jdk/", stringify!($name), ".txt")),
+					$suffix
+				))
 			};
 		}
 		match self {
-			Self::Auto => PossibleValue::new("auto")
-				.help("Automagically pick the best JDK based on the requested version and features"),
+			Self::Auto => PossibleValue::new("auto").help(
+				"Automagically pick the best JDK based on the requested version and features",
+			),
 			Self::JBR => doc!(JBR).alias("jetbrains-runtime"),
 			Self::JavaSE => doc!(JavaSE),
 			Self::Temurin => doc!(Temurin).alias("adoptium"),
 			Self::Liberica => doc!(Liberica, ""),
-		}.into()
+		}
+		.into()
 	}
 }
 
 impl Display for JDK {
-
 	fn fmt(&self, f: &mut Formatter<'_>) -> Result {
 		write!(
 			f,
@@ -158,7 +163,7 @@ impl Display for JDK {
 				JDK::JBR => "jbr",
 				JDK::JavaSE => "java-se",
 				JDK::Temurin => "temurin",
-				JDK::Liberica => "liberica"
+				JDK::Liberica => "liberica",
 			}
 		)
 	}

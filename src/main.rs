@@ -1,16 +1,19 @@
+#![warn(clippy::all)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::nursery)]
 #![allow(clippy::tabs_in_doc_comments)]
-pub mod commands;
+pub mod arch;
 pub mod cli;
 pub mod cmd_link;
 pub mod cmd_manage;
-pub mod macros;
+pub mod cmd_preset;
+pub mod commands;
 pub mod jvm;
-pub mod arch;
 pub mod kotlin;
+pub mod macros;
 pub mod os;
 #[cfg(windows)]
 pub mod win_link;
-pub mod cmd_preset;
 
 use std::env::set_var;
 
@@ -28,7 +31,11 @@ use crate::cmd_preset::cmd_preset;
 ///
 /// * UNIX-likes: `/opt/fuji`
 /// * Windows: `\Program Files\fuji`
-pub const FUJI_DIR: &str = if cfg!(windows) { "\\Program Files\\fuji" } else { "/opt/fuji" };
+pub const FUJI_DIR: &str = if cfg!(windows) {
+	"\\Program Files\\fuji"
+} else {
+	"/opt/fuji"
+};
 
 pub fn main() {
 	if cfg!(windows) {

@@ -1,5 +1,5 @@
 use std::ffi::OsStr;
-use std::fs::{remove_dir_all, File};
+use std::fs::{File, remove_dir_all};
 use std::io::{Error, ErrorKind, Result};
 use std::path::Path;
 use std::process::{Child, Command, ExitStatus, Output, Stdio};
@@ -15,12 +15,10 @@ pub fn has_program(name: &str) -> bool {
 
 pub fn require_program(name: &str) -> Result<()> {
 	if !has_program(name) {
-		Err(
-			Error::new(
-				ErrorKind::NotFound,
-				format!("Couldn't find program '{name}'!")
-			)
-		)
+		Err(Error::new(
+			ErrorKind::NotFound,
+			format!("Couldn't find program '{name}'!"),
+		))
 	} else {
 		Ok(())
 	}
@@ -93,11 +91,11 @@ pub fn download<S: AsRef<OsStr>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> 
 	let dest: &Path = dest.as_ref();
 	let mut exists: bool = dest.try_exists()?;
 	if exists && dest.is_dir() {
-		remove_dir_all(dest).unwrap_or_else(|_| { panic!("{}", io_expect(dest, "delete")) });
+		remove_dir_all(dest).unwrap_or_else(|_| panic!("{}", io_expect(dest, "delete")));
 		exists = dest.try_exists()?;
 	};
 	if !exists {
-		File::create(dest).unwrap_or_else(|_| { panic!("{}", io_expect(dest, "create")) });
+		File::create(dest).unwrap_or_else(|_| panic!("{}", io_expect(dest, "create")));
 	};
 	let mut child: Child = Command::new("curl")
 		.arg("-L")

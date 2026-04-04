@@ -1,7 +1,7 @@
 use std::fmt::{Display, Formatter, Result};
 
-use clap::builder::OsStr;
 use clap::ValueEnum;
+use clap::builder::OsStr;
 
 #[derive(ValueEnum, Clone, PartialEq)]
 pub enum OS {
@@ -15,14 +15,12 @@ pub enum OS {
 }
 
 impl From<OS> for OsStr {
-
 	fn from(value: OS) -> Self {
 		value.to_string().into()
 	}
 }
 
 impl Display for OS {
-
 	fn fmt(&self, f: &mut Formatter<'_>) -> Result {
 		write!(
 			f,

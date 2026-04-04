@@ -63,9 +63,7 @@ pub enum Software {
 		op: crate::jvm::manage_jvm::Op,
 	},
 	/// Kotlin – <https://kotlinlang.org/>
-	Kotlin {
-	},
+	Kotlin {},
 	/// Kotlin/Native – <https://kotlinlang.org/docs/native-overview.html>
-	KotlinNative {
-	},
+	KotlinNative {},
 }

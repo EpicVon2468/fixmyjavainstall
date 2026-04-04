@@ -14,14 +14,14 @@ pub type DownloadJdkFn = fn(
 	os: OS,
 	java_home: &str,
 	dry_run: bool,
-	is_win: bool
+	is_win: bool,
 ) -> Result<()>;
 
 pub fn generic_download<S: AsRef<OsStr>, P: AsRef<str>>(
 	url: S,
 	java_home: P,
 	dry_run: bool,
-	is_win: bool
+	is_win: bool,
 ) -> Result<()> {
 	let url: &OsStr = url.as_ref();
 	let java_home: &str = java_home.as_ref();
