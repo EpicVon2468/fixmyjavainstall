@@ -1,6 +1,9 @@
-use std::io::Result;
+use std::fmt::{Display, Formatter};
+use std::str::FromStr;
 
-use clap::{Subcommand, ValueEnum};
+use clap::{Arg, Command, Error, Subcommand, ValueEnum};
+use clap::builder::TypedValueParser;
+use clap::error::ErrorKind;
 
 use serde::{Deserialize as Deserialise, Serialize as Serialise};
 
@@ -51,15 +54,79 @@ pub enum Op {
 		#[arg(long)]
 		dry_run: bool,
 
-		/// The requested JVM version.  One of the following: [A number representing the major JVM version; 'latest' for the latest JVM version; 'lts' for the latest Long Term Support version]
-		// #[clap(default_value_t = String::from("latest"))]
-		version: String,
+		/// The version for the requested JVM.  This can be a major version number, 'latest' for the latest version, or 'lts' for the latest Long Term Support version
+		#[clap(value_parser = MajorVersionParser {})]
+		version: MajorVersion,
 	},
 	/// Removes the currently installed JVM (only affects JVMs installed via fuji)
 	Remove,
 }
 
-pub fn manage_jvm(software: Software) -> Result<()> {
+#[derive(Clone, PartialEq)]
+pub enum MajorVersion {
+	Number(u32),
+	/// Latest
+	Latest,
+	/// Long Term Support
+	LTS,
+}
+
+impl Display for MajorVersion {
+
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		write!(
+			f,
+			"{}",
+			match self {
+				MajorVersion::Number(value) => value.to_string(),
+				MajorVersion::Latest => "latest".into(),
+				MajorVersion::LTS => "lts".into(),
+			}
+		)
+	}
+}
+
+#[derive(Clone)]
+struct MajorVersionParser;
+
+impl TypedValueParser for MajorVersionParser {
+
+	type Value = MajorVersion;
+
+	fn parse_ref(
+		&self,
+		_cmd: &Command,
+		_arg: Option<&Arg>,
+		value: &std::ffi::OsStr
+	) -> Result<Self::Value, Error> {
+		<MajorVersion as FromStr>::from_str(
+			value
+				.to_str()
+				.unwrap()
+				.to_lowercase()
+				.as_str()
+		)
+	}
+}
+
+// https://stackoverflow.com/questions/73658377/how-to-have-number-or-string-as-a-cli-argument-in-clap
+impl FromStr for MajorVersion {
+
+	type Err = Error;
+
+	fn from_str(s: &str) -> Result<Self, Self::Err> {
+		match s.parse::<u32>() {
+			Ok(num) => Ok(MajorVersion::Number(num)),
+			Err(_) => match s {
+				"latest" => Ok(MajorVersion::Latest),
+				"lts" => Ok(MajorVersion::LTS),
+				_ => Err(Error::new(ErrorKind::InvalidValue)),
+			},
+		}
+	}
+}
+
+pub fn manage_jvm(software: Software) -> std::io::Result<()> {
 	let Software::JVM {
 		op,
 	} = software else {

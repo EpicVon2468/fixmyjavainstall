@@ -10,7 +10,7 @@ use crate::jvm::jdk_java_se::download_java_se;
 use crate::jvm::jdk_jbr::download_jbr;
 use crate::jvm::jdk_liberica::download_liberica;
 use crate::jvm::jdk_temurin::download_temurin;
-use crate::jvm::manage_jvm::{JavaVersion, Op};
+use crate::jvm::manage_jvm::{JavaVersion, MajorVersion, Op};
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
 use crate::os::OS;
 use crate::{wrong_cmd, FUJI_DIR};
@@ -29,9 +29,9 @@ pub fn install(op: Op) -> Result<()> {
 		wrong_cmd!(install);
 	};
 	#[cfg(not(feature = "multi_os"))]
-	let operating_system: &OS = &crate::os::SYSTEM;
-	// Temurin & Java SE both only need major version, except for 'latest' where we return the latest major from our endpoint
-	let json: String = if (jdk == JDK::Temurin || jdk == JDK::JavaSE) && version != "latest" {
+	let operating_system: OS = crate::os::SYSTEM;
+	// Temurin & Java SE both only need major version, except for LTS/Latest where we return the major version from our endpoint
+	let json: String = if (jdk == JDK::Temurin || jdk == JDK::JavaSE) && let MajorVersion::Number(version) = version {
 		format!("{{\"major\": \"{version}\", \"specific\":\"\", \"revision\": \"\"}}")
 	} else {
 		connect(
