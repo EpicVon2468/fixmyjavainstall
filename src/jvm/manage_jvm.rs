@@ -74,7 +74,7 @@ pub fn manage_jvm(software: Software) -> std::io::Result<()> {
 #[derive(ValueEnum, Clone, PartialEq)]
 pub enum Feature {
 	/// Minimal JVM (JRE or no-Javadoc JDK).  If you don't know what this means & aren't a developer, you probably want this
-	MINIMAL,
+	Minimal,
 	/// Dynamic Code Evolution Virtual Machine (enhanced runtime class redefinition) – <https://ssw.jku.at/dcevm/>
 	///
 	/// `-XX:+AllowEnhancedClassRedefinition`

@@ -29,7 +29,7 @@ pub fn download_temurin(
 	url.push('/');
 	url.push_str(&arch.to_string());
 	url.push('/');
-	url.push_str(if features.contains(&Feature::MINIMAL) { "jre" } else { "jdk" });
+	url.push_str(if features.contains(&Feature::Minimal) { "jre" } else { "jdk" });
 	// returns a .zip instead of a .tar.gz for windows
 	url.push_str("/hotspot/normal/eclipse");
 	generic_download(url, java_home, dry_run, is_win)

@@ -19,7 +19,7 @@ pub fn download_liberica(
 	let target: &str = &format!("{}{}", version.specific, version.revision);
 	url.push_str(target);
 	url.push_str("/bellsoft-");
-	url.push_str(if features.contains(&Feature::MINIMAL) { "jre" } else { "jdk" });
+	url.push_str(if features.contains(&Feature::Minimal) { "jre" } else { "jdk" });
 	url.push_str(target);
 	url.push('-');
 	let os_name: &str = &os.to_string();

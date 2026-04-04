@@ -16,7 +16,7 @@ pub fn download_jbr(
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://cache-redirector.jetbrains.com/intellij-jbr/jbr");
-	if !features.contains(&Feature::MINIMAL) {
+	if !features.contains(&Feature::Minimal) {
 		url.push_str("sdk");
 	};
 	if features.contains(&Feature::JCEF) {

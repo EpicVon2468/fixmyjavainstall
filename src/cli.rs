@@ -52,7 +52,9 @@ pub enum Preset {
 	/// All the optimisations – Java Development Kit edition; For the performance-wary developer
 	FastJDK,
 	/// Bleeding-edge & unstable, you say?
-	LatestJVM,
+	LatestJRE,
+	/// Bleeding-edge & unstable, you say?
+	LatestJDK,
 }
 
 #[derive(Subcommand)]
