@@ -12,3 +12,7 @@ TODO:
 `cargo install --git https://github.com/EpicVon2468/fixmyjavainstall`
 
 If you would like to be able to install a JVM not made for your system, add `--features multi_os` to your installation command.
+
+### Documentation:
+
+`cargo doc --no-deps --document-private-items --features multi_os --open`

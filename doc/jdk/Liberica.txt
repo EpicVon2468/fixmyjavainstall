@@ -1,4 +1,4 @@
-Liberica by BellSoft – https://bell-sw.com/libericajdk/
+Liberica by BellSoft – <https://bell-sw.com/libericajdk/>
 Supported arches:
  - x64
  - aarch64

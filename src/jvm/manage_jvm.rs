@@ -76,16 +76,16 @@ pub fn manage_jvm(software: &Software) -> Result<()> {
 pub enum Feature {
 	/// Minimal JVM (JRE or no-Javadoc JDK).  If you don't know what this means & aren't a developer, you probably want this
 	MINIMAL,
-	/// Dynamic Code Evolution Virtual Machine (enhanced runtime class redefinition) – https://ssw.jku.at/dcevm/
+	/// Dynamic Code Evolution Virtual Machine (enhanced runtime class redefinition) – <https://ssw.jku.at/dcevm/>
 	///
 	/// `-XX:+AllowEnhancedClassRedefinition`
 	DCEVM,
-	/// JDK Enhancement Proposal 519 (Compact Object Headers) – https://openjdk.org/jeps/519
+	/// JDK Enhancement Proposal 519 (Compact Object Headers) – <https://openjdk.org/jeps/519>
 	///
 	/// `-XX:+UseCompactObjectHeaders`
 	#[clap(name = "jep-519", alias="compact-object-headers")]
 	JEP519,
-	/// Wayland support (requires Vulkan) – https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype
+	/// Wayland support (requires Vulkan) – <https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype>
 	///
 	/// `-Dawt.tookit.name=WLToolkit -Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false`
 	#[cfg(any(target_os = "linux", feature = "multi_os"))]
@@ -106,7 +106,7 @@ pub enum Feature {
 	/// `-Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false`
 	#[clap(alias="vk")]
 	Vulkan,
-	/// Java Chromium Embedded Framework – https://github.com/chromiumembedded/java-cef/
+	/// Java Chromium Embedded Framework – <https://github.com/chromiumembedded/java-cef/>
 	JCEF,
 	/// Allows all Java modules to use the (soon to be) restricted native library access
 	///
@@ -125,7 +125,7 @@ pub enum Feature {
 	/// `__GL_THREADED_OPTIMIZATIONS=0`
 	#[cfg(any(target_os = "linux", feature = "multi_os"))]
 	NVIDIAFixes,
-	/// MUSL libc support – https://musl.libc.org/
+	/// MUSL libc support – <https://musl.libc.org/>
 	#[cfg(any(unix, feature = "multi_os"))]
 	MUSL,
 }

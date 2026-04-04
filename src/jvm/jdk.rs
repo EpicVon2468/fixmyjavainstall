@@ -7,7 +7,7 @@ use clap::ValueEnum;
 pub enum JDK {
 	/// Automagically pick the best JDK based on the requested version and features
 	Auto,
-	/// JetBrains Runtime by JetBrains – https://github.com/JetBrains/JetBrainsRuntime/
+	/// JetBrains Runtime by JetBrains – <https://github.com/JetBrains/JetBrainsRuntime/>
 	///
 	/// <details><summary>Supported arches:</summary>
 	///
@@ -31,7 +31,7 @@ pub enum JDK {
 	/// * `17`
 	/// </details>
 	JBR,
-	/// Java Platform, Standard Edition by Oracle – https://www.oracle.com/java/
+	/// Java Platform, Standard Edition by Oracle – <https://www.oracle.com/java/>
 	///
 	/// <details><summary>Supported arches:</summary>
 	///
@@ -50,7 +50,7 @@ pub enum JDK {
 	/// * `21`
 	/// </details>
 	JavaSE,
-	/// Temurin (previously AdoptOpenJDK) by Eclipse/Adoptium – https://adoptium.net/
+	/// Temurin (previously AdoptOpenJDK) by Eclipse/Adoptium – <https://adoptium.net/>
 	///
 	/// <details><summary>Supported arches:</summary>
 	///
@@ -80,7 +80,7 @@ pub enum JDK {
 	/// * `8`
 	/// </details>
 	Temurin,
-	/// Liberica by BellSoft – https://bell-sw.com/libericajdk/
+	/// Liberica by BellSoft – <https://bell-sw.com/libericajdk/>
 	///
 	/// <details><summary>Supported arches:</summary>
 	///
