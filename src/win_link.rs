@@ -3,7 +3,7 @@
 use std::path::Path;
 
 macro_rules! open_env {
-    ($holder:ident) => {
+	($holder:ident) => {
 		windows_registry::$holder
 			.option()
 			.read()
@@ -22,12 +22,13 @@ pub fn win_link<P: AsRef<Path>>(bin_dir: P) -> std::io::Result<()> {
 	println!("Updating PATH with bin_dir {}", bin_dir.display());
 	// "To programmatically add or modify system environment variables, add them to the HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment registry key"
 	// https://learn.microsoft.com/en-gb/windows/win32/procthread/environment-variables
-	let environment = open_env!(LOCAL_MACHINE)
-		.unwrap_or_else(|_| {
-			open_env!(CURRENT_USER)
-				.expect("Couldn't get Environment for HKEY_LOCAL_MACHINE or HKEY_CURRENT_USER")
-		});
-	let prev_path = environment.get_string("PATH").expect("Couldn't get PATH environment variable!");
+	let environment = open_env!(LOCAL_MACHINE).unwrap_or_else(|_| {
+		open_env!(CURRENT_USER)
+			.expect("Couldn't get Environment for HKEY_LOCAL_MACHINE or HKEY_CURRENT_USER")
+	});
+	let prev_path = environment
+		.get_string("PATH")
+		.expect("Couldn't get PATH environment variable!");
 	// technically I'm supposed to broadcast a message about this, but uh... no.
 	environment
 		.set_string(

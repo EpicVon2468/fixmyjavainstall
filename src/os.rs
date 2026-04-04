@@ -1,7 +1,7 @@
 use std::fmt::{Display, Formatter, Result};
 
-use clap::builder::OsStr;
 use clap::ValueEnum;
+use clap::builder::OsStr;
 
 #[derive(ValueEnum, Clone, PartialEq)]
 pub enum OS {

@@ -1,10 +1,10 @@
-pub mod manage_jvm;
-pub mod jdk;
-pub mod wrapper;
-pub mod jdk_jbr;
 pub mod install;
+pub mod jdk;
 pub mod jdk_generic;
 pub mod jdk_java_se;
-pub mod jdk_temurin;
+pub mod jdk_jbr;
 pub mod jdk_liberica;
+pub mod jdk_temurin;
 pub mod major_version;
+pub mod manage_jvm;
+pub mod wrapper;

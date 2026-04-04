@@ -12,7 +12,7 @@ pub fn download_java_se(
 	os: OS,
 	java_home: &str,
 	dry_run: bool,
-	is_win: bool
+	is_win: bool,
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://download.oracle.com/java/");
@@ -21,12 +21,10 @@ pub fn download_java_se(
 	url.push_str(version.major);
 	url.push('_');
 	let os_name: &str = &os.to_string();
-	url.push_str(
-		match os_name {
-			"osx" => "macos",
-			_ => os_name,
-		}
-	);
+	url.push_str(match os_name {
+		"osx" => "macos",
+		_ => os_name,
+	});
 	url.push('-');
 	url.push_str(&arch.to_string());
 	url.push_str("_bin.");

@@ -57,42 +57,40 @@ fn preset_fast(minimal: bool) -> Result<()> {
 	features.push(Feature::Metal);
 	#[cfg(windows)]
 	features.push(Feature::OpenGL);
-	cmd_manage(
-		Cmd::Manage {
-			software: Software::JVM {
-				op: Op::Install {
-					jdk: JDK::JBR,
-					arch,
-					operating_system: os,
-					features: vec![],
-					include_kotlin: false,
-					dry_run: false,
-					version: MajorVersion::LTS,
-				},
-			}.into()
+	cmd_manage(Cmd::Manage {
+		software: Software::JVM {
+			op: Op::Install {
+				jdk: JDK::JBR,
+				arch,
+				operating_system: os,
+				features: vec![],
+				include_kotlin: false,
+				dry_run: false,
+				version: MajorVersion::LTS,
+			},
 		}
-	)
+		.into(),
+	})
 }
 
 fn preset_latest(minimal: bool) -> Result<()> {
-	cmd_manage(
-		Cmd::Manage {
-			software: Software::JVM {
-				op: Op::Install {
-					// FIXME: need to implement JDK::Auto so I don't have to default to JavaSE
-					jdk: JDK::JavaSE,
-					arch: crate::arch::SYSTEM,
-					operating_system: crate::os::SYSTEM,
-					features: if minimal {
-						vec![Feature::Minimal]
-					} else {
-						vec![]
-					},
-					include_kotlin: false,
-					dry_run: false,
-					version: MajorVersion::Latest,
+	cmd_manage(Cmd::Manage {
+		software: Software::JVM {
+			op: Op::Install {
+				// FIXME: need to implement JDK::Auto so I don't have to default to JavaSE
+				jdk: JDK::JavaSE,
+				arch: crate::arch::SYSTEM,
+				operating_system: crate::os::SYSTEM,
+				features: if minimal {
+					vec![Feature::Minimal]
+				} else {
+					vec![]
 				},
-			}.into(),
+				include_kotlin: false,
+				dry_run: false,
+				version: MajorVersion::Latest,
+			},
 		}
-	)
+		.into(),
+	})
 }

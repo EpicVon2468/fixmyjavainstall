@@ -30,12 +30,16 @@ pub fn cmd_link(command: Cmd) -> Result<()> {
 			&link_dir,
 			use_update_alternatives
 		).unwrap_or_else(|_| panic!("Failed to link '{path}'!"));
-	};
+	}
 	Ok(())
 }
 
 #[allow(unused_variables)]
-pub fn link_impl<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update_alternatives: bool) -> Result<()> {
+pub fn link_impl<P: AsRef<Path>, S: AsRef<str>>(
+	path: P,
+	link_dir: S,
+	use_update_alternatives: bool,
+) -> Result<()> {
 	let path: &Path = path.as_ref();
 	println!("Linking path: {}", path.display());
 	let bin: PathBuf = path.join("bin");
@@ -47,14 +51,12 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update
 	let can_use_update_alternatives: bool = cfg!(target_os = "linux") && use_update_alternatives && has_program("update-alternatives");
 	if !can_use_update_alternatives && use_update_alternatives {
 		println!("Couldn't find update-alternatives on system when explicitly requested!");
-		return Err(
-			Error::new(
-				ErrorKind::NotFound,
-				"Couldn't find update-alternatives on system when explicitly requested!"
-			)
-		);
+		return Err(Error::new(
+			ErrorKind::NotFound,
+			"Couldn't find update-alternatives on system when explicitly requested!",
+		));
 	};
-	for entry in bin.read_dir().unwrap_or_else(|_| { panic!("{}", io_expect(bin, "list directory")) }) {
+	for entry in bin.read_dir().unwrap_or_else(|_| panic!("{}", io_expect(bin, "list directory"))) {
 		let file: &PathBuf = &entry?.path();
 		// TODO: '--quiet'
 		println!("\n{}", file.display());
@@ -65,7 +67,11 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update
 			println!("Filename was none! '{}'", file.display());
 			continue;
 		};
-		let dest: String = format!("{}{MAIN_SEPARATOR}{}", link_dir.as_ref(), filename.display());
+		let dest: String = format!(
+			"{}{MAIN_SEPARATOR}{}",
+			link_dir.as_ref(),
+			filename.display()
+		);
 		if can_use_update_alternatives {
 			debian_link(file, filename, dest).expect("Couldn't link with update-alternatives!");
 		} else {
@@ -98,7 +104,7 @@ pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Resul
 			} else {
 				remove_dir_all(dest)
 			};
-			remove.unwrap_or_else(|_| { panic!("{}", io_expect(dest, "remove")) });
+			remove.unwrap_or_else(|_| panic!("{}", io_expect(dest, "remove")));
 
 			symlink_impl(source, dest).expect("Symbolic linking failed second time, panicking!");
 		} else {
@@ -136,7 +142,7 @@ pub fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Res
 pub fn debian_link<P: AsRef<Path>, S: AsRef<OsStr>, S2: AsRef<OsStr>>(
 	file: P,
 	filename: S,
-	dest: S2
+	dest: S2,
 ) -> Result<()> {
 	let file: &Path = file.as_ref();
 	let filename: &OsStr = filename.as_ref();

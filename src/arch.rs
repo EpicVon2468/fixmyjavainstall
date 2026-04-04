@@ -1,7 +1,7 @@
 use std::fmt::{Display, Formatter, Result};
 
-use clap::builder::OsStr;
 use clap::ValueEnum;
+use clap::builder::OsStr;
 
 /// An enumeration of CPU Architectures
 #[derive(ValueEnum, Clone)]
@@ -22,7 +22,6 @@ impl From<Arch> for OsStr {
 }
 
 impl Display for Arch {
-
 	fn fmt(&self, f: &mut Formatter<'_>) -> Result {
 		write!(
 			f,

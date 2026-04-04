@@ -14,7 +14,7 @@ use crate::jvm::major_version::MajorVersion;
 use crate::jvm::manage_jvm::{JavaVersion, Op};
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
 use crate::os::OS;
-use crate::{wrong_cmd, FUJI_DIR};
+use crate::{FUJI_DIR, wrong_cmd};
 
 pub fn install(op: Op) -> Result<()> {
 	let Op::Install {
@@ -35,22 +35,24 @@ pub fn install(op: Op) -> Result<()> {
 	let json: String = if (jdk == JDK::Temurin || jdk == JDK::JavaSE) && let MajorVersion::Number(version) = version {
 		format!(r#"{{"major": "{version}", "specific":"", "revision": ""}}"#)
 	} else {
-		connect(
-			format!(
-				"https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{}/{}.json",
-				jdk,
-				version
-			)
-		)?
+		connect(format!(
+			"https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{}/{}.json",
+			jdk, version
+		))?
 	};
 	let java_version: JavaVersion = serde_json::from_str(&json).expect("JSON failed to parse!");
 	// FUJI_DIR/jvm/{version}
-	let java_home: &str = &format!("{FUJI_DIR}{MAIN_SEPARATOR}jvm{MAIN_SEPARATOR}{}", java_version.major);
+	let java_home: &str = &format!(
+		"{FUJI_DIR}{MAIN_SEPARATOR}jvm{MAIN_SEPARATOR}{}",
+		java_version.major
+	);
 	if !dry_run {
 		if exists(java_home)? {
-			remove_dir_all(java_home).unwrap_or_else(|_| { panic!("{}", io_expect(java_home, "remove directory")) });
+			remove_dir_all(java_home)
+				.unwrap_or_else(|_| panic!("{}", io_expect(java_home, "remove directory")));
 		};
-		create_dir_all(java_home).unwrap_or_else(|_| { panic!("{}", io_expect(java_home, "create directory")) });
+		create_dir_all(java_home)
+			.unwrap_or_else(|_| panic!("{}", io_expect(java_home, "create directory")));
 	};
 	let is_win: bool = operating_system == OS::Windows;
 	let download_jdk: DownloadJdkFn = match jdk {
@@ -67,7 +69,7 @@ pub fn install(op: Op) -> Result<()> {
 		operating_system,
 		java_home,
 		dry_run,
-		is_win
+		is_win,
 	)?;
 	println!();
 	// https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
@@ -105,12 +107,8 @@ pub fn install(op: Op) -> Result<()> {
 	#[cfg(not(windows))]
 	symlink_link(
 		java_home,
-		format!("{FUJI_DIR}{MAIN_SEPARATOR}jvm{MAIN_SEPARATOR}latest")
+		format!("{FUJI_DIR}{MAIN_SEPARATOR}jvm{MAIN_SEPARATOR}latest"),
 	)?;
 	// link all of $JAVA_HOME/bin
-	link_impl(
-		java_home,
-		"/usr/bin",
-		false
-	)
+	link_impl(java_home, "/usr/bin", false)
 }

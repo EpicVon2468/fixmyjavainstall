@@ -8,7 +8,7 @@ pub fn generate_wrapper(
 	java_home: &str,
 	features: &[Feature],
 	is_win: bool,
-	bin_suffix: &str
+	bin_suffix: &str,
 ) -> String {
 	if is_win {
 		generate_wrapper_win(java_home, features, bin_suffix)
@@ -23,11 +23,7 @@ pub fn generate_wrapper(
 // https://stackoverflow.com/questions/12990480/shift-doesn-t-affect
 // Oh dear...
 // https://serverfault.com/questions/315077/is-there-a-windows-cmd-equivalent-of-unix-shells-exec
-fn generate_wrapper_win(
-	java_home: &str,
-	features: &[Feature],
-	bin_suffix: &str
-) -> String {
+fn generate_wrapper_win(java_home: &str, features: &[Feature], bin_suffix: &str) -> String {
 	let mut result: String = String::with_capacity(500);
 
 	result.push_str("@echo off\r\n\r\n");
@@ -42,13 +38,9 @@ fn generate_wrapper_win(
 	result.push_str("start /b /wait \"\" \"%JAVA_HOME%\\bin\\java");
 	result.push_str(bin_suffix);
 	result.push_str(".bak\" ");
-	gen_features(
-		&mut result,
-		features,
-		&|_, args: &str| {
-			format!("{args} ")
-		}
-	);
+
+	gen_features(&mut result, features, &|_, args: &str| format!("{args} "));
+
 	result.push_str("\"$FUJI_CLASSPATH_ARG\" %*");
 
 	result
@@ -66,13 +58,9 @@ fn generate_wrapper_unix(java_home: &str, features: &[Feature], bin_suffix: &str
 	result.push_str("\tset -- -cp \"$CLASSPATH:.\" \"$@\"\n");
 	result.push_str("fi\n\n");
 
-	gen_features(
-		&mut result,
-		features,
-		&|comment: &str, args: &str| {
-			format!("# {comment}\nset -- {args} \"$@\"\n\n")
-		}
-	);
+	gen_features(&mut result, features, &|comment: &str, args: &str| {
+		format!("# {comment}\nset -- {args} \"$@\"\n\n")
+	});
 
 	#[cfg(any(target_os = "linux", feature = "multi_os"))]
 	if features.contains(&Feature::NVIDIAFixes) {
@@ -90,7 +78,7 @@ fn generate_wrapper_unix(java_home: &str, features: &[Feature], bin_suffix: &str
 fn gen_features(
 	result: &mut String,
 	features: &[Feature],
-	transform: &dyn Fn(&str, &str) -> String
+	transform: &dyn Fn(&str, &str) -> String,
 ) {
 	let mut fuji_jvm_arg = |comment: &str, args: &str| {
 		result.push_str(&transform(comment, args));
@@ -121,7 +109,9 @@ fn gen_features(
 	// https://docs.oracle.com/en/java/javase/25/troubleshoot/java-2d-properties.html
 	if features.contains(&Feature::OpenGL) {
 		if requires_vulkan {
-			panic!("Vulkan required for WLToolkit, but OpenGL was also explicitly requested.  Resolve incompatible args and try again.");
+			panic!(
+				"Vulkan required for WLToolkit, but OpenGL was also explicitly requested.  Resolve incompatible args and try again."
+			);
 		};
 		fuji_jvm_arg(
 			"OpenGL for AWT/Swing.  This has been bundled in OpenJDK for a long time, but isn't on by default",
@@ -131,7 +121,9 @@ fn gen_features(
 	#[cfg(any(target_os = "macos", feature = "multi_os"))]
 	if features.contains(&Feature::Metal) {
 		if requires_vulkan {
-			panic!("Vulkan required for WLToolkit, but Metal was also explicitly requested.  Resolve incompatible args and try again.");
+			panic!(
+				"Vulkan required for WLToolkit, but Metal was also explicitly requested.  Resolve incompatible args and try again."
+			);
 		};
 		fuji_jvm_arg(
 			"Metal support for AWT/Swing (macOS).  If you're on macOS, use this instead of OpenGL (Apple has deprecated OpenGL on macOS)",
@@ -173,16 +165,16 @@ pub fn install_wrapper(script: String, java_home: &str, bin_suffix: &str, is_win
 		.write(true)
 		.create_new(true)
 		.open(&script_file)
-		.unwrap_or_else(|_| { panic!("{}", io_expect(&script_file, "create")) });
+		.unwrap_or_else(|_| panic!("{}", io_expect(&script_file, "create")));
 	result
 		.write_all(script.as_bytes())
-		.unwrap_or_else(|_| { panic!("{}", io_expect(&script_file, "write")) });
+		.unwrap_or_else(|_| panic!("{}", io_expect(&script_file, "write")));
 	// rwxr-xr-x
 	#[cfg(unix)] {
 		use std::os::unix::fs::PermissionsExt;
 		result
 			.set_permissions(Permissions::from_mode(0o755))
-			.unwrap_or_else(|_| { panic!("{}", io_expect(&script_file, "set permissions for")) });
+			.unwrap_or_else(|_| panic!("{}", io_expect(&script_file, "set permissions for")));
 	};
 	script_file
 }

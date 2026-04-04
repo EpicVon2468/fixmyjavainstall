@@ -12,7 +12,7 @@ pub fn download_jbr(
 	os: OS,
 	java_home: &str,
 	dry_run: bool,
-	is_win: bool
+	is_win: bool,
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://cache-redirector.jetbrains.com/intellij-jbr/jbr");
