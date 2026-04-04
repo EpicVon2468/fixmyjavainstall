@@ -33,9 +33,10 @@ pub fn require_program(name: &str) -> Result<()> {
 ///
 /// Implementation notes:
 ///
-/// * `dest` is [`canonicalised`][`Path::canonicalize`] when passed to `tar`.
-/// * The standard output stream of `tar` is [`redirected to /dev/null`][`Stdio::null`].
-/// * The topmost directory inside `archive` is merged into `dest` (via `--strip-components 1`).
+/// * Uses [`tar`](https://www.gnu.org/software/tar/) for extraction.
+/// 	* `dest` is [`canonicalised`][`Path::canonicalize`] when passed to `tar`.
+/// 	* The [`standard output stream`][`Command::stdout`] of `tar` is [`redirected to /dev/null`][`Stdio::null`].
+/// 	* The topmost directory inside `archive` is merged into `dest` (via `--strip-components 1`).
 ///
 /// Platform-specific behaviour:
 /// * No checks are performed to determine if `dest` exists.
