@@ -9,7 +9,7 @@ use crate::os::OS;
 pub fn download_temurin(
 	arch: Arch,
 	version: JavaVersion,
-	features: &Vec<Feature>,
+	features: &[Feature],
 	os: OS,
 	java_home: &str,
 	dry_run: bool,
