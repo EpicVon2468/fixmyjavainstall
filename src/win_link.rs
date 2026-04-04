@@ -27,6 +27,6 @@ pub fn win_link<P: AsRef<Path>>(bin_dir: P) -> Result<()> {
 		});
 	let prev_path = key.get_string("PATH").expect("Couldn't get PATH");
 	// technically I'm supposed to broadcast a message about this, but uh... no.
-	key.set_string("PATH", format!("{prev_path};{}", bin_dir.display())).expect("Couldn't set PATH");
+	key.set_string("PATH", format!("{};{prev_path}", bin_dir.display())).expect("Couldn't set PATH");
 	Ok(())
 }

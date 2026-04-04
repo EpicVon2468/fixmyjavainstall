@@ -43,12 +43,13 @@ pub fn require_program(name: &str) -> Result<()> {
 /// * If `is_zip` is true, no checks are performed to determine if `archive` ends with `.zip`, and vice versa.
 /// * `tar` is used on all platforms.
 /// 	* `tar` is called via [`Command`], not via any library.
-/// 	* Windows has had `tar` bundled for a while.
-/// 		* <https://devblogs.microsoft.com/commandline/tar-and-curl-come-to-windows/>
-/// 		* <https://techcommunity.microsoft.com/blog/containers/tar-and-curl-come-to-windows/382409/>
-/// 	* macOS has had `cURL` bundled for a while.
-/// 		* <https://support.apple.com/en-gb/guide/terminal/apdc52250ee-4659-4751-9a3a-8b7988150530/mac/>
-/// 	* Tell me you don't have `tar` on Linux, and I'll eat my boot.
+/// 		* Windows has had `tar` bundled for a while.
+/// 			* <https://devblogs.microsoft.com/commandline/tar-and-curl-come-to-windows/>
+/// 			* <https://techcommunity.microsoft.com/blog/containers/tar-and-curl-come-to-windows/382409/>
+/// 		* macOS has had `tar` bundled for a while.
+/// 			* <https://support.apple.com/en-gb/guide/terminal/apdc52250ee-4659-4751-9a3a-8b7988150530/mac/>
+/// 		* Tell me you don't have `tar` on Linux, and I'll eat my boot.
+/// 	* Due to use of `--strip-components 1`, this function may not work on `tar` versions older than 1.15 (dated 2004-12-20).
 pub fn untar_jdk<S: AsRef<OsStr>, P: AsRef<Path>>(archive: S, dest: P, is_zip: bool) -> Result<()> {
 	require_program("tar")?;
 	let mut child: Child = Command::new("tar")
@@ -75,18 +76,18 @@ pub fn untar_jdk<S: AsRef<OsStr>, P: AsRef<Path>>(archive: S, dest: P, is_zip: b
 /// 	* If `dest` does not exist, [`File::create`] is called.
 /// * Uses [`cURL`](https://curl.se/) for the HTTP(S) request.
 /// 	* [`require_program`] is always called as a safety precaution.
-/// 	* If `url` is a redirect, it will be followed automagically (via the `-L` flag).
+/// 	* If `url` is a redirect, it is followed automagically (via the `-L` flag).
 /// 	* If `cURL`'s return value is non-success, [`Err`] is returned with [`Error::other`].
 ///
 /// Platform-specific behaviour:
 /// * `cURL` is used on all platforms.
 /// 	* `cURL` is called via [`Command`], not via `libcURL`.
-/// 	* Windows has had `cURL` bundled for a while.
-/// 		* <https://devblogs.microsoft.com/commandline/tar-and-curl-come-to-windows/>
-/// 		* <https://techcommunity.microsoft.com/blog/containers/tar-and-curl-come-to-windows/382409/>
-/// 		* <https://curl.se/windows/microsoft.html>
-/// 	* macOS has had `cURL` bundled for a while.
-/// 	* If you don't have `cURL` on Linux... why?
+/// 		* Windows has had `cURL` bundled for a while.
+/// 			* <https://devblogs.microsoft.com/commandline/tar-and-curl-come-to-windows/>
+/// 			* <https://techcommunity.microsoft.com/blog/containers/tar-and-curl-come-to-windows/382409/>
+/// 			* <https://curl.se/windows/microsoft.html>
+/// 		* macOS has had `cURL` bundled for a while.
+/// 		* If you don't have `cURL` on Linux... why?
 pub fn download<S: AsRef<OsStr>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 	require_program("curl")?;
 	let dest: &Path = dest.as_ref();
@@ -109,6 +110,25 @@ pub fn download<S: AsRef<OsStr>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> 
 	Ok(())
 }
 
+/// Fetches a [`String`] resource from `url`.
+///
+/// Implementation notes:
+///
+/// * Uses [`cURL`](https://curl.se/) for the HTTP(S) request.
+/// 	* [`require_program`] is always called as a safety precaution.
+/// 	* If `url` is a redirect, it is followed automagically (via the `-L` flag).
+/// 	* The [`standard output stream`][`Command::stdout`] of `cURL` is [`piped`][`Stdio::piped`] and used for the return value.
+/// 	* If `cURL`'s return value is non-success, [`Err`] is returned with [`Error::other`].
+///
+/// Platform-specific behaviour:
+/// * `cURL` is used on all platforms.
+/// 	* `cURL` is called via [`Command`], not via `libcURL`.
+/// 		* Windows has had `cURL` bundled for a while.
+/// 			* <https://devblogs.microsoft.com/commandline/tar-and-curl-come-to-windows/>
+/// 			* <https://techcommunity.microsoft.com/blog/containers/tar-and-curl-come-to-windows/382409/>
+/// 			* <https://curl.se/windows/microsoft.html>
+/// 		* macOS has had `cURL` bundled for a while.
+/// 		* If you don't have `cURL` on Linux... why?
 pub fn connect<S: AsRef<OsStr>>(url: S) -> Result<String> {
 	require_program("curl")?;
 	let child: Child = Command::new("curl")
