@@ -19,3 +19,8 @@ serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
 which = "8.0.2"
 windows-registry = "0.6.1"
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
