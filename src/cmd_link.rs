@@ -10,7 +10,7 @@ use crate::commands::{has_program, io_expect};
 use crate::{wait_and_check_status, wrong_cmd};
 
 #[cfg(any(not(windows), feature = "multi_os"))]
-pub fn cmd_link(command: &Cmd) -> Result<()> {
+pub fn cmd_link(command: Cmd) -> Result<()> {
 	let Cmd::Link {
 		paths,
 		#[cfg(any(not(windows), feature = "multi_os"))]
@@ -23,12 +23,12 @@ pub fn cmd_link(command: &Cmd) -> Result<()> {
 	#[cfg(all(windows, not(feature = "multi_os")))]
 	let link_dir: &str = "";
 	#[cfg(all(not(target_os = "linux"), not(feature = "multi_os")))]
-	let use_update_alternatives: &bool = &false;
-	for path in paths {
+	let use_update_alternatives: bool = false;
+	for path in &paths {
 		link_impl(
 			path,
-			link_dir,
-			*use_update_alternatives
+			&link_dir,
+			use_update_alternatives
 		).expect(&format!("Failed to link '{path}'!"));
 	};
 	Ok(())
@@ -129,7 +129,7 @@ pub fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Res
 		} else {
 			// https://doc.rust-lang.org/std/os/windows/fs/fn.symlink_file.html
 			symlink_file(original, link)
-		}
+		};
 	}
 }
 

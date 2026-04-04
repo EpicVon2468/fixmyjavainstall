@@ -41,8 +41,7 @@ pub fn main() {
 	unsafe {
 		set_var("RUST_BACKTRACE", "1");
 	};
-	let arguments: Arguments = Arguments::parse();
-	if let Some(command) = &arguments.command {
+	if let Some(command) = Arguments::parse().command {
 		match command {
 			#[cfg(any(not(windows), feature = "multi_os"))]
 			Cmd::Link { .. } => cmd_link(command).unwrap(),

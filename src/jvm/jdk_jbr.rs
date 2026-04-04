@@ -6,12 +6,12 @@ use crate::jvm::manage_jvm::{Feature, JavaVersion};
 use crate::os::OS;
 
 pub fn download_jbr(
-	arch: &Arch,
+	arch: Arch,
 	version: JavaVersion,
 	features: &Vec<Feature>,
-	os: &OS,
+	os: OS,
 	java_home: &str,
-	dry_run: &bool,
+	dry_run: bool,
 	is_win: bool
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);

@@ -7,12 +7,12 @@ use crate::os::OS;
 
 // https://github.com/adoptium/api.adoptium.net/blob/main/docs/cookbook.adoc
 pub fn download_temurin(
-	arch: &Arch,
+	arch: Arch,
 	version: JavaVersion,
 	features: &Vec<Feature>,
-	os: &OS,
+	os: OS,
 	java_home: &str,
-	dry_run: &bool,
+	dry_run: bool,
 	is_win: bool
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
