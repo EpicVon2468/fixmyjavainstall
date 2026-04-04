@@ -29,7 +29,7 @@ pub fn cmd_link(command: Cmd) -> Result<()> {
 			path,
 			&link_dir,
 			use_update_alternatives
-		).expect(&format!("Failed to link '{path}'!"));
+		).unwrap_or_else(|_| panic!("Failed to link '{path}'!"));
 	};
 	Ok(())
 }
@@ -54,7 +54,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<str>>(path: P, link_dir: S, use_update
 			)
 		);
 	};
-	for entry in bin.read_dir().expect(&io_expect(bin, "list directory")) {
+	for entry in bin.read_dir().unwrap_or_else(|_| { panic!("{}", io_expect(bin, "list directory")) }) {
 		let file: &PathBuf = &entry?.path();
 		// TODO: '--quiet'
 		println!("\n{}", file.display());
@@ -99,7 +99,7 @@ pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Resul
 			} else {
 				remove_dir_all(dest)
 			};
-			remove.expect(&io_expect(dest, "remove"));
+			remove.unwrap_or_else(|_| { panic!("{}", io_expect(dest, "remove")) });
 
 			symlink_impl(source, dest).expect("Symbolic linking failed second time, panicking!");
 		} else {

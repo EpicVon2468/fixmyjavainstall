@@ -173,16 +173,16 @@ pub fn install_wrapper(script: String, java_home: &str, bin_suffix: &str, is_win
 		.write(true)
 		.create_new(true)
 		.open(&script_file)
-		.expect(&io_expect(&script_file, "create"));
+		.unwrap_or_else(|_| { panic!("{}", io_expect(&script_file, "create")) });
 	result
 		.write_all(script.as_bytes())
-		.expect(&io_expect(&script_file, "write"));
+		.unwrap_or_else(|_| { panic!("{}", io_expect(&script_file, "write")) });
 	// rwxr-xr-x
 	#[cfg(unix)] {
 		use std::os::unix::fs::PermissionsExt;
 		result
 			.set_permissions(Permissions::from_mode(0o755))
-			.expect(&io_expect(&script_file, "set permissions for"));
+			.unwrap_or_else(|_| { panic!("{}", io_expect(&script_file, "set permissions for")) });
 	};
 	script_file
 }
