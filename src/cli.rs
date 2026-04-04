@@ -47,9 +47,11 @@ pub enum Cmd {
 #[derive(Subcommand)]
 #[clap(subcommand_value_name = "PRESET")]
 pub enum Preset {
-	/// All the optimisations – Java Runtime Environment edition; For the performance-wary user
+	RecommendedJRE,
+	RecommendedJDK,
+	/// (Almost) all the optimisations – Java Runtime Environment edition; For the performance-wary user
 	FastJRE,
-	/// All the optimisations – Java Development Kit edition; For the performance-wary developer
+	/// (Almost) all the optimisations – Java Development Kit edition; For the performance-wary developer
 	FastJDK,
 	/// Bleeding-edge & unstable, you say?
 	LatestJRE,
