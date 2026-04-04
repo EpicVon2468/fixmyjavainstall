@@ -5,7 +5,7 @@ use std::path::Path;
 macro_rules! open_env {
 	($holder:ident) => {
 		windows_registry::$holder
-			.option()
+			.options()
 			.read()
 			.write()
 			.open("Environment")
