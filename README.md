@@ -7,6 +7,17 @@ TODO:
 - Download Kotlin
 - Download Kotlin Native
 
+### Status:
+
+- Linux: `[WORKING]-[TESTED]`
+  - All core functionality working, tested regularly.
+- macOS: `[WORKING]-[UNTESTED]`
+  - All core functionality _theoretically_ working, needs testing.
+- Windows: `[BROKEN]-[TESTED]`
+  - Symbolic links for `%JAVA_HOME%\bin\java.exe` & `%JAVA_HOME%\bin\javaw.exe` don't work and can't be fixed.
+  - Another dependency is needed for `.zip` file extraction.
+  - No checks are done to make sure that `%PATH%` doesn't contain multiple of the same fuji install.
+
 ### Installation:
 
 `cargo install --git https://github.com/EpicVon2468/fixmyjavainstall`
