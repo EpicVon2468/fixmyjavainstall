@@ -2,11 +2,7 @@
 
 Rewriting this in Rust was simpler than debugging and 'fixing' the bash script(s).  I am serious.
 
-TODO:
-
-- Download Kotlin
-- Download Kotlin Native
-- Look into why macOS `/usr/bin/*` is stubborn
+NOTICE: You must run with `sudo -E` to preserve environment variables, else some preset detections may fail.
 
 ### Status:
 
@@ -30,3 +26,10 @@ If you would like to be able to install a JVM not made for your system, add `--f
 ### Documentation:
 
 `cargo doc --no-deps --document-private-items --features multi_os --open`
+
+### TODO:
+
+- [x] Download JVM
+- [ ] Download Kotlin
+- [ ] Download Kotlin Native
+- [ ] Look into why macOS `/usr/bin/*` is stubborn

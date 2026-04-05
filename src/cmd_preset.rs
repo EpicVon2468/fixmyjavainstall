@@ -94,7 +94,7 @@ fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 			features.push(Feature::NVIDIAFixes);
 		};
 
-		if var("XDG_SESSION_TYPE").unwrap().to_ascii_lowercase().contains("wayland") {
+		if var("WAYLAND_DISPLAY").is_ok() {
 			// WLToolkit also enables Vulkan
 			features.push(Feature::WLToolkit);
 		} else {
