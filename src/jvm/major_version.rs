@@ -1,4 +1,4 @@
-use std::ffi::OsString;
+use std::ffi::{OsString, OsStr};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
@@ -67,7 +67,7 @@ impl TypedValueParser for MajorVersionParser {
 		&self,
 		cmd: &Command,
 		arg: Option<&Arg>,
-		value: &std::ffi::OsStr,
+		value: &OsStr,
 	) -> Result<Self::Value, Error> {
 		self.parse(cmd, arg, value.to_owned())
 	}
@@ -76,7 +76,7 @@ impl TypedValueParser for MajorVersionParser {
 		&self,
 		cmd: &Command,
 		arg: Option<&Arg>,
-		value: OsString
+		value: OsString,
 	) -> Result<Self::Value, Error> {
 		let result: Result<MajorVersion, String> = value
 			.to_str()
@@ -84,32 +84,33 @@ impl TypedValueParser for MajorVersionParser {
 			.to_lowercase()
 			.as_str()
 			.parse();
-		if let Err(e) = result {
-			let mut error: Error = Error::new(ErrorKind::InvalidValue).with_cmd(cmd);
-			if let Some(argument) = arg {
+		match result {
+			Ok(version) => Ok(version),
+			Err(invalid_value) => {
+				let mut error: Error = Error::new(ErrorKind::InvalidValue).with_cmd(cmd);
+				if let Some(argument) = arg {
+					error.insert(
+						ContextKind::InvalidArg,
+						ContextValue::String(argument.to_string()),
+					);
+				};
 				error.insert(
-					ContextKind::InvalidArg,
-					ContextValue::String(argument.to_string()),
+					ContextKind::InvalidValue,
+					ContextValue::String(invalid_value),
 				);
-			};
-			error.insert(
-				ContextKind::InvalidValue,
-				ContextValue::String(e),
-			);
-			error.insert(
-				ContextKind::ValidValue,
-				ContextValue::Strings(
-					Self::possible_values()
-						.map(|v: PossibleValue| v.get_name().to_owned())
-						.collect::<Vec<String>>()
-						.iter()
-						.map(|s: &String| (*s).clone())
-						.collect()
-				),
-			);
-			Err(error)
-		} else {
-			Ok(result.unwrap())
+				error.insert(
+					ContextKind::ValidValue,
+					ContextValue::Strings(
+						Self::possible_values()
+							.map(|v: PossibleValue| v.get_name().to_owned())
+							.collect::<Vec<String>>()
+							.iter()
+							.map(|s: &String| (*s).clone())
+							.collect()
+					),
+				);
+				Err(error)
+			}
 		}
 	}
 
