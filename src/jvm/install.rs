@@ -32,15 +32,14 @@ pub fn install(op: Op) -> Result<()> {
 	#[cfg(not(feature = "multi_os"))]
 	let operating_system: OS = crate::os::SYSTEM;
 	// Temurin & Java SE both only need major version, except for LTS/Latest where we return the major version from our endpoint
-	let json: String = if (jdk == JDK::Temurin || jdk == JDK::JavaSE) && let MajorVersion::Number(version) = version {
+	let json: &str = &if (jdk == JDK::Temurin || jdk == JDK::JavaSE) && let MajorVersion::Number(version) = version {
 		format!(r#"{{"major": "{version}", "specific":"", "revision": ""}}"#)
 	} else {
 		connect(format!(
-			"https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{}/{}.json",
-			jdk, version
+			"https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{jdk}/{version}.json",
 		))?
 	};
-	let java_version: JavaVersion = serde_json::from_str(&json).expect("JSON failed to parse!");
+	let java_version: JavaVersion = serde_json::from_str(json).expect("JSON failed to parse!");
 	// FUJI_DIR/jvm/{version}
 	let java_home: &Path = &Path::new(FUJI_DIR).join("jvm").join(java_version.major);
 	if !dry_run {
@@ -65,7 +64,7 @@ pub fn install(op: Op) -> Result<()> {
 		os: operating_system.clone(),
 		java_home,
 		dry_run,
-	})?;
+	}).expect("Couldn't download JDK!");
 	println!();
 	// https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
 	let is_win: bool = operating_system == OS::Windows;
@@ -90,21 +89,22 @@ pub fn install(op: Op) -> Result<()> {
 		if dry_run {
 			continue;
 		};
-		// move $JAVA_HOME/bin/java(w)(.exe) to a 'backup' file so that programs which try to run $JAVA_HOME/bin/java(w)(.exe) literally can't skip the run script
-		rename(&java_executable, java_executable.with_added_extension(".bak"))?;
+		// move JAVA_HOME/bin/java(w)(.exe) to a 'backup' file so that programs which try to run JAVA_HOME/bin/java(w)(.exe) literally can't skip the run script
+		rename(&java_executable, java_executable.with_added_extension(".bak"))
+			.expect("Couldn't backup java executable!");
 		let script_file: PathBuf = install_wrapper(script, java_home, suffix, is_win);
-		// link $JAVA_HOME/bin/java(w)(.exe) to $JAVA_HOME/bin/fuji_jvm_wrapper
-		symlink_link(script_file, java_executable)?;
+		// link JAVA_HOME/bin/java(w)(.exe) to JAVA_HOME/bin/fuji_jvm_wrapper
+		symlink_link(script_file, java_executable)
+			.expect("Couldn't symbolically link JAVA_HOME/bin/java to point to JAVA_HOME/bin/fuji_jvm_wrapper!");
 	};
 	if dry_run {
 		return Ok(());
 	};
 	// make FUJI_DIR/jvm/latest point to FUJI_DIR/jvm/{version}
-	symlink_link(java_home, Path::new(FUJI_DIR).join("jvm").join("latest"))?;
-	// link all of $JAVA_HOME/bin
-	link_impl(
-		java_home,
-		"/usr/bin",
-		false,
-	)
+	symlink_link(java_home, Path::new(FUJI_DIR).join("jvm").join("latest"))
+		.expect("Couldn't symbolically link FUJI_DIR/jvm/latest to current install directory!");
+	// link all of JAVA_HOME/bin
+	link_impl(java_home, "/usr/bin", false)
+		.expect("Couldn't install JAVA_HOME!");
+	Ok(())
 }

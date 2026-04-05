@@ -1,7 +1,6 @@
 use std::ffi::OsStr;
 use std::fs::{remove_dir_all, remove_file};
 use std::io::{Error, ErrorKind, Result};
-use std::path::MAIN_SEPARATOR;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command};
 
@@ -36,7 +35,7 @@ pub fn cmd_link(command: Cmd) -> Result<()> {
 }
 
 #[allow(unused_variables)]
-pub fn link_impl<P: AsRef<Path>, S: AsRef<str>>(
+pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	path: P,
 	link_dir: S,
 	use_update_alternatives: bool,
@@ -58,7 +57,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<str>>(
 		));
 	};
 	for entry in bin.read_dir().unwrap_or_else(|_| panic!("{}", io_expect(bin, "list directory"))) {
-		let file: &PathBuf = &entry?.path();
+		let file: &Path = &entry?.path();
 		// TODO: '--quiet'
 		println!("\n{}", file.display());
 		if file.is_dir() {
@@ -68,11 +67,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<str>>(
 			println!("Filename was none! '{}'", file.display());
 			continue;
 		};
-		let dest: String = format!(
-			"{}{MAIN_SEPARATOR}{}",
-			link_dir.as_ref(),
-			filename.display()
-		);
+		let dest: PathBuf = link_dir.as_ref().join(filename);
 		if can_use_update_alternatives {
 			debian_link(file, filename, dest).expect("Couldn't link with update-alternatives!");
 		} else {
