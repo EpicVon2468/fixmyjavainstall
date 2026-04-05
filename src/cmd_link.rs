@@ -25,6 +25,7 @@ pub fn cmd_link(command: Cmd) -> Result<()> {
 	#[cfg(all(not(target_os = "linux"), not(feature = "multi_os")))]
 	let use_update_alternatives: bool = false;
 	for path in &paths {
+		#[allow(clippy::needless_borrows_for_generic_args)]
 		link_impl(
 			path,
 			&link_dir,

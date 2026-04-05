@@ -54,7 +54,7 @@ impl MajorVersionParser {
 		[
 			MajorVersion::Number(0),
 			MajorVersion::Latest,
-			MajorVersion::LTS
+			MajorVersion::LTS,
 		].iter().filter_map(MajorVersion::to_possible_value)
 	}
 }
@@ -114,7 +114,7 @@ impl TypedValueParser for MajorVersionParser {
 		}
 	}
 
-	fn possible_values(&self) -> Option<Box<dyn Iterator<Item=PossibleValue> + '_>> {
+	fn possible_values(&self) -> Option<Box<dyn Iterator<Item = PossibleValue> + '_>> {
 		Some(Box::new(Self::possible_values()))
 	}
 }

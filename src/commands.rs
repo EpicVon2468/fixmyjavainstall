@@ -45,7 +45,7 @@ pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 	if is_zip {
 		panic!("no.");
 	};
-	let dest: PathBuf = dest.as_ref().canonicalize()?;
+	let dest: PathBuf = dest.as_ref().canonicalize().expect("Couldn't canonicalise destination path!");
 	let input: File = File::open(archive.as_ref()).expect("Couldn't open JDK archive!");
 	let mut reader: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
 	for entry in reader.entries().expect("Couldn't iterate through JDK archive!") {

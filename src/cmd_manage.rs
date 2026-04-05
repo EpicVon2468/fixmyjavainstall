@@ -13,8 +13,8 @@ pub fn cmd_manage(command: Cmd) -> Result<()> {
 	if let Some(software) = option {
 		match software {
 			Software::JVM { .. } => return manage_jvm(software),
-			Software::Kotlin { .. } => {}
-			Software::KotlinNative { .. } => {}
+			Software::Kotlin { .. } => {},
+			Software::KotlinNative { .. } => {},
 		};
 	};
 	Ok(())

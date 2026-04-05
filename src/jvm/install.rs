@@ -111,11 +111,7 @@ pub fn install(op: Op) -> Result<()> {
 	// link all of $JAVA_HOME/bin
 	link_impl(
 		java_home,
-		if operating_system == OS::OSX {
-			"/usr/local/bin"
-		} else {
-			"/usr/bin"
-		},
+		"/usr/bin",
 		false,
 	)
 }

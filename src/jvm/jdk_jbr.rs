@@ -3,9 +3,9 @@ use std::io::Result;
 use crate::jvm::jdk_generic::{generic_download, DownloadJDKArgs};
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
 
-pub fn download_jbr(arg: DownloadJDKArgs) -> Result<()> {
-	let features: &[Feature] = arg.features;
-	let version: &JavaVersion = &arg.version;
+pub fn download_jbr(args: DownloadJDKArgs) -> Result<()> {
+	let features: &[Feature] = args.features;
+	let version: &JavaVersion = &args.version;
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://cache-redirector.jetbrains.com/intellij-jbr/jbr");
 	if !features.contains(&Feature::Minimal) {
@@ -17,15 +17,15 @@ pub fn download_jbr(arg: DownloadJDKArgs) -> Result<()> {
 	url.push('-');
 	url.push_str(version.specific);
 	url.push('-');
-	url.push_str(&arg.os.to_string());
+	url.push_str(&args.os.to_string());
 	url.push('-');
 	#[cfg(any(unix, feature = "multi_os"))]
 	if features.contains(&Feature::MUSL) {
 		url.push_str("musl-");
 	};
-	url.push_str(&arg.arch.to_string());
+	url.push_str(&args.arch.to_string());
 	url.push('-');
 	url.push_str(version.revision);
-	url.push_str(if arg.is_win() { ".zip" } else { ".tar.gz" });
-	generic_download(url, arg.java_home, arg.dry_run, arg.is_win(), arg.is_mac())
+	url.push_str(if args.is_win() { ".zip" } else { ".tar.gz" });
+	generic_download(url, args)
 }

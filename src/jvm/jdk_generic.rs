@@ -29,25 +29,23 @@ impl<'a> DownloadJDKArgs<'a> {
 	}
 }
 
-pub fn generic_download<S: AsRef<OsStr>, P: AsRef<str>>(
+pub fn generic_download<S: AsRef<OsStr>>(
 	url: S,
-	java_home: P,
-	dry_run: bool,
-	is_win: bool,
-	is_mac: bool,
+	args: DownloadJDKArgs
 ) -> Result<()> {
 	let url: &OsStr = url.as_ref();
-	let java_home: &str = java_home.as_ref();
+	let java_home: &str = args.java_home;
+	let is_win: bool = args.is_win();
 	let archive: &str = &format!("{java_home}.{}", if is_win { "zip" } else { "tar.gz" });
 
 	println!("Downloading JDK: {}...", url.display());
-	if dry_run {
+	if args.dry_run {
 		return Ok(());
 	};
 	download(url, archive).expect("Couldn't download JDK!");
 
 	println!("Untaring JDK...");
-	untar_jdk(archive, java_home, is_win, is_mac).expect("Couldn't untar JDK!");
+	untar_jdk(archive, java_home, is_win, args.is_mac()).expect("Couldn't untar JDK!");
 
 	println!("Removing JDK archive...");
 	remove_file(archive).expect("Couldn't delete JDK archive!");

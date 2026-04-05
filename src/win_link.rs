@@ -29,6 +29,8 @@ pub fn win_link<P: AsRef<Path>>(bin_dir: P) -> std::io::Result<()> {
 		.get_string("PATH")
 		.expect("Couldn't get PATH environment variable!");
 	// technically I'm supposed to broadcast a message about this, but uh... no.
+	// TODO: check if PATH already contains `\Program Files\fuji\jvm\latest`
+	// note: technically `;` is allowed in a Windows path (and can be placed in `%PATH%` if you quote the path), but I don't want to have to figure that out so consider it unsupported
 	environment
 		.set_string(
 			"PATH",

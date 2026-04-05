@@ -68,9 +68,9 @@ fn generate_wrapper_unix(java_home: &str, features: &[Feature], bin_suffix: &str
 		result.push_str("export __GL_THREADED_OPTIMIZATIONS=0\n\n");
 	};
 
-	result.push_str("exec \"$JAVA_HOME/bin/java");
+	result.push_str(r#"exec "$JAVA_HOME/bin/java"#);
 	result.push_str(bin_suffix);
-	result.push_str(".bak\" \"$@\"");
+	result.push_str(r#".bak" "$@""#);
 
 	result
 }

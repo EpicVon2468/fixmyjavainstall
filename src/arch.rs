@@ -22,6 +22,7 @@ impl From<Arch> for OsStr {
 }
 
 impl Display for Arch {
+
 	fn fmt(&self, f: &mut Formatter<'_>) -> Result {
 		write!(
 			f,
