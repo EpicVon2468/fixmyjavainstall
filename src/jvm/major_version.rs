@@ -1,17 +1,33 @@
+use std::ffi::OsString;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
-use clap::builder::TypedValueParser;
-use clap::error::ErrorKind;
+use clap::builder::{PossibleValue, TypedValueParser};
+use clap::error::{ContextKind, ContextValue, ErrorKind};
 use clap::{Arg, Command, Error};
 
 #[derive(Clone, PartialEq)]
 pub enum MajorVersion {
+	/// Some arbitrary numeric version
 	Number(u32),
-	/// Latest
+	/// The latest version
 	Latest,
-	/// Long Term Support
+	/// The latest Long Term Support version
 	LTS,
+}
+
+impl MajorVersion {
+
+	fn to_possible_value(&self) -> Option<PossibleValue> {
+		match self {
+			MajorVersion::Number(_) => PossibleValue::new("[0..4_294_967_295]")
+				.help("Some arbitrary numeric version"),
+			MajorVersion::Latest => PossibleValue::new("latest")
+				.help("The latest version"),
+			MajorVersion::LTS => PossibleValue::new("lts")
+				.help("The latest Long Term Support version"),
+		}.into()
+	}
 }
 
 impl Display for MajorVersion {
@@ -32,6 +48,17 @@ impl Display for MajorVersion {
 #[derive(Clone)]
 pub struct MajorVersionParser;
 
+impl MajorVersionParser {
+
+	fn possible_values() -> impl Iterator<Item = PossibleValue> {
+		[
+			MajorVersion::Number(0),
+			MajorVersion::Latest,
+			MajorVersion::LTS
+		].iter().filter_map(MajorVersion::to_possible_value)
+	}
+}
+
 impl TypedValueParser for MajorVersionParser {
 
 	type Value = MajorVersion;
@@ -39,19 +66,62 @@ impl TypedValueParser for MajorVersionParser {
 	fn parse_ref(
 		&self,
 		cmd: &Command,
-		_arg: Option<&Arg>,
+		arg: Option<&Arg>,
 		value: &std::ffi::OsStr,
 	) -> Result<Self::Value, Error> {
-		value.to_str().unwrap().to_lowercase().as_str().parse().map_err(|e: Error| {
-			e.with_cmd(cmd)
-		})
+		self.parse(cmd, arg, value.to_owned())
+	}
+
+	fn parse(
+		&self,
+		cmd: &Command,
+		arg: Option<&Arg>,
+		value: OsString
+	) -> Result<Self::Value, Error> {
+		let result: Result<MajorVersion, String> = value
+			.to_str()
+			.unwrap()
+			.to_lowercase()
+			.as_str()
+			.parse();
+		if let Err(e) = result {
+			let mut error: Error = Error::new(ErrorKind::InvalidValue).with_cmd(cmd);
+			if let Some(argument) = arg {
+				error.insert(
+					ContextKind::InvalidArg,
+					ContextValue::String(argument.to_string()),
+				);
+			};
+			error.insert(
+				ContextKind::InvalidValue,
+				ContextValue::String(e),
+			);
+			error.insert(
+				ContextKind::ValidValue,
+				ContextValue::Strings(
+					Self::possible_values()
+						.map(|v: PossibleValue| v.get_name().to_owned())
+						.collect::<Vec<String>>()
+						.iter()
+						.map(|s: &String| (*s).clone())
+						.collect()
+				),
+			);
+			Err(error)
+		} else {
+			Ok(result.unwrap())
+		}
+	}
+
+	fn possible_values(&self) -> Option<Box<dyn Iterator<Item=PossibleValue> + '_>> {
+		Some(Box::new(Self::possible_values()))
 	}
 }
 
 // https://stackoverflow.com/questions/73658377/how-to-have-number-or-string-as-a-cli-argument-in-clap
 impl FromStr for MajorVersion {
 
-	type Err = Error;
+	type Err = String;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		match s.parse::<u32>() {
@@ -59,7 +129,7 @@ impl FromStr for MajorVersion {
 			Err(_) => match s {
 				"latest" => Ok(MajorVersion::Latest),
 				"lts" => Ok(MajorVersion::LTS),
-				_ => Err(Error::new(ErrorKind::InvalidValue)),
+				_ => Err(s.into()),
 			},
 		}
 	}

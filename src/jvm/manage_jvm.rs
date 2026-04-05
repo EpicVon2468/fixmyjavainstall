@@ -50,7 +50,7 @@ pub enum Op {
 		#[arg(long)]
 		dry_run: bool,
 
-		/// The version for the requested JVM.  This can be a major version number, 'latest' for the latest version, or 'lts' for the latest Long Term Support version
+		/// The version for the requested JVM
 		#[clap(value_parser = MajorVersionParser {})]
 		version: MajorVersion,
 	},
