@@ -1,6 +1,6 @@
 use std::fs::{create_dir_all, exists, remove_dir_all, rename};
 use std::io::Result;
-use std::path::{PathBuf, MAIN_SEPARATOR};
+use std::path::{Path, PathBuf};
 
 use crate::cmd_link::{link_impl, symlink_link};
 use crate::commands::{connect, io_expect};
@@ -14,7 +14,7 @@ use crate::jvm::major_version::MajorVersion;
 use crate::jvm::manage_jvm::{JavaVersion, Op};
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
 use crate::os::OS;
-use crate::{FUJI_DIR, wrong_cmd};
+use crate::{wrong_cmd, FUJI_DIR};
 
 pub fn install(op: Op) -> Result<()> {
 	let Op::Install {
@@ -42,7 +42,7 @@ pub fn install(op: Op) -> Result<()> {
 	};
 	let java_version: JavaVersion = serde_json::from_str(&json).expect("JSON failed to parse!");
 	// FUJI_DIR/jvm/{version}
-	let java_home: &PathBuf = &PathBuf::from(FUJI_DIR).join("jvm").join(java_version.major);
+	let java_home: &Path = &Path::new(FUJI_DIR).join("jvm").join(java_version.major);
 	if !dry_run {
 		if exists(java_home)? {
 			remove_dir_all(java_home)
@@ -99,12 +99,8 @@ pub fn install(op: Op) -> Result<()> {
 	if dry_run {
 		return Ok(());
 	};
-	// make FUJI_DIR/jvm/latest point to output_dir
-	#[cfg(not(windows))]
-	symlink_link(
-		java_home,
-		format!("{FUJI_DIR}{MAIN_SEPARATOR}jvm{MAIN_SEPARATOR}latest"),
-	)?;
+	// make FUJI_DIR/jvm/latest point to FUJI_DIR/jvm/{version}
+	symlink_link(java_home, Path::new(FUJI_DIR).join("jvm").join("latest"))?;
 	// link all of $JAVA_HOME/bin
 	link_impl(
 		java_home,
