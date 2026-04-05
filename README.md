@@ -6,17 +6,20 @@ TODO:
 
 - Download Kotlin
 - Download Kotlin Native
+- Look into why macOS `/usr/bin/*` is stubborn
 
 ### Status:
 
 - Linux: `[WORKING]-[TESTED]`
   - All core functionality working, tested regularly.
-- macOS: `[WORKING]-[UNTESTED]`
-  - All core functionality _theoretically_ working, needs testing.
+- macOS: `[BROKEN]-[TESTED]`
+  - All core functionality _should_ work, but doesn't.
+  - Symbolic link install phase is broken.  See TODO.
 - Windows: `[BROKEN]-[TESTED]`
   - Symbolic links for `%JAVA_HOME%\bin\java.exe` & `%JAVA_HOME%\bin\javaw.exe` don't work and can't be fixed.
   - Another dependency is needed for `.zip` file extraction.
   - No checks are done to make sure that `%PATH%` doesn't contain multiple of the same fuji install.
+  - Despite being quoted, `"\Program Files\fuji\jvm\25"` isn't treated as one path, as batch fails to handle the space in `Program Files`.
 
 ### Installation:
 
