@@ -13,7 +13,6 @@ macro_rules! open_env {
 }
 
 // https://stackoverflow.com/questions/79701236/what-is-the-recommended-way-to-append-a-path-to-windows-path-environment-vari
-// Completely untested.  I don't even have the syntax highlighting to see if this works since I'm not on Windows.
 /// Appends `bin_dir` to the `PATH` environment variable.
 ///
 /// Initially, this will attempt to modify the `PATH` of `HKEY_LOCAL_MACHINE`, however if that fails it will use `HKEY_CURRENT_USER` as a fallback.
