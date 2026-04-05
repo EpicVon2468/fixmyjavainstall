@@ -2,7 +2,7 @@ use std::borrow::Cow;
 use std::ffi::OsStr;
 use std::fs::{remove_dir_all, File};
 use std::io::{Error, ErrorKind, Result};
-use std::path::{Component, Components, Path};
+use std::path::{Component, Components, Path, PathBuf};
 use std::process::{Child, Command, ExitStatus, Output, Stdio};
 
 use flate2::read::GzDecoder;
@@ -35,25 +35,11 @@ pub fn require_program(name: &str) -> Result<()> {
 ///
 /// Implementation notes:
 ///
-/// * Uses [`tar`](https://www.gnu.org/software/tar/) for extraction.
-/// 	* `dest` is [`canonicalised`][`Path::canonicalize`] when passed to `tar`.
-/// 	* The [`standard output stream`][`Command::stdout`] of `tar` is [`redirected to /dev/null`][`Stdio::null`].
-/// 	* The topmost directory inside `archive` is merged into `dest` (via `--strip-components 1`).
-///
-/// Platform-specific behaviour:
+/// * `dest` is [`canonicalised`][`Path::canonicalize`] before use.
 /// * No checks are performed to determine if `dest` exists.
 /// * If `is_zip` is true, no checks are performed to determine if `archive` ends with `.zip`, and vice versa.
-/// * `tar` is used on all platforms.
-/// 	* `tar` is called via [`Command`], not via any library.
-/// 		* Windows has had `tar` bundled for a while.
-/// 			* <https://devblogs.microsoft.com/commandline/tar-and-curl-come-to-windows/>
-/// 			* <https://techcommunity.microsoft.com/blog/containers/tar-and-curl-come-to-windows/382409/>
-/// 		* macOS has had `tar` bundled for a while.
-/// 			* <https://support.apple.com/en-gb/guide/terminal/apdc52250ee-4659-4751-9a3a-8b7988150530/mac/>
-/// 		* Tell me you don't have `tar` on Linux, and I'll eat my boot.
-/// 	* Due to use of `--strip-components 1`, this function may not work on `tar` versions older than 1.15 (dated 2004-12-20).
 pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(archive: S, dest: P, _is_zip: bool, is_mac: bool) -> Result<()> {
-	let dest: &Path = dest.as_ref();
+	let dest: PathBuf = dest.as_ref().canonicalize()?;
 	let input: File = File::open(archive.as_ref()).expect("foo");
 	let mut reader: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
 	for file in reader.entries()? {
