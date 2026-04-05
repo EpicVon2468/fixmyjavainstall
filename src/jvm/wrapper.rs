@@ -1,11 +1,12 @@
 use std::fs::{File, OpenOptions, Permissions};
 use std::io::Write;
+use std::path::{Path, PathBuf};
 
 use crate::commands::io_expect;
 use crate::jvm::manage_jvm::Feature;
 
 pub fn generate_wrapper(
-	java_home: &str,
+	java_home: &Path,
 	features: &[Feature],
 	is_win: bool,
 	bin_suffix: &str,
@@ -23,13 +24,13 @@ pub fn generate_wrapper(
 // https://stackoverflow.com/questions/12990480/shift-doesn-t-affect
 // Oh dear...
 // https://serverfault.com/questions/315077/is-there-a-windows-cmd-equivalent-of-unix-shells-exec
-fn generate_wrapper_win(java_home: &str, features: &[Feature], bin_suffix: &str) -> String {
+fn generate_wrapper_win(java_home: &Path, features: &[Feature], bin_suffix: &str) -> String {
 	let mut result: String = String::with_capacity(500);
 
 	result.push_str("@echo off\r\n\r\n");
 	result.push_str("setlocal enableextensions\r\n\r\n");
 
-	result.push_str(&format!("set JAVA_HOME=\"{java_home}\"\r\n\r\n"));
+	result.push_str(&format!("set JAVA_HOME=\"{}\"\r\n\r\n", java_home.display()));
 
 	result.push_str("if defined CLASSPATH (\r\n");
 	result.push_str("\tset FUJI_CLASSPATH_ARG=\"-cp %CLASSPATH%;.\"\r\n");
@@ -46,13 +47,13 @@ fn generate_wrapper_win(java_home: &str, features: &[Feature], bin_suffix: &str)
 	result
 }
 
-fn generate_wrapper_unix(java_home: &str, features: &[Feature], bin_suffix: &str) -> String {
+fn generate_wrapper_unix(java_home: &Path, features: &[Feature], bin_suffix: &str) -> String {
 	let mut result: String = String::with_capacity(500);
 
 	result.push_str("#! /usr/bin/env sh\n\n");
 
 	result.push_str("# shellcheck disable=SC2155\n");
-	result.push_str(&format!("export JAVA_HOME=\"{java_home}\"\n\n"));
+	result.push_str(&format!("export JAVA_HOME=\"{}\"\n\n", java_home.display()));
 
 	result.push_str("if [ -n \"$CLASSPATH\" ]; then\n");
 	result.push_str("\tset -- -cp \"$CLASSPATH:.\" \"$@\"\n");
@@ -156,10 +157,9 @@ fn gen_features(
 	};
 }
 
-pub fn install_wrapper(script: String, java_home: &str, bin_suffix: &str, is_win: bool) -> String {
-	let script_file: String = format!(
-		"{java_home}/bin/fuji_jvm_wrapper{bin_suffix}{}",
-		if is_win { ".bat" } else { "" }
+pub fn install_wrapper(script: String, java_home: &Path, bin_suffix: &str, is_win: bool) -> PathBuf {
+	let script_file: PathBuf = java_home.join("bin").join(
+		format!("fuji_jvm_wrapper{bin_suffix}{}", if is_win { ".bat" } else { "" })
 	);
 	let mut result: File = OpenOptions::new()
 		.write(true)

@@ -1,6 +1,6 @@
 use std::fs::{create_dir_all, exists, remove_dir_all, rename};
 use std::io::Result;
-use std::path::MAIN_SEPARATOR;
+use std::path::{PathBuf, MAIN_SEPARATOR};
 
 use crate::cmd_link::{link_impl, symlink_link};
 use crate::commands::{connect, io_expect};
@@ -42,10 +42,7 @@ pub fn install(op: Op) -> Result<()> {
 	};
 	let java_version: JavaVersion = serde_json::from_str(&json).expect("JSON failed to parse!");
 	// FUJI_DIR/jvm/{version}
-	let java_home: &str = &format!(
-		"{FUJI_DIR}{MAIN_SEPARATOR}jvm{MAIN_SEPARATOR}{}",
-		java_version.major
-	);
+	let java_home: &PathBuf = &PathBuf::from(FUJI_DIR).join("jvm").join(java_version.major);
 	if !dry_run {
 		if exists(java_home)? {
 			remove_dir_all(java_home)
@@ -85,19 +82,19 @@ pub fn install(op: Op) -> Result<()> {
 			suffix
 		};
 		// $JAVA_HOME/bin/java(w)(.exe)
-		let java_executable: String = format!("{java_home}{MAIN_SEPARATOR}bin{MAIN_SEPARATOR}java{suffix}");
+		let java_executable: PathBuf = java_home.join("bin").join(format!("java{suffix}"));
 		let script: String = generate_wrapper(java_home, &features, is_win, suffix);
-		println!("Writing script to {java_executable}...");
+		println!("Writing script to {}...", java_executable.display());
 		println!("'''\n{script}\n'''");
 		println!();
 		if dry_run {
 			continue;
 		};
 		// move $JAVA_HOME/bin/java(w)(.exe) to a 'backup' file so that programs which try to run $JAVA_HOME/bin/java(w)(.exe) literally can't skip the run script
-		rename(&java_executable, format!("{java_executable}.bak"))?;
-		let script_file: String = install_wrapper(script, java_home, suffix, is_win);
+		rename(&java_executable, java_executable.with_added_extension(".bak"))?;
+		let script_file: PathBuf = install_wrapper(script, java_home, suffix, is_win);
 		// link $JAVA_HOME/bin/java(w)(.exe) to $JAVA_HOME/bin/fuji_jvm_wrapper
-		symlink_link(&script_file, java_executable)?;
+		symlink_link(script_file, java_executable)?;
 	};
 	if dry_run {
 		return Ok(());
