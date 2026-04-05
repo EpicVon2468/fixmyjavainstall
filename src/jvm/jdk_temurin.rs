@@ -14,6 +14,7 @@ pub fn download_temurin(
 	java_home: &str,
 	dry_run: bool,
 	is_win: bool,
+	is_mac: bool,
 ) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://api.adoptium.net/v3/binary/latest/");
@@ -34,5 +35,5 @@ pub fn download_temurin(
 	});
 	// returns a .zip instead of a .tar.gz for windows
 	url.push_str("/hotspot/normal/eclipse");
-	generic_download(url, java_home, dry_run, is_win)
+	generic_download(url, java_home, dry_run, is_win, is_mac)
 }

@@ -1,8 +1,13 @@
+use std::borrow::Cow;
 use std::ffi::OsStr;
-use std::fs::{File, remove_dir_all};
+use std::fs::{remove_dir_all, File};
 use std::io::{Error, ErrorKind, Result};
-use std::path::Path;
+use std::path::{Component, Components, Path};
 use std::process::{Child, Command, ExitStatus, Output, Stdio};
+
+use flate2::read::GzDecoder;
+
+use tar::{Archive, Entry};
 
 use which::which;
 
@@ -26,7 +31,6 @@ pub fn require_program(name: &str) -> Result<()> {
 
 // https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
 // sudo tar --strip-components 1 -xvf 25.0.2.tar.gz -C 25.0.2
-// macOS & Linux both come with tar, and Windows versions from 2017 and onwards have it bundled
 /// Extracts `archive` into `dest`, stripping one component.
 ///
 /// Implementation notes:
@@ -48,19 +52,28 @@ pub fn require_program(name: &str) -> Result<()> {
 /// 			* <https://support.apple.com/en-gb/guide/terminal/apdc52250ee-4659-4751-9a3a-8b7988150530/mac/>
 /// 		* Tell me you don't have `tar` on Linux, and I'll eat my boot.
 /// 	* Due to use of `--strip-components 1`, this function may not work on `tar` versions older than 1.15 (dated 2004-12-20).
-pub fn untar_jdk<S: AsRef<OsStr>, P: AsRef<Path>>(archive: S, dest: P, is_zip: bool) -> Result<()> {
-	require_program("tar")?;
-	let mut child: Child = Command::new("tar")
-		.arg("--strip-components")
-		.arg("1")
-		.arg(if is_zip { "-zxvf" } else { "-xvf" })
-		.arg(archive)
-		.arg("-C")
-		.arg(dest.as_ref().canonicalize()?)
-		.stdout(Stdio::null())
-		.spawn()
-		.expect("Couldn't start tar!");
-	wait_and_check_status!(child, "tar");
+pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(archive: S, dest: P, _is_zip: bool, is_mac: bool) -> Result<()> {
+	let dest: &Path = dest.as_ref();
+	let input: File = File::open(archive.as_ref()).expect("foo");
+	let mut reader: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
+	for file in reader.entries()? {
+		let mut file: Entry<GzDecoder<File>> = file?;
+		let cow: Cow<Path> = file.path()?;
+		let mut components: Components = cow.components();
+		// --strip-components 1
+		components.next();
+		// macOS .tar.gz is laid out differently.  it's a '.app'...
+		if is_mac {
+			// skip "Contents"
+			components.next();
+			// only allow paths under "Home"
+			if components.next() != Some(Component::Normal("Home".as_ref())) {
+				continue;
+			};
+		};
+		let path: &Path = components.as_path();
+		file.unpack(dest.join(path))?;
+	};
 	Ok(())
 }
 

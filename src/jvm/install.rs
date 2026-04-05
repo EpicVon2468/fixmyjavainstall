@@ -55,6 +55,7 @@ pub fn install(op: Op) -> Result<()> {
 			.unwrap_or_else(|_| panic!("{}", io_expect(java_home, "create directory")));
 	};
 	let is_win: bool = operating_system == OS::Windows;
+	let is_mac: bool = operating_system == OS::OSX;
 	let download_jdk: DownloadJdkFn = match jdk {
 		JDK::Auto => todo!(),
 		JDK::JBR => download_jbr,
@@ -70,6 +71,7 @@ pub fn install(op: Op) -> Result<()> {
 		java_home,
 		dry_run,
 		is_win,
+		is_mac,
 	)?;
 	println!();
 	// https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe

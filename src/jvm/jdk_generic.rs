@@ -15,6 +15,7 @@ pub type DownloadJdkFn = fn(
 	java_home: &str,
 	dry_run: bool,
 	is_win: bool,
+	is_mac: bool,
 ) -> Result<()>;
 
 pub fn generic_download<S: AsRef<OsStr>, P: AsRef<str>>(
@@ -22,6 +23,7 @@ pub fn generic_download<S: AsRef<OsStr>, P: AsRef<str>>(
 	java_home: P,
 	dry_run: bool,
 	is_win: bool,
+	is_mac: bool,
 ) -> Result<()> {
 	let url: &OsStr = url.as_ref();
 	let java_home: &str = java_home.as_ref();
@@ -34,7 +36,7 @@ pub fn generic_download<S: AsRef<OsStr>, P: AsRef<str>>(
 	download(url, archive).expect("Couldn't download JDK!");
 
 	println!("Untaring JDK...");
-	untar_jdk(archive, java_home, is_win).expect("Couldn't untar JDK!");
+	untar_jdk(archive, java_home, is_win, is_mac).expect("Couldn't untar JDK!");
 
 	println!("Removing JDK archive...");
 	remove_file(archive).expect("Couldn't delete JDK archive!");
