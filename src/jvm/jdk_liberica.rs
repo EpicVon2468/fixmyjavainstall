@@ -1,15 +1,13 @@
 use std::io::Result;
 
 use crate::jvm::jdk_generic::{generic_download, DownloadJDKArgs};
-use crate::jvm::manage_jvm::Feature;
+use crate::jvm::manage_jvm::{Feature, JavaVersion};
 
 pub fn download_liberica(arg: DownloadJDKArgs) -> Result<()> {
-	let version = &arg.version;
 	let mut url: String = String::with_capacity(100);
-	url.push_str("https://download.bell-sw.com/java/");
+	let version: &JavaVersion = &arg.version;
 	let target: &str = &format!("{}{}", version.specific, version.revision);
-	url.push_str(target);
-	url.push_str("/bellsoft-");
+	url.push_str(&format!("https://download.bell-sw.com/java/{target}/bellsoft-"));
 	url.push_str(if arg.features.contains(&Feature::Minimal) {
 		"jre"
 	} else {

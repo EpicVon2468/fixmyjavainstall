@@ -3,13 +3,9 @@ use std::io::Result;
 use crate::jvm::jdk_generic::{generic_download, DownloadJDKArgs};
 
 pub fn download_java_se(arg: DownloadJDKArgs) -> Result<()> {
-	let version = &arg.version;
 	let mut url: String = String::with_capacity(100);
-	url.push_str("https://download.oracle.com/java/");
-	url.push_str(version.major);
-	url.push_str("/latest/jdk-");
-	url.push_str(version.major);
-	url.push('_');
+	let major: &str = arg.version.major;
+	url.push_str(&format!("https://download.oracle.com/java/{major}/latest/jdk-{major}_"));
 	let os_name: &str = &arg.os.to_string();
 	url.push_str(match os_name {
 		"osx" => "macos",
