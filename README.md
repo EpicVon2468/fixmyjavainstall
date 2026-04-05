@@ -35,3 +35,4 @@ If you would like to be able to install a JVM not made for your system, add `--f
 - [ ] Look into why macOS `/usr/bin/*` is stubborn
 - [ ] Get UNIX-likes to a stable release
 - [ ] Fix Windows (soon™)
+- [ ] Fix `cargo`-based installs not working with `sudo`
