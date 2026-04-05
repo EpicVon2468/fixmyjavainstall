@@ -1,5 +1,3 @@
-use std::env::var;
-use std::fs::DirEntry;
 use std::io::Result;
 
 use crate::cli::{Cmd, Preset, Software};
@@ -80,7 +78,10 @@ fn preset_fast(minimal: bool) -> Result<()> {
 fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 	features.push(Feature::JEP519);
 	#[cfg(target_os = "linux")] {
+		use std::fs::DirEntry;
 		use std::path::Path;
+		use std::env::var;
+
 		if Path::new("/proc/driver").read_dir()?.any(|entry: Result<DirEntry>| {
 			entry
 				.expect("Couldn't check for NVIDIA drivers!")
@@ -92,6 +93,7 @@ fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 		}) {
 			features.push(Feature::NVIDIAFixes);
 		};
+
 		if var("XDG_SESSION_TYPE").unwrap().to_ascii_lowercase().contains("wayland") {
 			// WLToolkit also enables Vulkan
 			features.push(Feature::WLToolkit);
