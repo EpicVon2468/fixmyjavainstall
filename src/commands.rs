@@ -36,7 +36,15 @@ pub fn require_program(name: &str) -> Result<()> {
 /// * `dest` is [`canonicalised`][`Path::canonicalize`] before use.
 /// * No checks are performed to determine if `dest` exists.
 /// * If `is_zip` is true, no checks are performed to determine if `archive` ends with `.zip`, and vice versa.
-pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(archive: S, dest: P, _is_zip: bool, is_mac: bool) -> Result<()> {
+pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(
+	archive: S,
+	dest: P,
+	is_zip: bool,
+	is_mac: bool,
+) -> Result<()> {
+	if is_zip {
+		panic!("no.");
+	};
 	let dest: PathBuf = dest.as_ref().canonicalize()?;
 	let input: File = File::open(archive.as_ref()).expect("Couldn't open JDK archive!");
 	let mut reader: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));

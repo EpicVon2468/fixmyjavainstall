@@ -7,16 +7,27 @@ use crate::commands::{download, untar_jdk};
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
 use crate::os::OS;
 
-pub type DownloadJdkFn = fn(
-	arch: Arch,
-	version: JavaVersion,
-	features: &[Feature],
-	os: OS,
-	java_home: &str,
-	dry_run: bool,
-	is_win: bool,
-	is_mac: bool,
-) -> Result<()>;
+pub type DownloadJDKFn = fn(arg: DownloadJDKArgs) -> Result<()>;
+
+pub struct DownloadJDKArgs<'a> {
+	pub arch: Arch,
+	pub version: JavaVersion<'a>,
+	pub features: &'a [Feature],
+	pub os: OS,
+	pub java_home: &'a str,
+	pub dry_run: bool,
+}
+
+impl<'a> DownloadJDKArgs<'a> {
+
+	pub fn is_win(&self) -> bool {
+		self.os == OS::Windows
+	}
+
+	pub fn is_mac(&self) -> bool {
+		self.os == OS::OSX
+	}
+}
 
 pub fn generic_download<S: AsRef<OsStr>, P: AsRef<str>>(
 	url: S,

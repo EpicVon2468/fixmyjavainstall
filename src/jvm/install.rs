@@ -5,7 +5,7 @@ use std::path::MAIN_SEPARATOR;
 use crate::cmd_link::{link_impl, symlink_link};
 use crate::commands::{connect, io_expect};
 use crate::jvm::jdk::JDK;
-use crate::jvm::jdk_generic::DownloadJdkFn;
+use crate::jvm::jdk_generic::{DownloadJDKArgs, DownloadJDKFn};
 use crate::jvm::jdk_java_se::download_java_se;
 use crate::jvm::jdk_jbr::download_jbr;
 use crate::jvm::jdk_liberica::download_liberica;
@@ -55,24 +55,21 @@ pub fn install(op: Op) -> Result<()> {
 			.unwrap_or_else(|_| panic!("{}", io_expect(java_home, "create directory")));
 	};
 	let is_win: bool = operating_system == OS::Windows;
-	let is_mac: bool = operating_system == OS::OSX;
-	let download_jdk: DownloadJdkFn = match jdk {
+	let download_jdk: DownloadJDKFn = match jdk {
 		JDK::Auto => todo!(),
 		JDK::JBR => download_jbr,
 		JDK::JavaSE => download_java_se,
 		JDK::Temurin => download_temurin,
 		JDK::Liberica => download_liberica,
 	};
-	download_jdk(
+	download_jdk(DownloadJDKArgs {
 		arch,
-		java_version,
-		&features,
-		operating_system,
+		version: java_version,
+		features: &features,
+		os: operating_system,
 		java_home,
 		dry_run,
-		is_win,
-		is_mac,
-	)?;
+	})?;
 	println!();
 	// https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
 	let mut executable_suffixes: Vec<&str> = vec![""];
