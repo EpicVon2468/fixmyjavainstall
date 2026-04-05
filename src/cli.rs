@@ -25,7 +25,11 @@ pub enum Cmd {
 			short,
 			long,
 			value_name = "DIR",
-			default_value = if cfg!(windows) { "" } else { "/usr/bin" }
+			default_value = if cfg!(target_os = "macos") {
+				"/usr/local/bin"
+			} else {
+				"/usr/bin"
+			}
 		)]
 		link_dir: String,
 

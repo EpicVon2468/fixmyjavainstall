@@ -8,9 +8,8 @@ NOTICE: You must run with `sudo -E` to preserve environment variables, else some
 
 - Linux: `[WORKING]-[TESTED]`
   - All core functionality working, tested regularly.
-- macOS: `[BROKEN]-[TESTED]`
-  - All core functionality _should_ work, but doesn't.
-  - Symbolic link install phase is broken.  See TODO.
+- macOS: `[WORKING?]-[UNTESTED]`
+  - All core functionality _should_ work, untested.
 - Windows: `[BROKEN]-[TESTED]`
   - Symbolic links for `%JAVA_HOME%\bin\java.exe` & `%JAVA_HOME%\bin\javaw.exe` don't work and can't be fixed.
   - Another dependency is needed for `.zip` file extraction.
@@ -32,7 +31,7 @@ If you would like to be able to install a JVM not made for your system, add `--f
 - [X] Download JVM
 - [ ] Download Kotlin
 - [ ] Download Kotlin Native
-- [ ] Look into why macOS `/usr/bin/*` is stubborn
+- [X] Look into why macOS `/usr/bin/*` is stubborn – [oh dear...](https://apple.stackexchange.com/questions/193368/what-is-the-rootless-feature-in-el-capitan-really/)
 - [ ] Get UNIX-likes to a stable release
 - [ ] Fix Windows (soon™)
 - [ ] Fix `cargo`-based installs not working with `sudo`

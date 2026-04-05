@@ -55,6 +55,7 @@ pub fn install(op: Op) -> Result<()> {
 			.unwrap_or_else(|_| panic!("{}", io_expect(java_home, "create directory")));
 	};
 	let is_win: bool = operating_system == OS::Windows;
+	let is_mac: bool = operating_system == OS::OSX;
 	let download_jdk: DownloadJDKFn = match jdk {
 		JDK::Auto => todo!(),
 		JDK::JBR => download_jbr,
@@ -109,5 +110,13 @@ pub fn install(op: Op) -> Result<()> {
 		format!("{FUJI_DIR}{MAIN_SEPARATOR}jvm{MAIN_SEPARATOR}latest"),
 	)?;
 	// link all of $JAVA_HOME/bin
-	link_impl(java_home, "/usr/bin", false)
+	link_impl(
+		java_home,
+		if is_mac {
+			"/usr/local/bin"
+		} else {
+			"/usr/bin"
+		},
+		false,
+	)
 }
