@@ -33,20 +33,24 @@ impl Display for MajorVersion {
 pub struct MajorVersionParser;
 
 impl TypedValueParser for MajorVersionParser {
+
 	type Value = MajorVersion;
 
 	fn parse_ref(
 		&self,
-		_cmd: &Command,
+		cmd: &Command,
 		_arg: Option<&Arg>,
 		value: &std::ffi::OsStr,
 	) -> Result<Self::Value, Error> {
-		value.to_str().unwrap().to_lowercase().as_str().parse()
+		value.to_str().unwrap().to_lowercase().as_str().parse().map_err(|e: Error| {
+			e.with_cmd(cmd)
+		})
 	}
 }
 
 // https://stackoverflow.com/questions/73658377/how-to-have-number-or-string-as-a-cli-argument-in-clap
 impl FromStr for MajorVersion {
+
 	type Err = Error;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
