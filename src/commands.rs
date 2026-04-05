@@ -29,8 +29,6 @@ pub fn require_program(name: &str) -> Result<()> {
 	}
 }
 
-// https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
-// sudo tar --strip-components 1 -xvf 25.0.2.tar.gz -C 25.0.2
 /// Extracts `archive` into `dest`, stripping one component.
 ///
 /// Implementation notes:
@@ -40,12 +38,13 @@ pub fn require_program(name: &str) -> Result<()> {
 /// * If `is_zip` is true, no checks are performed to determine if `archive` ends with `.zip`, and vice versa.
 pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(archive: S, dest: P, _is_zip: bool, is_mac: bool) -> Result<()> {
 	let dest: PathBuf = dest.as_ref().canonicalize()?;
-	let input: File = File::open(archive.as_ref()).expect("foo");
+	let input: File = File::open(archive.as_ref()).expect("Couldn't open JDK archive!");
 	let mut reader: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
-	for file in reader.entries()? {
-		let mut file: Entry<GzDecoder<File>> = file?;
-		let cow: Cow<Path> = file.path()?;
-		let mut components: Components = cow.components();
+	for entry in reader.entries().expect("Couldn't iterate through JDK archive!") {
+		let mut entry: Entry<GzDecoder<File>> = entry.expect("Couldn't get entry in JDK archive!");
+		let path: Cow<Path> = entry.path().expect("Couldn't get path for entry in JDK archive!");
+		let mut components: Components = path.components();
+		// https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
 		// --strip-components 1
 		components.next();
 		// macOS .tar.gz is laid out differently.  it's a '.app'...
@@ -57,8 +56,9 @@ pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(archive: S, dest: P, _is_zip: b
 				continue;
 			};
 		};
-		let path: &Path = components.as_path();
-		file.unpack(dest.join(path))?;
+		entry
+			.unpack(dest.join(components.as_path()))
+			.expect("Couldn't unpack file from JDK archive!");
 	};
 	Ok(())
 }
