@@ -29,7 +29,9 @@ If you would like to be able to install a JVM not made for your system, add `--f
 
 ### TODO:
 
-- [x] Download JVM
+- [X] Download JVM
 - [ ] Download Kotlin
 - [ ] Download Kotlin Native
 - [ ] Look into why macOS `/usr/bin/*` is stubborn
+- [ ] Get UNIX-likes to a stable release
+- [ ] Fix Windows (soon™)
