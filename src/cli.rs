@@ -43,6 +43,9 @@ pub enum Cmd {
 		#[command(subcommand)]
 		preset: Preset,
 	},
+	#[cfg(feature = "dev")]
+	#[clap(hide = true)]
+	Manual,
 }
 
 #[derive(Subcommand)]

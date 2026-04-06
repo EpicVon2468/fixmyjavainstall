@@ -8,6 +8,8 @@ pub mod commands;
 pub mod jvm;
 pub mod kotlin;
 pub mod macros;
+#[cfg(feature = "dev")]
+pub mod man;
 pub mod os;
 #[cfg(windows)]
 pub mod win_link;
@@ -21,6 +23,8 @@ use crate::cli::{Arguments, Cmd};
 use crate::cmd_link::cmd_link;
 use crate::cmd_manage::cmd_manage;
 use crate::cmd_preset::cmd_preset;
+#[cfg(feature = "dev")]
+use crate::man::cmd_man;
 
 /// The installation directory for fuji-managed programs.
 ///
@@ -53,6 +57,8 @@ pub fn main() {
 			Cmd::Link { .. } => cmd_link(command).unwrap(),
 			Cmd::Manage { .. } => cmd_manage(command).unwrap(),
 			Cmd::Preset { .. } => cmd_preset(command).unwrap(),
+			#[cfg(feature = "dev")]
+			Cmd::Manual => cmd_man(command).unwrap(),
 		};
 	};
 }
