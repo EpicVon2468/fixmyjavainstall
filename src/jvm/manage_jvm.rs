@@ -12,9 +12,11 @@ use crate::os::OS;
 use crate::wrong_cmd;
 
 #[derive(Subcommand)]
+#[clap(author = "Mavity The Madity")]
 pub enum Op {
 	// TODO: L&F?
 	/// Installs a new JVM
+	#[clap(author = "Mavity The Madity")]
 	Install {
 		/// The JDK for the requested JVM
 		#[arg(short, long = "java-dev-kit", default_value = "jbr")]
@@ -55,6 +57,7 @@ pub enum Op {
 		version: MajorVersion,
 	},
 	/// Removes the currently installed JVM (only affects JVMs installed via fuji)
+	#[clap(author = "Mavity The Madity")]
 	Remove,
 }
 

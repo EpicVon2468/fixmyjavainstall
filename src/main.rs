@@ -8,7 +8,7 @@ pub mod commands;
 pub mod jvm;
 pub mod kotlin;
 pub mod macros;
-pub mod man;
+pub mod cmd_man;
 pub mod os;
 #[cfg(windows)]
 pub mod win_link;
@@ -22,7 +22,7 @@ use crate::cli::{Arguments, Cmd};
 use crate::cmd_link::cmd_link;
 use crate::cmd_manage::cmd_manage;
 use crate::cmd_preset::cmd_preset;
-use crate::man::cmd_man;
+use crate::cmd_man::cmd_man;
 
 /// The installation directory for fuji-managed programs.
 ///

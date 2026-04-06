@@ -6,7 +6,8 @@ use clap::{Parser, Subcommand};
 #[command(
 	version,
 	about,
-	long_about = "Fix Ur Java Install – A JVM & Kotlin management utility."
+	long_about = "Fix Ur Java Install – A JVM & Kotlin management utility",
+	author = "Mavity The Madity",
 )]
 pub struct Arguments {
 	#[command(subcommand)]
@@ -14,8 +15,10 @@ pub struct Arguments {
 }
 
 #[derive(Subcommand)]
+#[clap(author = "Mavity The Madity")]
 pub enum Cmd {
 	#[cfg(any(not(windows), feature = "multi_os"))]
+	#[clap(author = "Mavity The Madity")]
 	Link {
 		// #[arg(long, value_name = "PATHS", trailing_var_arg = true, num_args = 1..)]
 		// TODO: should this be `Vec<PathBuf>` ?
@@ -37,16 +40,18 @@ pub enum Cmd {
 		#[arg(short, long, default_value = "false")]
 		use_update_alternatives: bool,
 	},
+	#[clap(author = "Mavity The Madity")]
 	Manage {
 		#[command(subcommand)]
 		software: Option<Software>,
 	},
+	#[clap(author = "Mavity The Madity")]
 	Preset {
 		#[command(subcommand)]
 		preset: Preset,
 	},
 	/// UNIX `man` page generation
-	#[clap(hide = true)]
+	#[clap(author = "Mavity The Madity", hide = true)]
 	Manual {
 
 		#[clap(
@@ -79,18 +84,22 @@ pub enum Preset {
 }
 
 #[derive(Subcommand)]
+#[clap(author = "Mavity The Madity")]
 pub enum Software {
 	/// Manages the Java Virtual Machine – <https://www.java.com/>
 	#[clap(display_name = "fuji-jvm")]
+	#[clap(author = "Mavity The Madity")]
 	JVM {
 		#[command(subcommand)]
 		op: crate::jvm::manage_jvm::Op,
 	},
 	/// Manages the Kotlin Programming Language – <https://kotlinlang.org/>
 	#[clap(display_name = "fuji-kt")]
+	#[clap(author = "Mavity The Madity")]
 	Kotlin {
 	},
 	/// Manages the Kotlin/Native compiler – <https://kotlinlang.org/docs/native-overview.html>
+	#[clap(author = "Mavity The Madity")]
 	KotlinNative {
 	},
 }
