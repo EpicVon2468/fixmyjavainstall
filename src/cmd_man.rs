@@ -36,18 +36,18 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 
 		let man: Man = Man::new(parent.clone())
 			.section("8")
-			.date("2026-04-06");
+			.date("2026-04-07");
 
 		let mut output: GzEncoder<File> = GzEncoder::new(
 			File::create_new(out_dir.join(man.get_filename()).with_added_extension("gz")).expect("create man_file.gz"),
 			Compression::default(),
 		);
-		man.render_title(&mut output)?;
-		man.render_name_section(&mut output)?;
-		man.render_synopsis_section(&mut output)?;
-		man.render_description_section(&mut output)?;
+		man.render_title(&mut output).expect("title");
+		man.render_name_section(&mut output).expect("name");
+		man.render_synopsis_section(&mut output).expect("synopsis");
+		man.render_description_section(&mut output).expect("description");
 		if parent.get_arguments().any(|i: &Arg| !i.is_hide_set()) {
-			man.render_options_section(&mut output)?;
+			man.render_options_section(&mut output).expect("options");
 		};
 		if parent.get_subcommands().any(|i| !i.is_hide_set()) {
 			let mut roff = Roff::default();
@@ -59,14 +59,13 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 			sorted_subcommands.sort_by_key(|c| (c.get_display_order(), c.get_name()));
 			for sub in sorted_subcommands {
 				roff.control("TP", []);
-				let result: String = sub.get_display_name().map(str::to_string).unwrap_or_else(|| {
+				let name: String = sub.get_display_name().map(str::to_string).unwrap_or_else(|| {
 					format!(
 						"{}-{}",
-						parent.get_display_name().unwrap_or_else(|| parent.get_name()),
-						sub.get_name()
+						parent.get_display_name().unwrap_or(parent.get_name()),
+						sub.get_name(),
 					)
-				});
-				let name: String = format!("{result}(8)");
+				}) + "(8)";
 				roff.text([roman(name)]);
 				if let Some(about) = sub.get_about().or_else(|| sub.get_long_about()) {
 					for line in about.to_string().lines() {
@@ -74,16 +73,16 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 					};
 				};
 			};
-			roff.to_writer(&mut output)?;
+			roff.to_writer(&mut output).expect("subcommands");
 		};
 		if parent.get_after_long_help().is_some() || parent.get_after_help().is_some() {
-			man.render_extra_section(&mut output)?;
+			man.render_extra_section(&mut output).expect("extra");
 		};
 		if parent.get_version().or_else(|| parent.get_long_version()).is_some() {
-			man.render_version_section(&mut output)?;
+			man.render_version_section(&mut output).expect("version");
 		};
 		if parent.get_author().is_some() {
-			man.render_authors_section(&mut output)?;
+			man.render_authors_section(&mut output).expect("authors");
 		};
 		output.flush().expect("flush");
 

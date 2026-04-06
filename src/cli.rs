@@ -5,8 +5,11 @@ use clap::{Parser, Subcommand};
 #[derive(Parser)]
 #[command(
 	version,
-	about,
-	long_about = "Fix Ur Java Install – A JVM & Kotlin management utility",
+	about = "Fix Ur Java Install – A JVM & Kotlin management utility",
+	long_about = "\
+Fix Ur Java Install – A JVM & Kotlin management utility\n
+v0.1.2 – \"I hate macOS JVM .tar.gz files (and Windows (.zip) pt. 2)\"\
+	",
 	author = "Mavity The Madity",
 )]
 pub struct Arguments {
@@ -40,12 +43,14 @@ pub enum Cmd {
 		#[arg(short, long, default_value = "false")]
 		use_update_alternatives: bool,
 	},
+	/// Manages software
 	#[clap(author = "Mavity The Madity")]
 	Manage {
 		#[command(subcommand)]
 		software: Option<Software>,
 	},
-	#[clap(author = "Mavity The Madity")]
+	/// Management presets
+	#[clap(author = "Mavity The Madity", alias = "presets")]
 	Preset {
 		#[command(subcommand)]
 		preset: Preset,
@@ -98,6 +103,7 @@ pub enum Software {
 	#[clap(author = "Mavity The Madity")]
 	Kotlin {
 	},
+	// TODO: merge into kotlin?
 	/// Manages the Kotlin/Native compiler – <https://kotlinlang.org/docs/native-overview.html>
 	#[clap(author = "Mavity The Madity")]
 	KotlinNative {
