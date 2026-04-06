@@ -1,9 +1,17 @@
 use std::fmt::{Display, Formatter, Result};
 
 use clap::ValueEnum;
-use clap::builder::PossibleValue;
 
-#[derive(Clone, PartialEq)]
+macro_rules! clap_doc {
+	($name:ident) => {
+		clap_doc!($name, '\n')
+	};
+	($name:ident, $suffix:literal) => {
+		concat!(include_str!(concat!("../../doc/jdk/", stringify!($name), ".txt")), $suffix)
+	};
+}
+
+#[derive(ValueEnum, Clone, PartialEq)]
 pub enum JDK {
 	/// Automagically pick the best JDK based on the requested version and features
 	Auto,
@@ -30,6 +38,7 @@ pub enum JDK {
 	/// * `21`
 	/// * `17`
 	/// </details>
+	#[clap(help = clap_doc!(JBR), alias = "jetbrains-runtime")]
 	JBR,
 	/// Java Platform, Standard Edition by Oracle – <https://www.oracle.com/java/>
 	///
@@ -49,6 +58,7 @@ pub enum JDK {
 	/// * `25`
 	/// * `21`
 	/// </details>
+	#[clap(help = clap_doc!(JavaSE))]
 	JavaSE,
 	/// Temurin (previously AdoptOpenJDK) by Eclipse/Adoptium – <https://adoptium.net/>
 	///
@@ -79,6 +89,7 @@ pub enum JDK {
 	/// * `11`
 	/// * `8`
 	/// </details>
+	#[clap(help = clap_doc!(Temurin), alias = "adoptium")]
 	Temurin,
 	/// Liberica by BellSoft – <https://bell-sw.com/libericajdk/>
 	///
@@ -114,46 +125,12 @@ pub enum JDK {
 	/// * `10`
 	/// * `8`
 	/// </details>
+	#[clap(help = clap_doc!(Liberica, ""))]
 	Liberica,
 }
 
-impl ValueEnum for JDK {
-
-	fn value_variants<'a>() -> &'a [Self] {
-		&[
-			Self::Auto,
-			Self::JBR,
-			Self::JavaSE,
-			Self::Temurin,
-			Self::Liberica,
-		]
-	}
-
-	fn to_possible_value<'a>(&self) -> Option<PossibleValue> {
-		macro_rules! doc {
-			($name:ident) => {
-				doc!($name, '\n')
-			};
-			($name:ident, $suffix:literal) => {
-				PossibleValue::new(self.to_string()).help(concat!(
-					include_str!(concat!("../../doc/jdk/", stringify!($name), ".txt")),
-					$suffix
-				))
-			};
-		}
-		match self {
-			Self::Auto => PossibleValue::new("auto").help(
-				"Automagically pick the best JDK based on the requested version and features",
-			),
-			Self::JBR => doc!(JBR).alias("jetbrains-runtime"),
-			Self::JavaSE => doc!(JavaSE),
-			Self::Temurin => doc!(Temurin).alias("adoptium"),
-			Self::Liberica => doc!(Liberica, ""),
-		}.into()
-	}
-}
-
 impl Display for JDK {
+
 	fn fmt(&self, f: &mut Formatter<'_>) -> Result {
 		write!(
 			f,
