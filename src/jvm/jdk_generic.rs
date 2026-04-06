@@ -30,10 +30,7 @@ impl<'a> DownloadJDKArgs<'a> {
 	}
 }
 
-pub fn generic_download<S: AsRef<OsStr>>(
-	url: S,
-	args: DownloadJDKArgs
-) -> Result<()> {
+pub fn generic_download<S: AsRef<OsStr>>(url: S, args: DownloadJDKArgs) -> Result<()> {
 	let url: &OsStr = url.as_ref();
 	let java_home: &Path = args.java_home;
 	let is_win: bool = args.is_win();

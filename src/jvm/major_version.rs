@@ -6,6 +6,7 @@ use clap::builder::{PossibleValue, TypedValueParser};
 use clap::error::{ContextKind, ContextValue, ErrorKind};
 use clap::{Arg, Command, Error};
 
+/// The major version of a JVM
 #[derive(Clone, PartialEq)]
 pub enum MajorVersion {
 	/// Some arbitrary numeric version
@@ -82,7 +83,6 @@ impl TypedValueParser for MajorVersionParser {
 			.to_str()
 			.unwrap()
 			.to_lowercase()
-			.as_str()
 			.parse();
 		match result {
 			Ok(version) => Ok(version),
@@ -103,9 +103,6 @@ impl TypedValueParser for MajorVersionParser {
 					ContextValue::Strings(
 						Self::possible_values()
 							.map(|v: PossibleValue| v.get_name().to_owned())
-							.collect::<Vec<String>>()
-							.iter()
-							.map(|s: &String| (*s).clone())
 							.collect()
 					),
 				);
@@ -125,7 +122,7 @@ impl FromStr for MajorVersion {
 	type Err = String;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		match s.parse::<u32>() {
+		match s.parse() {
 			Ok(num) => Ok(MajorVersion::Number(num)),
 			Err(_) => match s {
 				"latest" => Ok(MajorVersion::Latest),

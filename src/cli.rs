@@ -16,6 +16,7 @@ pub enum Cmd {
 	#[cfg(any(not(windows), feature = "multi_os"))]
 	Link {
 		// #[arg(long, value_name = "PATHS", trailing_var_arg = true, num_args = 1..)]
+		// TODO: should this be `Vec<PathBuf>` ?
 		/// Input directories.  Note that on UNIX, the `/bin` suffix will be appended for each of these by the program
 		paths: Vec<String>,
 
@@ -63,15 +64,15 @@ pub enum Preset {
 
 #[derive(Subcommand)]
 pub enum Software {
-	/// Java Virtual Machine – <https://www.java.com/>
+	/// The Java Virtual Machine – <https://www.java.com/>
 	JVM {
 		#[command(subcommand)]
 		op: crate::jvm::manage_jvm::Op,
 	},
-	/// Kotlin – <https://kotlinlang.org/>
+	/// The Kotlin Programming Language – <https://kotlinlang.org/>
 	Kotlin {
 	},
-	/// Kotlin/Native – <https://kotlinlang.org/docs/native-overview.html>
+	/// The Kotlin/Native compiler – <https://kotlinlang.org/docs/native-overview.html>
 	KotlinNative {
 	},
 }
