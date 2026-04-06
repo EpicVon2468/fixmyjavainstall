@@ -23,13 +23,13 @@ pub fn cmd_link(command: Cmd) -> Result<()> {
 	let link_dir: &str = "";
 	#[cfg(all(not(target_os = "linux"), not(feature = "multi_os")))]
 	let use_update_alternatives: bool = false;
-	for path in &paths {
+	for path in paths {
 		#[allow(clippy::needless_borrows_for_generic_args)]
 		link_impl(
-			path,
+			&path,
 			&link_dir,
-			use_update_alternatives
-		).unwrap_or_else(|_| panic!("Failed to link '{path}'!"));
+			use_update_alternatives,
+		).unwrap_or_else(|_| panic!("Failed to link '{}'!", path.display()));
 	}
 	Ok(())
 }

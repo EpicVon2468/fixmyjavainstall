@@ -1,3 +1,5 @@
+use std::io::Result;
+
 use clap::{Subcommand, ValueEnum};
 
 use serde::{Deserialize as Deserialise, Serialize as Serialise};
@@ -61,7 +63,7 @@ pub enum Op {
 	Remove,
 }
 
-pub fn manage_jvm(software: Software) -> std::io::Result<()> {
+pub fn manage_jvm(software: Software) -> Result<()> {
 	let Software::JVM {
 		op,
 	} = software else {

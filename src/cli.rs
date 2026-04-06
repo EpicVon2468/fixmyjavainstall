@@ -5,11 +5,9 @@ use clap::{Parser, Subcommand};
 #[derive(Parser)]
 #[command(
 	version,
+	long_version = "0.1.2 – \"I hate macOS JVM .tar.gz files (and Windows (.zip) pt. 2)\"",
 	about = "Fix Ur Java Install – A JVM & Kotlin management utility",
-	long_about = "\
-Fix Ur Java Install – A JVM & Kotlin management utility\n
-v0.1.2 – \"I hate macOS JVM .tar.gz files (and Windows (.zip) pt. 2)\"\
-	",
+	long_about = "Fix Ur Java Install – A JVM & Kotlin management utility",
 	author = "Mavity The Madity",
 )]
 pub struct Arguments {
@@ -23,10 +21,8 @@ pub enum Cmd {
 	#[cfg(any(not(windows), feature = "multi_os"))]
 	#[clap(author = "Mavity The Madity")]
 	Link {
-		// #[arg(long, value_name = "PATHS", trailing_var_arg = true, num_args = 1..)]
-		// TODO: should this be `Vec<PathBuf>` ?
 		/// Input directories.  Note that on UNIX, the `/bin` suffix will be appended for each of these by the program
-		paths: Vec<String>,
+		paths: Vec<PathBuf>,
 
 		/// Directory to link files into.  Does nothing on Windows
 		#[cfg(any(not(windows), feature = "multi_os"))]
@@ -89,7 +85,7 @@ pub enum Preset {
 }
 
 #[derive(Subcommand)]
-#[clap(author = "Mavity The Madity")]
+#[clap(author = "Mavity The Madity", subcommand_value_name = "SOFTWARE")]
 pub enum Software {
 	/// Manages the Java Virtual Machine – <https://www.java.com/>
 	#[clap(display_name = "fuji-jvm")]
@@ -103,9 +99,9 @@ pub enum Software {
 	#[clap(author = "Mavity The Madity")]
 	Kotlin {
 	},
-	// TODO: merge into kotlin?
+	// TODO: merge into Kotlin
 	/// Manages the Kotlin/Native compiler – <https://kotlinlang.org/docs/native-overview.html>
-	#[clap(author = "Mavity The Madity")]
+	#[clap(author = "Mavity The Madity", hide = true)]
 	KotlinNative {
 	},
 }

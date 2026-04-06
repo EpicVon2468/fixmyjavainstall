@@ -39,7 +39,8 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 			.date("2026-04-07");
 
 		let mut output: GzEncoder<File> = GzEncoder::new(
-			File::create_new(out_dir.join(man.get_filename()).with_added_extension("gz")).expect("create man_file.gz"),
+			File::create_new(out_dir.join(man.get_filename()).with_added_extension("gz"))
+				.expect("create man_file.gz"),
 			Compression::default(),
 		);
 		man.render_title(&mut output).expect("title");
@@ -50,7 +51,7 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 			man.render_options_section(&mut output).expect("options");
 		};
 		if parent.get_subcommands().any(|i| !i.is_hide_set()) {
-			let mut roff = Roff::default();
+			let mut roff: Roff = Roff::default();
 			roff.control(
 				"SH",
 				[parent.get_subcommand_help_heading().unwrap_or("SUBCOMMANDS")],
@@ -59,6 +60,8 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 			sorted_subcommands.sort_by_key(|c| (c.get_display_order(), c.get_name()));
 			for sub in sorted_subcommands {
 				roff.control("TP", []);
+				// the built-in implementation of this part is broken
+				// fuji-manage will try to resolve fuji-jvm as though it were still called fuji-manage-jvm
 				let name: String = sub.get_display_name().map(str::to_string).unwrap_or_else(|| {
 					format!(
 						"{}-{}",
