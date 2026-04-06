@@ -35,6 +35,7 @@ pub const FUJI_DIR: &str = if cfg!(windows) {
 };
 
 // TODO: https://crates.io/crates/anyhow/
+// TODO: https://specifications.freedesktop.org/desktop-entry/latest/
 pub fn main() {
 	if cfg!(windows) {
 		// Ever heard of "Never judge a book by is cover" ?

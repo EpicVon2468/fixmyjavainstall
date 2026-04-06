@@ -76,6 +76,7 @@ pub enum JDK {
 	///
 	/// <details><summary>Supported versions:</summary>
 	///
+	/// * `26`
 	/// * `25`
 	/// * `24`
 	/// * `23`

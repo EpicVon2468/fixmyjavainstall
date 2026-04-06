@@ -8,6 +8,7 @@ Supported features:
  - Minimal
 
 Supported versions:
+ - 26
  - 25
  - 24
  - 23
