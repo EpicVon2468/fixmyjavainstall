@@ -14,7 +14,6 @@ NOTICE: You must run with `sudo -E` to preserve environment variables, else some
 - Windows: `[BROKEN]-[TESTED]`
   - Symbolic links for `%JAVA_HOME%\bin\java.exe` & `%JAVA_HOME%\bin\javaw.exe` don't work and can't be fixed.
   - Another dependency is needed for `.zip` file extraction.
-  - No checks are done to make sure that `%PATH%` doesn't contain multiple of the same fuji install.
   - Despite being quoted, `"\Program Files\fuji\jvm\25"` isn't treated as one path, as batch fails to handle the space in `Program Files`.
 
 ### Installation:
@@ -38,3 +37,4 @@ If you would like to be able to install a JVM not made for your system, add `--f
 - [ ] Get UNIX-likes to a stable release
 - [ ] Fix Windows (soon™)
 - [ ] Fix `cargo`-based installs not working with `sudo`
+- [ ] Set `$JAVA_HOME` & `$PATH`
