@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
@@ -28,7 +30,7 @@ pub enum Cmd {
 			value_name = "DIR",
 			default_value = "/usr/bin",
 		)]
-		link_dir: String,
+		link_dir: PathBuf,
 
 		/// Whether to use update-alternatives for install.
 		#[cfg(any(target_os = "linux", feature = "multi_os"))]
@@ -43,9 +45,20 @@ pub enum Cmd {
 		#[command(subcommand)]
 		preset: Preset,
 	},
-	#[cfg(feature = "dev")]
+	/// UNIX `man` page generation
 	#[clap(hide = true)]
-	Manual,
+	Manual {
+
+		#[clap(
+			value_name = "DIR",
+			default_value = if cfg!(feature = "dev") {
+				"./man"
+			} else {
+				"/usr/share/man"
+			},
+		)]
+		man_dir: PathBuf,
+	},
 }
 
 #[derive(Subcommand)]
@@ -67,15 +80,17 @@ pub enum Preset {
 
 #[derive(Subcommand)]
 pub enum Software {
-	/// The Java Virtual Machine – <https://www.java.com/>
+	/// Manages the Java Virtual Machine – <https://www.java.com/>
+	#[clap(display_name = "fuji-jvm")]
 	JVM {
 		#[command(subcommand)]
 		op: crate::jvm::manage_jvm::Op,
 	},
-	/// The Kotlin Programming Language – <https://kotlinlang.org/>
+	/// Manages the Kotlin Programming Language – <https://kotlinlang.org/>
+	#[clap(display_name = "fuji-kt")]
 	Kotlin {
 	},
-	/// The Kotlin/Native compiler – <https://kotlinlang.org/docs/native-overview.html>
+	/// Manages the Kotlin/Native compiler – <https://kotlinlang.org/docs/native-overview.html>
 	KotlinNative {
 	},
 }

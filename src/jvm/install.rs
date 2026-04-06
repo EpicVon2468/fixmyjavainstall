@@ -109,8 +109,11 @@ pub fn install(op: Op) -> Result<()> {
 	#[cfg(target_os = "linux")] {
 		use std::fs::File;
 		use std::io::Write;
-		#[allow(unused_variables)] // why is it too stupid to tell they're in use?
+
 		let base: &Path = Path::new("/usr/share/applications");
+		if !base.exists() {
+			return Ok(());
+		};
 		macro_rules! desktop_entry {
 			($output:literal, $ident:ident) => {
 				File::create(base.join($output))
