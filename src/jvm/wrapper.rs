@@ -72,6 +72,7 @@ fn generate_wrapper_unix(java_home: &Path, features: &[Feature], bin_suffix: &st
 	result.push_str(r#"exec "$JAVA_HOME/bin/java"#);
 	result.push_str(bin_suffix);
 	result.push_str(r#".bak" "$@""#);
+	result.push('\n');
 
 	result
 }
