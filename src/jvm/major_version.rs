@@ -1,4 +1,4 @@
-use std::ffi::{OsString, OsStr};
+use std::ffi::{OsStr, OsString};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
@@ -49,7 +49,18 @@ impl Display for MajorVersion {
 #[derive(Clone)]
 pub struct MajorVersionParser;
 
+impl Default for MajorVersionParser {
+
+	fn default() -> Self {
+		Self::new()
+	}
+}
+
 impl MajorVersionParser {
+
+	pub fn new() -> MajorVersionParser {
+		MajorVersionParser {}
+	}
 
 	fn possible_values() -> impl Iterator<Item = PossibleValue> {
 		[
@@ -79,11 +90,7 @@ impl TypedValueParser for MajorVersionParser {
 		arg: Option<&Arg>,
 		value: OsString,
 	) -> Result<Self::Value, Error> {
-		let result: Result<MajorVersion, String> = value
-			.to_str()
-			.unwrap()
-			.to_lowercase()
-			.parse();
+		let result: Result<MajorVersion, String> = value.to_str().unwrap().to_lowercase().parse();
 		match result {
 			Ok(version) => Ok(version),
 			Err(invalid_value) => {
@@ -103,7 +110,7 @@ impl TypedValueParser for MajorVersionParser {
 					ContextValue::Strings(
 						Self::possible_values()
 							.map(|v: PossibleValue| v.get_name().to_owned())
-							.collect()
+							.collect(),
 					),
 				);
 				Err(error)

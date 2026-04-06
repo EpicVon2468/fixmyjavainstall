@@ -51,7 +51,7 @@ pub enum Op {
 		dry_run: bool,
 
 		/// The version for the requested JVM
-		#[clap(value_parser = MajorVersionParser {})]
+		#[clap(value_parser = MajorVersionParser::new())]
 		version: MajorVersion,
 	},
 	/// Removes the currently installed JVM (only affects JVMs installed via fuji)
