@@ -4,6 +4,7 @@ use std::path::Path;
 
 use clap::{Arg, Command, CommandFactory};
 use clap_mangen::Man;
+use clap_mangen::roff::{roman, Roff};
 
 use flate2::read::GzEncoder;
 use flate2::Compression;
@@ -49,7 +50,31 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 			man.render_options_section(&mut output)?;
 		};
 		if parent.get_subcommands().any(|i| !i.is_hide_set()) {
-			man.render_subcommands_section(&mut output)?;
+			let mut roff = Roff::default();
+			roff.control(
+				"SH",
+				[parent.get_subcommand_help_heading().unwrap_or("SUBCOMMANDS")],
+			);
+			let mut sorted_subcommands: Vec<&Command> = parent.get_subcommands().filter(|s| !s.is_hide_set()).collect();
+			sorted_subcommands.sort_by_key(|c| (c.get_display_order(), c.get_name()));
+			for sub in sorted_subcommands {
+				roff.control("TP", []);
+				let result: String = sub.get_display_name().map(str::to_string).unwrap_or_else(|| {
+					format!(
+						"{}-{}",
+						parent.get_display_name().unwrap_or_else(|| parent.get_name()),
+						sub.get_name()
+					)
+				});
+				let name: String = format!("{result}(8)");
+				roff.text([roman(name)]);
+				if let Some(about) = sub.get_about().or_else(|| sub.get_long_about()) {
+					for line in about.to_string().lines() {
+						roff.text([roman(line)]);
+					};
+				};
+			};
+			roff.to_writer(&mut output)?;
 		};
 		if parent.get_after_long_help().is_some() || parent.get_after_help().is_some() {
 			man.render_extra_section(&mut output)?;
