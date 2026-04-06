@@ -3,8 +3,8 @@ name = "fixmyjavainstall"
 authors = ["Mavity The Madity"]
 version = "0.1.2"
 edition = "2024"
-repository = "https://github.com/EpicVon2468/fixmyjavainstall"
-homepage = "https://github.com/EpicVon2468/fixmyjavainstall"
+repository = "https://github.com/EpicVon2468/fixmyjavainstall/"
+homepage = "https://github.com/EpicVon2468/fixmyjavainstall/"
 
 [features]
 multi_os = []

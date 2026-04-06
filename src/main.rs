@@ -34,6 +34,7 @@ pub const FUJI_DIR: &str = if cfg!(windows) {
 	"/opt/fuji"
 };
 
+// TODO: https://crates.io/crates/anyhow/
 pub fn main() {
 	if cfg!(windows) {
 		// Ever heard of "Never judge a book by is cover" ?
