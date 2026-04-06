@@ -6,10 +6,10 @@ NOTICE: You must run with `sudo -E` to preserve environment variables, else some
 
 ### Status:
 
-- Linux: `[WORKING]-[TESTED]`
-  - All core functionality working, tested regularly.
+- Linux: `[WORKING?]-[UNTESTED]`
+  - All core functionality _should_ be working.
 - macOS: `[BROKEN*]-[TESTED]`
-  - All core functionality _should_ work, but doesn't.
+  - All core functionality _should_ be working, but isn't.
   - `/usr/local/bin` is not on default path.
 - Windows: `[BROKEN]-[TESTED]`
   - Symbolic links for `%JAVA_HOME%\bin\java.exe` & `%JAVA_HOME%\bin\javaw.exe` don't work and can't be fixed.

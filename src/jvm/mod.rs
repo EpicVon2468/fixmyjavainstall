@@ -1,3 +1,5 @@
+#[cfg(target_os = "linux")]
+pub mod desktop;
 pub mod install;
 pub mod jdk;
 pub mod jdk_generic;

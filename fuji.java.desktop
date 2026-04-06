@@ -1,0 +1,16 @@
+[Desktop Entry]
+Name=Java (fuji)
+GenericName=The Java Virtual Machine
+Comment=Java managed by fuji
+Icon=application-x-java
+Type=Application
+TryExec=/opt/fuji/jvm/latest/bin/java
+Exec=/opt/fuji/jvm/latest/bin/java -jar %F
+NoDisplay=false
+StartupNotify=true
+Terminal=false
+MimeType=application/java-archive
+X-KDE-SubstituteUID=false
+X-KDE-Username=
+Categories=Utility;Development;Java;
+Keywords=Java;JVM;JDK;JRE;AWT;Swing;JavaFX;Applet;.class;.java;fixmyjavainstall;

@@ -106,5 +106,21 @@ pub fn install(op: Op) -> Result<()> {
 	// link all of JAVA_HOME/bin
 	link_impl(java_home, "/usr/bin", false)
 		.expect("Couldn't install JAVA_HOME!");
+	#[cfg(target_os = "linux")] {
+		use std::fs::File;
+		use std::io::Write;
+		#[allow(unused_variables)] // why is it too stupid to tell they're in use?
+		let base: &Path = Path::new("/usr/share/applications");
+		macro_rules! desktop_entry {
+			($output:literal, $ident:ident) => {
+				File::create(base.join($output))
+					.expect(concat!("Couldn't create/write /usr/share/applications/", $output))
+					.write_all(crate::jvm::desktop::$ident.as_bytes())
+					.expect(concat!("Couldn't write to /usr/share/applications/", $output))
+			};
+		}
+		desktop_entry!("fuji.java.desktop", FREEDESKTOP_ENTRY);
+		desktop_entry!("fuji.java.terminal.desktop", FREEDESKTOP_ENTRY_TERMINAL)
+	};
 	Ok(())
 }
