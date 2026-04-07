@@ -54,6 +54,7 @@ pub fn generic_download<S: AsRef<str>>(url: S, args: DownloadJDKArgs) -> Result<
 
 	println!("Removing JDK archive...");
 	remove_file(archive).expect("Couldn't delete JDK archive!");
+	println!("Done.\n");
 
 	Ok(())
 }

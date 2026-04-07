@@ -72,7 +72,6 @@ pub fn install(op: Op) -> Result<()> {
 		java_home,
 		dry_run,
 	}).expect("Couldn't download JDK!");
-	println!();
 	// https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
 	let is_win: bool = operating_system == OS::Windows;
 	let mut executable_suffixes: Vec<&str> = vec![""];
@@ -89,17 +88,19 @@ pub fn install(op: Op) -> Result<()> {
 		};
 		// $JAVA_HOME/bin/java(w)(.exe)
 		let java_executable: PathBuf = java_home.join("bin").join(format!("java{suffix}"));
-		let script: String = generate_wrapper(java_home, &features, is_win, suffix);
 		println!("Writing script to {}...", java_executable.display());
-		println!("'''\n{script}\n'''");
-		println!();
 		if dry_run {
 			continue;
 		};
 		// move JAVA_HOME/bin/java(w)(.exe) to a 'backup' file so that programs which try to run JAVA_HOME/bin/java(w)(.exe) literally can't skip the run script
 		rename(&java_executable, java_executable.with_added_extension("bak"))
 			.expect("Couldn't backup java executable!");
-		let script_file: PathBuf = install_wrapper(script, java_home, suffix, is_win);
+		let script_file: PathBuf = install_wrapper(
+			generate_wrapper(java_home, &features, is_win, suffix),
+			java_home,
+			suffix,
+			is_win,
+		);
 		// link JAVA_HOME/bin/java(w)(.exe) to JAVA_HOME/bin/fuji_jvm_wrapper
 		symlink_link(script_file, java_executable)
 			.expect("Couldn't symbolically link JAVA_HOME/bin/java to point to JAVA_HOME/bin/fuji_jvm_wrapper!");

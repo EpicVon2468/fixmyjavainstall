@@ -1,4 +1,5 @@
 use std::borrow::Cow;
+use std::cmp::min;
 use std::fmt::Write;
 use std::fs::File;
 use std::io::{copy, Result};
@@ -36,9 +37,11 @@ pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 	if is_zip {
 		panic!("no.");
 	};
-	// TODO: progress bar
 	let dest: PathBuf = dest.as_ref().canonicalize().expect("Couldn't canonicalise destination path!");
 	let input: File = File::open(archive.as_ref()).expect("Couldn't open JDK archive!");
+	let max_len: u64 = input.metadata()?.len();
+	let pb: ProgressBar = progress_bar(max_len);
+	let mut progress: u64 = 0;
 	let mut reader: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
 	for entry in reader.entries().expect("Couldn't iterate through JDK archive!") {
 		let mut entry: Entry<GzDecoder<File>> = entry.expect("Couldn't get entry in JDK archive!");
@@ -59,7 +62,11 @@ pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 		entry
 			.unpack(dest.join(components.as_path()))
 			.expect("Couldn't unpack file from JDK archive!");
+		progress = min(progress + entry.size(), max_len);
+		pb.set_position(progress);
 	};
+	pb.finish();
+	println!("Done.\n");
 	Ok(())
 }
 
@@ -80,22 +87,28 @@ pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 		.parse()
 		.expect("Couldn't parse integer from Content-Length header!");
 
-	// https://github.com/console-rs/indicatif/blob/main/examples/download.rs
-	let pb: ProgressBar = ProgressBar::new(len);
-	pb.set_style(ProgressStyle::with_template("[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})")
-		.unwrap()
-		.with_key("eta", |state: &ProgressState, w: &mut dyn Write| write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap())
-		.progress_chars("=>-"));
-
+	let pb: ProgressBar = progress_bar(len);
 	let mut dest: File = File::create(dest).expect("Couldn't open destination file for download!");
 	copy(
 		&mut pb.wrap_read(&mut response.into_body().into_reader()),
 		&mut dest,
 	).expect("Couldn't download resource from URL!");
-
-	pb.finish_with_message("downloaded");
+	pb.finish();
+	println!("Done.\n");
 
 	Ok(())
+}
+
+const TEMPLATE: &str = "[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})";
+
+// https://github.com/console-rs/indicatif/blob/main/examples/download.rs
+pub fn progress_bar(len: u64) -> ProgressBar {
+	let pb: ProgressBar = ProgressBar::new(len);
+	pb.set_style(ProgressStyle::with_template(TEMPLATE)
+		.unwrap()
+		.with_key("eta", |state: &ProgressState, w: &mut dyn Write| write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap())
+		.progress_chars("=>-"));
+	pb
 }
 
 pub fn io_expect<P: AsRef<Path>, S: AsRef<str>>(dest: P, msg: S) -> String {
