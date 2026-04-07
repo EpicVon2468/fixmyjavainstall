@@ -1,6 +1,8 @@
 use std::fs::{create_dir_all, remove_dir_all, File};
-use std::io::{Result, Write};
+use std::io::Write;
 use std::path::Path;
+
+use anyhow::{Context, Result};
 
 use clap::{Arg, Command, CommandFactory};
 use clap_mangen::roff::{roman, Roff};
@@ -20,10 +22,10 @@ pub fn cmd_man(cmd: Cmd) -> Result<()> {
 	};
 	let dir: &Path = &man_dir.join("man8");
 	if dir.exists() {
-		remove_dir_all(dir).expect("remove_dir_all");
+		remove_dir_all(dir).context("remove_dir_all")?;
 	};
 	if !dir.exists() {
-		create_dir_all(dir).expect("create_dir_all");
+		create_dir_all(dir).context("create_dir_all")?;
 	};
 	dump_manual(Arguments::command(), dir)
 }

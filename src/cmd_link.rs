@@ -45,8 +45,10 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	println!("Linking path: {}", path.display());
 	let bin: PathBuf = path.join("bin");
 
-	#[cfg(windows)]
-	return crate::win_link::win_link(bin);
+	#[cfg(windows)] {
+		crate::win_link::win_link(bin)?;
+		return Ok(());
+	};
 
 	#[allow(unreachable_code)]
 	let can_use_update_alternatives: bool = cfg!(target_os = "linux") && use_update_alternatives && has_program("update-alternatives");

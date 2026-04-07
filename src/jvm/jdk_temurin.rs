@@ -1,5 +1,5 @@
 #![doc = "Temurin (previously AdoptOpenJDK) by Eclipse/Adoptium – <https://adoptium.net/>"]
-use std::io::Result;
+use anyhow::Result;
 
 use crate::jvm::jdk_generic::{generic_download, DownloadJDKArgs};
 use crate::jvm::manage_jvm::Feature;

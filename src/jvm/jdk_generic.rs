@@ -1,6 +1,7 @@
 use std::fs::{remove_dir_all, remove_file};
-use std::io::Result;
 use std::path::Path;
+
+use anyhow::{Context, Result};
 
 use crate::arch::Arch;
 use crate::commands::{download, extract_jdk};
@@ -45,15 +46,15 @@ pub fn generic_download<S: AsRef<str>>(url: S, args: DownloadJDKArgs) -> Result<
 			remove_dir_all(archive)
 		} else {
 			remove_file(archive)
-		}.expect("Couldn't remove unexpected pre-existing JDK archive!")
+		}.context("Couldn't remove unexpected pre-existing JDK archive!")?;
 	};
-	download(url, archive).expect("Couldn't download JDK!");
+	download(url, archive).context("Couldn't download JDK archive!")?;
 
 	println!("Extracting JDK...");
-	extract_jdk(archive, java_home, is_win, args.is_mac()).expect("Couldn't extract JDK!");
+	extract_jdk(archive, java_home, is_win, args.is_mac()).context("Couldn't extract JDK!")?;
 
 	println!("Removing JDK archive...");
-	remove_file(archive).expect("Couldn't delete JDK archive!");
+	remove_file(archive).context("Couldn't delete JDK archive!")?;
 	println!("Done.\n");
 
 	Ok(())

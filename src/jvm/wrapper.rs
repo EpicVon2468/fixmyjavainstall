@@ -2,6 +2,8 @@ use std::fs::{File, OpenOptions, Permissions};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
+use anyhow::{Context, Result};
+
 use crate::commands::io_expect;
 use crate::jvm::manage_jvm::Feature;
 
@@ -158,7 +160,7 @@ fn gen_features(
 	};
 }
 
-pub fn install_wrapper(script: String, java_home: &Path, bin_suffix: &str, is_win: bool) -> PathBuf {
+pub fn install_wrapper(script: String, java_home: &Path, bin_suffix: &str, is_win: bool) -> Result<PathBuf> {
 	let script_file: PathBuf = java_home.join("bin").join(
 		format!("fuji_jvm_wrapper{bin_suffix}{}", if is_win { ".bat" } else { "" })
 	);
@@ -166,16 +168,16 @@ pub fn install_wrapper(script: String, java_home: &Path, bin_suffix: &str, is_wi
 		.write(true)
 		.create_new(true)
 		.open(&script_file)
-		.unwrap_or_else(|_| panic!("{}", io_expect(&script_file, "create")));
+		.with_context(|| io_expect(&script_file, "create"))?;
 	result
 		.write_all(script.as_bytes())
-		.unwrap_or_else(|_| panic!("{}", io_expect(&script_file, "write")));
+		.with_context(|| io_expect(&script_file, "write"))?;
 	// rwxr-xr-x
 	#[cfg(unix)] {
 		use std::os::unix::fs::PermissionsExt;
 		result
 			.set_permissions(Permissions::from_mode(0o755))
-			.unwrap_or_else(|_| panic!("{}", io_expect(&script_file, "set permissions for")));
+			.with_context(|| io_expect(&script_file, "set permissions for"))?;
 	};
-	script_file
+	Ok(script_file)
 }

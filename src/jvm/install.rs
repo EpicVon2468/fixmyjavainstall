@@ -1,6 +1,7 @@
 use std::fs::{create_dir_all, exists, remove_dir_all, rename};
-use std::io::Result;
 use std::path::{Path, PathBuf};
+
+use anyhow::{Context, Result};
 
 use crate::cmd_link::{link_impl, symlink_link};
 use crate::commands::io_expect;
@@ -44,20 +45,20 @@ pub fn install(op: Op) -> Result<()> {
 		);
 		ureq::get(uri)
 			.call()
-			.expect("Couldn't connect to URL!")
+			.context("Couldn't connect to URL!")?
 			.body_mut()
 			.read_json()
-			.expect("Couldn't parse JSON from response!")
+			.context("Couldn't parse JSON from response!")?
 	};
 	// FUJI_DIR/jvm/{version}
 	let java_home: &Path = &Path::new(FUJI_DIR).join("jvm").join(&java_version.major);
 	if !dry_run {
 		if exists(java_home)? {
 			remove_dir_all(java_home)
-				.unwrap_or_else(|_| panic!("{}", io_expect(java_home, "remove directory")));
+				.with_context(|| io_expect(java_home, "remove directory"))?;
 		};
 		create_dir_all(java_home)
-			.unwrap_or_else(|_| panic!("{}", io_expect(java_home, "create directory")));
+			.with_context(|| io_expect(java_home, "create directory"))?;
 	};
 	let download_jdk: DownloadJDKFn = match jdk {
 		JDK::Auto => todo!(),
@@ -73,7 +74,7 @@ pub fn install(op: Op) -> Result<()> {
 		os: operating_system.clone(),
 		java_home,
 		dry_run,
-	}).expect("Couldn't download JDK!");
+	}).context("Couldn't download JDK!")?;
 	// https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
 	let is_win: bool = operating_system == OS::Windows;
 	let mut executable_suffixes: Vec<&str> = vec![""];
@@ -104,7 +105,7 @@ pub fn install(op: Op) -> Result<()> {
 			java_home,
 			suffix,
 			is_win,
-		);
+		).context("Couldn't install JVM wrapper script!")?;
 		// link JAVA_HOME/bin/java(w)(.exe) to JAVA_HOME/bin/fuji_jvm_wrapper
 		symlink_link(script_file, java_executable).expect(
 			"Couldn't symbolically link JAVA_HOME/bin/java to point to JAVA_HOME/bin/fuji_jvm_wrapper!",
@@ -115,9 +116,10 @@ pub fn install(op: Op) -> Result<()> {
 	};
 	// make FUJI_DIR/jvm/latest point to FUJI_DIR/jvm/{version}
 	symlink_link(java_home, Path::new(FUJI_DIR).join("jvm").join("latest"))
-		.expect("Couldn't symbolically link FUJI_DIR/jvm/latest to current install directory!");
+		.context("Couldn't symbolically link FUJI_DIR/jvm/latest to current install directory!")?;
 	// link all of JAVA_HOME/bin
-	link_impl(java_home, "/usr/bin", false).expect("Couldn't install JAVA_HOME!");
+	link_impl(java_home, "/usr/bin", false)
+		.context("Couldn't install JAVA_HOME!")?;
 	#[cfg(target_os = "linux")] {
 		use std::fs::File;
 		use std::io::Write;
@@ -129,15 +131,15 @@ pub fn install(op: Op) -> Result<()> {
 		macro_rules! desktop_entry {
 			($output:literal, $ident:ident) => {
 				File::create(base.join($output))
-					.expect(concat!(
+					.context(concat!(
 						"Couldn't create/write /usr/share/applications/",
 						$output
-					))
+					))?
 					.write_all($crate::jvm::desktop::$ident.as_bytes())
-					.expect(concat!(
+					.context(concat!(
 						"Couldn't write to /usr/share/applications/",
 						$output
-					))
+					))?
 			};
 		}
 		desktop_entry!("fuji.java.desktop", FREEDESKTOP_ENTRY);
