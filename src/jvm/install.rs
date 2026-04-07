@@ -3,7 +3,7 @@ use std::io::Result;
 use std::path::{Path, PathBuf};
 
 use crate::cmd_link::{link_impl, symlink_link};
-use crate::commands::{connect, io_expect};
+use crate::commands::io_expect;
 use crate::jvm::jdk::JDK;
 use crate::jvm::jdk_generic::{DownloadJDKArgs, DownloadJDKFn};
 use crate::jvm::jdk_java_se::download_java_se;
@@ -32,16 +32,23 @@ pub fn install(op: Op) -> Result<()> {
 	#[cfg(not(feature = "multi_os"))]
 	let operating_system: OS = crate::os::SYSTEM;
 	// Temurin & Java SE both only need major version, except for LTS/Latest where we return the major version from our endpoint
-	let json: &str = &if (jdk == JDK::Temurin || jdk == JDK::JavaSE) && let MajorVersion::Number(version) = version {
-		format!(r#"{{"major": "{version}", "specific":"", "revision": ""}}"#)
+	let java_version: JavaVersion = if (jdk == JDK::Temurin || jdk == JDK::JavaSE) && let MajorVersion::Number(version) = version {
+		JavaVersion {
+			major: version.to_string(),
+			specific: "".into(),
+			revision: "".into(),
+		}
 	} else {
-		connect(format!(
-			"https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{jdk}/{version}.json",
-		))?
+		let uri: String = format!("https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{jdk}/{version}.json");
+		ureq::get(uri)
+			.call()
+			.expect("Couldn't connect to URL!")
+			.body_mut()
+			.read_json()
+			.expect("Couldn't parse JSON from response!")
 	};
-	let java_version: JavaVersion = serde_json::from_str(json).expect("JSON failed to parse!");
 	// FUJI_DIR/jvm/{version}
-	let java_home: &Path = &Path::new(FUJI_DIR).join("jvm").join(java_version.major);
+	let java_home: &Path = &Path::new(FUJI_DIR).join("jvm").join(&java_version.major);
 	if !dry_run {
 		if exists(java_home)? {
 			remove_dir_all(java_home)

@@ -26,11 +26,11 @@ path = "src/bin/kt.rs"
 clap = { version = "4.6.0", features = ["derive", "string"] }
 clap_mangen = "0.3.0"
 serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0.149"
 which = "8.0.2"
 windows-registry = "0.6.1"
 tar = "0.4.45"
 flate2 = "1.1.9"
+ureq = { version = "3.3.0", features = ["json"] }
 
 # The profile that 'dist' will build with
 [profile.dist]

@@ -135,8 +135,8 @@ pub enum Feature {
 }
 
 #[derive(Serialise, Deserialise)]
-pub struct JavaVersion<'a> {
-	pub major: &'a str,
-	pub specific: &'a str,
-	pub revision: &'a str,
+pub struct JavaVersion {
+	pub major: String,
+	pub specific: String,
+	pub revision: String,
 }

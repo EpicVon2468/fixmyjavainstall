@@ -7,7 +7,7 @@ use crate::jvm::manage_jvm::Feature;
 pub fn download_temurin(args: DownloadJDKArgs) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://api.adoptium.net/v3/binary/latest/");
-	url.push_str(args.version.major);
+	url.push_str(&args.version.major);
 	url.push_str("/ga/");
 	let os_name: &str = &args.os.to_string();
 	url.push_str(match os_name {

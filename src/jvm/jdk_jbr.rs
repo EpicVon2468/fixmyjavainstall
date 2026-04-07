@@ -15,7 +15,7 @@ pub fn download_jbr(args: DownloadJDKArgs) -> Result<()> {
 		url.push_str("_jcef");
 	};
 	url.push('-');
-	url.push_str(version.specific);
+	url.push_str(&version.specific);
 	url.push('-');
 	url.push_str(&args.os.to_string());
 	url.push('-');
@@ -25,7 +25,7 @@ pub fn download_jbr(args: DownloadJDKArgs) -> Result<()> {
 	};
 	url.push_str(&args.arch.to_string());
 	url.push('-');
-	url.push_str(version.revision);
+	url.push_str(&version.revision);
 	url.push_str(if args.is_win() { ".zip" } else { ".tar.gz" });
 	generic_download(url, args)
 }

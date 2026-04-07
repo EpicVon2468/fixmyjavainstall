@@ -12,7 +12,7 @@ pub type DownloadJDKFn = fn(arg: DownloadJDKArgs) -> Result<()>;
 
 pub struct DownloadJDKArgs<'a> {
 	pub arch: Arch,
-	pub version: JavaVersion<'a>,
+	pub version: JavaVersion,
 	pub features: &'a [Feature],
 	pub os: OS,
 	pub java_home: &'a Path,
