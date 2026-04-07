@@ -19,7 +19,7 @@ NOTICE: You must run with `sudo -E` to preserve environment variables, else some
 
 ## Installation:
 
-Latest version: `v0.1.4: "Editing win_link is inordinate effort (I hate Windows pt. 3)"`
+Latest version: `v0.1.5: "Windows, I think we should start seeing other people (I hate Windows pt. 4)"`
 
 You can [download the latest release](https://github.com/EpicVon2468/fixmyjavainstall/releases/latest/) if there is one for your system and architecture.
 
