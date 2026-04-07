@@ -117,9 +117,10 @@ pub fn install(op: Op) -> Result<()> {
 	// make FUJI_DIR/jvm/latest point to FUJI_DIR/jvm/{version}
 	symlink_link(java_home, Path::new(FUJI_DIR).join("jvm").join("latest"))
 		.context("Couldn't symbolically link FUJI_DIR/jvm/latest to current install directory!")?;
-	// link all of JAVA_HOME/bin
+	println!("Installing {}/bin...", java_home.display());
 	link_impl(java_home, "/usr/bin", false)
 		.context("Couldn't install JAVA_HOME!")?;
+	println!("Done.\n");
 	#[cfg(target_os = "linux")] {
 		use std::fs::File;
 		use std::io::Write;
@@ -132,13 +133,15 @@ pub fn install(op: Op) -> Result<()> {
 			($output:literal, $ident:ident) => {
 				File::create(base.join($output))
 					.context(concat!(
-						"Couldn't create/write /usr/share/applications/",
-						$output
+						"Couldn't create/write '/usr/share/applications/",
+						$output,
+						"'!"
 					))?
 					.write_all($crate::jvm::desktop::$ident.as_bytes())
 					.context(concat!(
-						"Couldn't write to /usr/share/applications/",
-						$output
+						"Couldn't write to '/usr/share/applications/",
+						$output,
+						"'!"
 					))?
 			};
 		}

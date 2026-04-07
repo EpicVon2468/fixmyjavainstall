@@ -5,8 +5,10 @@ use std::process::{Child, Command};
 
 use anyhow::{anyhow, Context, Result};
 
+use indicatif::ProgressBar;
+
 use crate::cli::Cmd;
-use crate::commands::{has_program, io_failure};
+use crate::commands::{has_program, io_failure, progress_bar};
 use crate::wait_and_check_status;
 
 #[cfg(any(not(windows), feature = "multi_os"))]
@@ -25,12 +27,14 @@ pub fn cmd_link(command: Cmd) -> Result<()> {
 	#[cfg(all(not(target_os = "linux"), not(feature = "multi_os")))]
 	let use_update_alternatives: bool = false;
 	for path in paths {
+		println!("Linking {}...", path.display());
 		#[allow(clippy::needless_borrows_for_generic_args)]
 		link_impl(
 			&path,
 			&link_dir,
 			use_update_alternatives,
 		).with_context(|| format!("Failed to link '{}'!", path.display()))?;
+		println!("Done.\n");
 	}
 	Ok(())
 }
@@ -58,7 +62,8 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 			"Couldn't find update-alternatives on system when explicitly requested!",
 		).into());
 	};
-	for entry in bin.read_dir().with_context(|| io_failure(bin, "list directory"))? {
+	let pb: ProgressBar = progress_bar(bin.metadata()?.len());
+	for entry in pb.wrap_iter(bin.read_dir().with_context(|| io_failure(bin, "list directory"))?) {
 		let file: &Path = &entry?.path();
 		if file.is_dir() {
 			continue;
@@ -71,6 +76,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 			symlink_link(file, dest).context("Couldn't link with symlink!")?;
 		};
 	};
+	pb.finish();
 	Ok(())
 }
 
