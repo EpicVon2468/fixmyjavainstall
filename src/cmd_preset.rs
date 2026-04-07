@@ -81,12 +81,12 @@ fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 		use std::env::var;
 		use std::fs::{DirEntry, ReadDir};
 		use std::path::Path;
-		use crate::commands::io_expect;
+		use crate::commands::io_failure;
 
 		let path: &str = "/proc/driver";
 		let mut dir: ReadDir = Path::new(path)
 			.read_dir()
-			.with_context(|| io_expect(path, "list directory"))?;
+			.with_context(|| io_failure(path, "list directory"))?;
 		if dir.any(|entry: std::io::Result<DirEntry>| {
 			entry
 				.expect("Couldn't check for NVIDIA drivers!")

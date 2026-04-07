@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use anyhow::{Context, Result};
 
 use crate::cmd_link::{link_impl, symlink_link};
-use crate::commands::io_expect;
+use crate::commands::io_failure;
 use crate::jvm::jdk::JDK;
 use crate::jvm::jdk_generic::{DownloadJDKArgs, DownloadJDKFn};
 use crate::jvm::jdk_java_se::download_java_se;
@@ -55,10 +55,10 @@ pub fn install(op: Op) -> Result<()> {
 	if !dry_run {
 		if exists(java_home)? {
 			remove_dir_all(java_home)
-				.with_context(|| io_expect(java_home, "remove directory"))?;
+				.with_context(|| io_failure(java_home, "remove directory"))?;
 		};
 		create_dir_all(java_home)
-			.with_context(|| io_expect(java_home, "create directory"))?;
+			.with_context(|| io_failure(java_home, "create directory"))?;
 	};
 	let download_jdk: DownloadJDKFn = match jdk {
 		JDK::Auto => todo!(),
@@ -99,7 +99,7 @@ pub fn install(op: Op) -> Result<()> {
 		rename(
 			&java_executable,
 			java_executable.with_added_extension("bak"),
-		).expect("Couldn't backup java executable!");
+		).context("Couldn't backup java executable!")?;
 		let script_file: PathBuf = install_wrapper(
 			generate_wrapper(java_home, &features, is_win, suffix),
 			java_home,
@@ -107,9 +107,9 @@ pub fn install(op: Op) -> Result<()> {
 			is_win,
 		).context("Couldn't install JVM wrapper script!")?;
 		// link JAVA_HOME/bin/java(w)(.exe) to JAVA_HOME/bin/fuji_jvm_wrapper
-		symlink_link(script_file, java_executable).expect(
+		symlink_link(script_file, java_executable).context(
 			"Couldn't symbolically link JAVA_HOME/bin/java to point to JAVA_HOME/bin/fuji_jvm_wrapper!",
-		);
+		)?;
 	}
 	if dry_run {
 		return Ok(());

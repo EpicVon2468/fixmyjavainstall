@@ -1,4 +1,5 @@
 #![cfg(windows)]
+#![doc = "DO NOT TOUCH THIS FILE!  SERIOUSLY!  EVEN IF YOU HAVE VALID IMPROVEMENTS!  IT'S NOT WORTH IT!!!"]
 use std::path::Path;
 
 macro_rules! open_env {

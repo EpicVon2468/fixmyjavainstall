@@ -6,7 +6,7 @@ use std::process::{Child, Command};
 use anyhow::{anyhow, Context, Result};
 
 use crate::cli::Cmd;
-use crate::commands::{has_program, io_expect};
+use crate::commands::{has_program, io_failure};
 use crate::wait_and_check_status;
 
 #[cfg(any(not(windows), feature = "multi_os"))]
@@ -58,7 +58,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 			"Couldn't find update-alternatives on system when explicitly requested!",
 		).into());
 	};
-	for entry in bin.read_dir().with_context(|| io_expect(bin, "list directory"))? {
+	for entry in bin.read_dir().with_context(|| io_failure(bin, "list directory"))? {
 		let file: &Path = &entry?.path();
 		if file.is_dir() {
 			continue;

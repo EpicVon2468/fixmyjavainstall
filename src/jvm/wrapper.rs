@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
 
-use crate::commands::io_expect;
+use crate::commands::io_failure;
 use crate::jvm::manage_jvm::Feature;
 
 pub fn generate_wrapper(
@@ -168,16 +168,16 @@ pub fn install_wrapper(script: String, java_home: &Path, bin_suffix: &str, is_wi
 		.write(true)
 		.create_new(true)
 		.open(&script_file)
-		.with_context(|| io_expect(&script_file, "create"))?;
+		.with_context(|| io_failure(&script_file, "create"))?;
 	result
 		.write_all(script.as_bytes())
-		.with_context(|| io_expect(&script_file, "write"))?;
+		.with_context(|| io_failure(&script_file, "write"))?;
 	// rwxr-xr-x
 	#[cfg(unix)] {
 		use std::os::unix::fs::PermissionsExt;
 		result
 			.set_permissions(Permissions::from_mode(0o755))
-			.with_context(|| io_expect(&script_file, "set permissions for"))?;
+			.with_context(|| io_failure(&script_file, "set permissions for"))?;
 	};
 	Ok(script_file)
 }

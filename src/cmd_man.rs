@@ -43,13 +43,13 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 
 		let mut output: GzEncoder<File> = GzEncoder::new(
 			File::create_new(out_dir.join(man.get_filename()).with_added_extension("gz"))
-				.expect("create man_file.gz"),
+				.context("create man_file.gz")?,
 			Compression::default(),
 		);
-		render0(&parent, &man, &mut output);
-		render_subcommands(&parent, &mut output);
-		render1(&parent, &man, &mut output);
-		output.flush().expect("flush");
+		render0(&parent, &man, &mut output)?;
+		render_subcommands(&parent, &mut output)?;
+		render1(&parent, &man, &mut output)?;
+		output.flush().context("flush")?;
 
 		Ok(())
 	}
@@ -59,20 +59,21 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 	generate(cmd, out_dir.as_ref())
 }
 
-fn render0(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) {
-	man.render_title(&mut output).expect("title");
-	man.render_name_section(&mut output).expect("name");
-	man.render_synopsis_section(&mut output).expect("synopsis");
-	man.render_description_section(&mut output).expect("description");
+fn render0(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) -> Result<()> {
+	man.render_title(&mut output).context("title")?;
+	man.render_name_section(&mut output).context("name")?;
+	man.render_synopsis_section(&mut output).context("synopsis")?;
+	man.render_description_section(&mut output).context("description")?;
 	if cmd.get_arguments().any(|a: &Arg| !a.is_hide_set()) {
-		man.render_options_section(&mut output).expect("options");
+		man.render_options_section(&mut output).context("options")?;
 	};
+	Ok(())
 }
 
 /// Slight modification of [`Man::render_subcommands_section`] to fix display names
 ///
 /// TODO: PR `clap_mangen` with minimal fix?
-fn render_subcommands(cmd: &Command, mut output: &mut GzEncoder<File>) {
+fn render_subcommands(cmd: &Command, mut output: &mut GzEncoder<File>) -> Result<()> {
 	if cmd.get_subcommands().any(|c: &Command| !c.is_hide_set()) {
 		let mut roff: Roff = Roff::default();
 		roff.control(
@@ -99,18 +100,20 @@ fn render_subcommands(cmd: &Command, mut output: &mut GzEncoder<File>) {
 				};
 			};
 		};
-		roff.to_writer(&mut output).expect("subcommands");
+		roff.to_writer(&mut output).context("subcommands")?;
 	};
+	Ok(())
 }
 
-fn render1(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) {
+fn render1(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) -> Result<()> {
 	if cmd.get_after_long_help().is_some() || cmd.get_after_help().is_some() {
-		man.render_extra_section(&mut output).expect("extra");
+		man.render_extra_section(&mut output).context("extra")?;
 	};
 	if cmd.get_version().or_else(|| cmd.get_long_version()).is_some() {
-		man.render_version_section(&mut output).expect("version");
+		man.render_version_section(&mut output).context("version")?;
 	};
 	if cmd.get_author().is_some() {
-		man.render_authors_section(&mut output).expect("authors");
+		man.render_authors_section(&mut output).context("authors")?;
 	};
+	Ok(())
 }
