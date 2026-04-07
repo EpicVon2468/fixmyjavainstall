@@ -1,9 +1,9 @@
-#![allow(clippy::tabs_in_doc_comments)]
 use clap::Parser;
 
 use fuji::cli::Arguments;
+use fuji::entrypoint;
 
-// TODO: https://crates.io/crates/anyhow/
+/// `fuji`
 pub fn main() {
-	fuji::entrypoint(Arguments::parse());
+	entrypoint(Arguments::parse());
 }

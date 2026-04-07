@@ -13,7 +13,10 @@ pub mod os;
 #[cfg(windows)]
 pub mod win_link;
 
-use std::env::set_var;
+use std::env::{args_os, set_var};
+use std::ffi::OsString;
+
+use clap::Parser;
 
 use crate::cli::{Arguments, Cmd};
 #[cfg(any(not(windows), feature = "multi_os"))]
@@ -34,6 +37,14 @@ pub const FUJI_DIR: &str = if cfg!(windows) {
 	"/opt/fuji"
 };
 
+pub fn subcommand_entrypoint(extras: &[OsString]) {
+	let mut args: Vec<OsString> = vec!["fuji".into()];
+	args.extend_from_slice(extras);
+	args.extend_from_slice(&args_os().skip(1).collect::<Vec<OsString>>());
+	entrypoint(Arguments::parse_from(args));
+}
+
+// TODO: https://crates.io/crates/anyhow/
 pub fn entrypoint(args: Arguments) {
 	if cfg!(windows) {
 		// Ever heard of "Never judge a book by is cover" ?

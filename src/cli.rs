@@ -88,15 +88,20 @@ pub enum Preset {
 #[clap(author = "Mavity The Madity", subcommand_value_name = "SOFTWARE")]
 pub enum Software {
 	/// Manages the Java Virtual Machine – <https://www.java.com/>
-	#[clap(display_name = "fuji-jvm")]
-	#[clap(author = "Mavity The Madity")]
+	#[clap(
+		display_name = "fuji-jvm",
+		author = "Mavity The Madity",
+	)]
 	JVM {
 		#[command(subcommand)]
 		op: crate::jvm::manage_jvm::Op,
 	},
 	/// Manages the Kotlin Programming Language – <https://kotlinlang.org/>
-	#[clap(display_name = "fuji-kt")]
-	#[clap(author = "Mavity The Madity")]
+	#[clap(
+		display_name = "fuji-kt",
+		alias = "kt",
+		author = "Mavity The Madity",
+	)]
 	Kotlin {
 	},
 	// TODO: merge into Kotlin
