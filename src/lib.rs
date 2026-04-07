@@ -2,27 +2,25 @@
 pub mod arch;
 pub mod cli;
 pub mod cmd_link;
+pub mod cmd_man;
 pub mod cmd_manage;
 pub mod cmd_preset;
 pub mod commands;
 pub mod jvm;
 pub mod kotlin;
 pub mod macros;
-pub mod cmd_man;
 pub mod os;
 #[cfg(windows)]
 pub mod win_link;
 
 use std::env::set_var;
 
-use clap::Parser;
-
 use crate::cli::{Arguments, Cmd};
 #[cfg(any(not(windows), feature = "multi_os"))]
 use crate::cmd_link::cmd_link;
+use crate::cmd_man::cmd_man;
 use crate::cmd_manage::cmd_manage;
 use crate::cmd_preset::cmd_preset;
-use crate::cmd_man::cmd_man;
 
 /// The installation directory for fuji-managed programs.
 ///
@@ -36,8 +34,7 @@ pub const FUJI_DIR: &str = if cfg!(windows) {
 	"/opt/fuji"
 };
 
-// TODO: https://crates.io/crates/anyhow/
-pub fn main() {
+pub fn entrypoint(args: Arguments) {
 	if cfg!(windows) {
 		// Ever heard of "Never judge a book by is cover" ?
 		// It's about how you should judge based on the content of something, not what is on the outside
@@ -49,7 +46,7 @@ pub fn main() {
 	unsafe {
 		set_var("RUST_BACKTRACE", "1");
 	};
-	if let Some(command) = Arguments::parse().command {
+	if let Some(command) = args.command {
 		match command {
 			#[cfg(any(not(windows), feature = "multi_os"))]
 			Cmd::Link { .. } => cmd_link(command).unwrap(),

@@ -80,4 +80,4 @@ fuji <subcommand(s)> --help | less
 - [ ] Get UNIX-likes to a stable release
 - [ ] Fix Windows (soon™)
 - [ ] Fix `cargo`-based installs not working with `sudo`
-- [ ] Set `$JAVA_HOME` & `$PATH`
+- [ ] Set `$JAVA_HOME` & `$PATH` persistently on UNIX-likes (or at least print export commands)
