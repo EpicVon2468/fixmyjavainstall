@@ -4,7 +4,7 @@ Rewriting this in Rust was simpler than debugging and 'fixing' the bash script(s
 
 NOTICE: You must run with `sudo -E` to preserve environment variables, else some preset detections may fail.
 
-### Status:
+## Status:
 
 - Linux: `[WORKING?]-[UNTESTED]`
   - All core functionality _should_ be working.
@@ -16,7 +16,9 @@ NOTICE: You must run with `sudo -E` to preserve environment variables, else some
   - Another dependency is needed for `.zip` file extraction.
   - Despite being quoted, `"\Program Files\fuji\jvm\25"` isn't treated as one path, as batch fails to handle the space in `Program Files`.
 
-### Installation:
+## Installation:
+
+Latest version: `v0.1.2: "I hate macOS JVM .tar.gz files (and Windows (.zip) pt. 2)"`
 
 You can [download the latest release](https://github.com/EpicVon2468/fixmyjavainstall/releases/latest/) if there is one for your system and architecture.
 
@@ -39,7 +41,7 @@ If you would like to be able to install a JVM not made for your system, add `--f
 Additionally, please note that there is no [crates.io](https://crates.io/) listing for fuji!<br>
 That is to say, `cargo install fuji` **WILL NOT INSTALL THIS PROJECT!**
 
-### Documentation:
+## Documentation:
 
 For rustdoc pages in a local website:
 
@@ -67,7 +69,7 @@ For standalone in-memory documentation:
 fuji <subcommand(s)> --help | less
 ```
 
-### TODO:
+## TODO:
 
 - [X] Download JVM
 - [ ] Download Kotlin
