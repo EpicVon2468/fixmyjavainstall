@@ -1,13 +1,17 @@
 use std::borrow::Cow;
-use std::fs::{remove_dir_all, File};
+use std::fmt::Write;
+use std::fs::File;
 use std::io::{copy, Result};
 use std::path::{Component, Components, Path, PathBuf};
 
 use flate2::read::GzDecoder;
 
+use indicatif::{ProgressBar, ProgressState, ProgressStyle};
+
 use tar::{Archive, Entry};
 
-use ureq::{get, BodyReader};
+use ureq::http::Response;
+use ureq::{get, Body};
 
 use which::which;
 
@@ -32,6 +36,7 @@ pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 	if is_zip {
 		panic!("no.");
 	};
+	// TODO: progress bar
 	let dest: PathBuf = dest.as_ref().canonicalize().expect("Couldn't canonicalise destination path!");
 	let input: File = File::open(archive.as_ref()).expect("Couldn't open JDK archive!");
 	let mut reader: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
@@ -58,32 +63,38 @@ pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 	Ok(())
 }
 
-// TODO: add progress bar of some kind + test functionality
 /// Downloads a resource from `url` to `dest`.
-///
-/// Implementation notes:
-///
-/// * Eagerly checks if `dest` exists.
-/// 	* The [`result`][`Result`] of [`Path::try_exists`] is immediately [`unwrapped`][`Result::unwrap`].
-/// 	* If `dest` exists and is a directory, [`remove_dir_all`] is called, and [`Path::try_exists`] is re-evaluated.
-/// 	* If `dest` does not exist, [`File::create`] is called.
 pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 	let dest: &Path = dest.as_ref();
-	let mut exists: bool = dest.exists();
-	if exists && dest.is_dir() {
-		remove_dir_all(dest).unwrap_or_else(|_| panic!("{}", io_expect(dest, "delete")));
-		exists = dest.exists();
-	};
-	if !exists {
-		File::create(dest).unwrap_or_else(|_| panic!("{}", io_expect(dest, "create")));
-	};
-	let mut resource: BodyReader = get(url.as_ref())
+
+	let response: Response<Body> = get(url.as_ref())
 		.call()
-		.expect("Couldn't download resource!")
-		.into_body()
-		.into_reader();
-	let mut dest: File = File::open(dest).expect("Couldn't open destination file for download!");
-	copy(&mut resource, &mut dest).expect("Couldn't download resource from URL!");
+		.expect("Couldn't download resource!");
+
+	let len: u64 = response
+		.headers()
+		.get("Content-Length")
+		.expect("Couldn't get Content-Length header for response!")
+		.to_str()
+		.expect("Couldn't get string value of Content-Length header!")
+		.parse()
+		.expect("Couldn't parse integer from Content-Length header!");
+
+	// https://github.com/console-rs/indicatif/blob/main/examples/download.rs
+	let pb: ProgressBar = ProgressBar::new(len);
+	pb.set_style(ProgressStyle::with_template("[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({eta})")
+		.unwrap()
+		.with_key("eta", |state: &ProgressState, w: &mut dyn Write| write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap())
+		.progress_chars("#>-"));
+
+	let mut dest: File = File::create(dest).expect("Couldn't open destination file for download!");
+	copy(
+		&mut pb.wrap_read(&mut response.into_body().into_reader()),
+		&mut dest,
+	).expect("Couldn't download resource from URL!");
+
+	pb.finish_with_message("downloaded");
+
 	Ok(())
 }
 

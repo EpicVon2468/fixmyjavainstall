@@ -80,3 +80,5 @@ RUSTDOCFLAGS="--default-theme=ayu" cargo doc --document-private-items --all-feat
 - [ ] Set `$JAVA_HOME` & `$PATH` persistently on UNIX-likes (or at least print export commands)
 - [ ] Changelog?
 - [ ] Automagic JDK selection
+- [ ] `fuji manual install` ("think make vs. make install")
+- [ ] custom sysroot/prefix

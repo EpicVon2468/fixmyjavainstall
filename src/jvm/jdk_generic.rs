@@ -1,4 +1,4 @@
-use std::fs::remove_file;
+use std::fs::{remove_dir_all, remove_file};
 use std::io::Result;
 use std::path::Path;
 
@@ -38,6 +38,14 @@ pub fn generic_download<S: AsRef<str>>(url: S, args: DownloadJDKArgs) -> Result<
 	println!("Downloading JDK: {url}...");
 	if args.dry_run {
 		return Ok(());
+	};
+	// Might exist from a failed previous install
+	if archive.exists() {
+		if archive.is_dir() {
+			remove_dir_all(archive)
+		} else {
+			remove_file(archive)
+		}.expect("Couldn't remove unexpected pre-existing JDK archive!")
 	};
 	download(url, archive).expect("Couldn't download JDK!");
 
