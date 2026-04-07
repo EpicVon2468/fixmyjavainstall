@@ -1,10 +1,10 @@
-use std::fs::{create_dir, remove_dir_all, File};
+use std::fs::{create_dir_all, remove_dir_all, File};
 use std::io::{Result, Write};
 use std::path::Path;
 
 use clap::{Arg, Command, CommandFactory};
-use clap_mangen::Man;
 use clap_mangen::roff::{roman, Roff};
+use clap_mangen::Man;
 
 use flate2::read::GzEncoder;
 use flate2::Compression;
@@ -26,7 +26,7 @@ pub fn cmd_man(cmd: Cmd) -> Result<()> {
 		remove_dir_all(dir).expect("remove_dir_all");
 	};
 	if !dir.exists() {
-		create_dir(dir).expect("create_dir");
+		create_dir_all(dir).expect("create_dir_all");
 	};
 	dump_manual(Arguments::command(), dir)
 }
