@@ -15,7 +15,7 @@ use crate::wrong_cmd;
 pub fn cmd_man(cmd: Cmd) -> Result<()> {
 	let Cmd::Manual {
 		man_dir,
-	} = cmd else {
+	}: Cmd = cmd else {
 		wrong_cmd!(cmd_man);
 	};
 	let dir: &Path = &man_dir.join("man8");

@@ -1,5 +1,4 @@
 #![cfg(windows)]
-
 use std::path::Path;
 
 macro_rules! open_env {

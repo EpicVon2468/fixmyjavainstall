@@ -66,7 +66,7 @@ pub enum Op {
 pub fn manage_jvm(software: Software) -> Result<()> {
 	let Software::JVM {
 		op,
-	} = software else {
+	}: Software = software else {
 		wrong_cmd!(manage_jvm);
 	};
 	match op {

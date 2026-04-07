@@ -7,7 +7,7 @@ use crate::wrong_cmd;
 pub fn cmd_manage(command: Cmd) -> Result<()> {
 	let Cmd::Manage {
 		software: option,
-	} = command else {
+	}: Cmd = command else {
 		wrong_cmd!(cmd_manage);
 	};
 	if let Some(software) = option {

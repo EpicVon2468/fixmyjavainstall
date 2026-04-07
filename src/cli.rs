@@ -54,7 +54,6 @@ pub enum Cmd {
 	/// UNIX `man` page generation
 	#[clap(author = "Mavity The Madity", hide = true)]
 	Manual {
-
 		#[clap(
 			value_name = "DIR",
 			default_value = if cfg!(feature = "dev") {

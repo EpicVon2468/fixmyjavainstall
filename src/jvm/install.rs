@@ -14,7 +14,7 @@ use crate::jvm::major_version::MajorVersion;
 use crate::jvm::manage_jvm::{JavaVersion, Op};
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
 use crate::os::OS;
-use crate::{wrong_cmd, FUJI_DIR};
+use crate::{FUJI_DIR, wrong_cmd};
 
 pub fn install(op: Op) -> Result<()> {
 	let Op::Install {
@@ -26,7 +26,7 @@ pub fn install(op: Op) -> Result<()> {
 		include_kotlin: _include_kotlin,
 		dry_run,
 		version,
-	} = op else {
+	}: Op = op else {
 		wrong_cmd!(install);
 	};
 	#[cfg(not(feature = "multi_os"))]
@@ -39,7 +39,9 @@ pub fn install(op: Op) -> Result<()> {
 			revision: "".into(),
 		}
 	} else {
-		let uri: String = format!("https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{jdk}/{version}.json");
+		let uri: String = format!(
+			"https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{jdk}/{version}.json"
+		);
 		ureq::get(uri)
 			.call()
 			.expect("Couldn't connect to URL!")
@@ -93,8 +95,10 @@ pub fn install(op: Op) -> Result<()> {
 			continue;
 		};
 		// move JAVA_HOME/bin/java(w)(.exe) to a 'backup' file so that programs which try to run JAVA_HOME/bin/java(w)(.exe) literally can't skip the run script
-		rename(&java_executable, java_executable.with_added_extension("bak"))
-			.expect("Couldn't backup java executable!");
+		rename(
+			&java_executable,
+			java_executable.with_added_extension("bak"),
+		).expect("Couldn't backup java executable!");
 		let script_file: PathBuf = install_wrapper(
 			generate_wrapper(java_home, &features, is_win, suffix),
 			java_home,
@@ -102,9 +106,10 @@ pub fn install(op: Op) -> Result<()> {
 			is_win,
 		);
 		// link JAVA_HOME/bin/java(w)(.exe) to JAVA_HOME/bin/fuji_jvm_wrapper
-		symlink_link(script_file, java_executable)
-			.expect("Couldn't symbolically link JAVA_HOME/bin/java to point to JAVA_HOME/bin/fuji_jvm_wrapper!");
-	};
+		symlink_link(script_file, java_executable).expect(
+			"Couldn't symbolically link JAVA_HOME/bin/java to point to JAVA_HOME/bin/fuji_jvm_wrapper!",
+		);
+	}
 	if dry_run {
 		return Ok(());
 	};
@@ -112,8 +117,7 @@ pub fn install(op: Op) -> Result<()> {
 	symlink_link(java_home, Path::new(FUJI_DIR).join("jvm").join("latest"))
 		.expect("Couldn't symbolically link FUJI_DIR/jvm/latest to current install directory!");
 	// link all of JAVA_HOME/bin
-	link_impl(java_home, "/usr/bin", false)
-		.expect("Couldn't install JAVA_HOME!");
+	link_impl(java_home, "/usr/bin", false).expect("Couldn't install JAVA_HOME!");
 	#[cfg(target_os = "linux")] {
 		use std::fs::File;
 		use std::io::Write;
@@ -125,9 +129,15 @@ pub fn install(op: Op) -> Result<()> {
 		macro_rules! desktop_entry {
 			($output:literal, $ident:ident) => {
 				File::create(base.join($output))
-					.expect(concat!("Couldn't create/write /usr/share/applications/", $output))
-					.write_all(crate::jvm::desktop::$ident.as_bytes())
-					.expect(concat!("Couldn't write to /usr/share/applications/", $output))
+					.expect(concat!(
+						"Couldn't create/write /usr/share/applications/",
+						$output
+					))
+					.write_all($crate::jvm::desktop::$ident.as_bytes())
+					.expect(concat!(
+						"Couldn't write to /usr/share/applications/",
+						$output
+					))
 			};
 		}
 		desktop_entry!("fuji.java.desktop", FREEDESKTOP_ENTRY);

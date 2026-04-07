@@ -16,7 +16,7 @@ pub fn cmd_link(command: Cmd) -> Result<()> {
 		link_dir,
 		#[cfg(any(target_os = "linux", feature = "multi_os"))]
 		use_update_alternatives,
-	} = command else {
+	}: Cmd = command else {
 		wrong_cmd!(cmd_link);
 	};
 	#[cfg(all(windows, not(feature = "multi_os")))]
