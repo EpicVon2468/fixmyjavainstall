@@ -18,10 +18,7 @@ pub fn cmd_man(cmd: Cmd) -> Result<()> {
 	} = cmd else {
 		wrong_cmd!(cmd_man);
 	};
-	let dir: &Path = &man_dir
-		.canonicalize()
-		.expect("canonicalise")
-		.join("man8");
+	let dir: &Path = &man_dir.join("man8");
 	if dir.exists() {
 		remove_dir_all(dir).expect("remove_dir_all");
 	};

@@ -62,7 +62,8 @@ sudo fuji manual
 For rustdoc pages in a local website:
 
 ```shell
-cargo doc --no-deps --document-private-items --all-features --open
+cargo clean --doc
+RUSTDOCFLAGS="--default-theme=ayu" cargo doc --document-private-items --all-features --release --color=always --open
 ```
 
 ## TODO:
