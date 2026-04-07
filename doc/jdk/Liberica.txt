@@ -1,5 +1,6 @@
 Liberica by BellSoft – <https://bell-sw.com/libericajdk/>
-Supported arches:
+
+Supported architectures:
  - x64
  - aarch64
  - riscv64

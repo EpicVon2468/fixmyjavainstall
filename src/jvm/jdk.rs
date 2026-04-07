@@ -19,7 +19,7 @@ pub enum JDK {
 	Auto,
 	/// JetBrains Runtime by JetBrains – <https://github.com/JetBrains/JetBrainsRuntime/>
 	///
-	/// <details><summary>Supported arches:</summary>
+	/// <details><summary>Supported architectures:</summary>
 	///
 	/// * `x64`
 	/// * `aarch64`
@@ -44,7 +44,7 @@ pub enum JDK {
 	JBR,
 	/// Java Platform, Standard Edition by Oracle – <https://www.oracle.com/java/>
 	///
-	/// <details><summary>Supported arches:</summary>
+	/// <details><summary>Supported architectures:</summary>
 	///
 	/// * `x64`
 	/// * `aarch64`
@@ -64,7 +64,7 @@ pub enum JDK {
 	JavaSE,
 	/// Temurin (previously AdoptOpenJDK) by Eclipse/Adoptium – <https://adoptium.net/>
 	///
-	/// <details><summary>Supported arches:</summary>
+	/// <details><summary>Supported architectures:</summary>
 	///
 	/// * `x64`
 	/// * `aarch64`
@@ -96,7 +96,7 @@ pub enum JDK {
 	Temurin,
 	/// Liberica by BellSoft – <https://bell-sw.com/libericajdk/>
 	///
-	/// <details><summary>Supported arches:</summary>
+	/// <details><summary>Supported architectures:</summary>
 	///
 	/// * `x64`
 	/// * `aarch64`

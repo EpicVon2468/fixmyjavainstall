@@ -1,5 +1,6 @@
 Temurin (previously AdoptOpenJDK) by Eclipse/Adoptium – <https://adoptium.net/>
-Supported arches:
+
+Supported architectures:
  - x64
  - aarch64
  - riscv64

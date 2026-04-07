@@ -52,7 +52,7 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 				dry_run: false,
 				version: MajorVersion::LTS,
 			},
-		}.into()
+		}.into(),
 	})
 }
 
@@ -78,9 +78,9 @@ fn preset_fast(minimal: bool) -> Result<()> {
 fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 	features.push(Feature::JEP519);
 	#[cfg(target_os = "linux")] {
+		use std::env::var;
 		use std::fs::DirEntry;
 		use std::path::Path;
-		use std::env::var;
 
 		if Path::new("/proc/driver").read_dir()?.any(|entry: Result<DirEntry>| {
 			entry
@@ -94,12 +94,12 @@ fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 			features.push(Feature::NVIDIAFixes);
 		};
 
-		if var("WAYLAND_DISPLAY").is_ok() {
-			// WLToolkit also enables Vulkan
-			features.push(Feature::WLToolkit);
+		// WLToolkit also enables Vulkan
+		features.push(if var("WAYLAND_DISPLAY").is_ok() {
+			Feature::WLToolkit
 		} else {
-			features.push(Feature::OpenGL);
-		};
+			Feature::OpenGL
+		});
 	};
 	#[cfg(target_os = "macos")]
 	features.push(Feature::Metal);

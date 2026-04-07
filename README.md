@@ -54,7 +54,7 @@ For UNIX `man` entries:
 
 ```shell
 # if compiled with `--features dev` (installs to "$PWD/man", only works as long as "$PWD/man" is on the manpath)
-fuji manual && export MANPATH="$(manpath):$PWD/man"
+fuji manual && export MANPATH="$PWD/man:$(manpath)"
 # else (installs to "/usr/share/man")
 sudo fuji manual
 ```
