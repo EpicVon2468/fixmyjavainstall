@@ -1,32 +1,19 @@
 use std::borrow::Cow;
-use std::ffi::OsStr;
 use std::fs::{remove_dir_all, File};
-use std::io::{Error, ErrorKind, Result};
+use std::io::{copy, Result};
 use std::path::{Component, Components, Path, PathBuf};
-use std::process::{Child, Command};
 
 use flate2::read::GzDecoder;
 
 use tar::{Archive, Entry};
 
-use which::which;
+use ureq::{get, BodyReader};
 
-use crate::wait_and_check_status;
+use which::which;
 
 /// Checks if the program `name` exists.  This is equivalent to `which(name).is_ok()`.
 pub fn has_program(name: &str) -> bool {
 	which(name).is_ok()
-}
-
-pub fn require_program(name: &str) -> Result<()> {
-	if !has_program(name) {
-		Err(Error::new(
-			ErrorKind::NotFound,
-			format!("Couldn't find program '{name}'!"),
-		))
-	} else {
-		Ok(())
-	}
 }
 
 /// Extracts `archive` into `dest`, stripping one component.
@@ -34,7 +21,7 @@ pub fn require_program(name: &str) -> Result<()> {
 /// Implementation notes:
 ///
 /// * `dest` is [`canonicalised`][`Path::canonicalize`] before use.
-/// * No checks are performed to determine if `dest` exists.
+/// * No checks are performed to determine if `dest` exists – however, [`canonicalise`][`Path::canonicalize`] will panic if it does not.
 /// * If `is_zip` is true, no checks are performed to determine if `archive` ends with `.zip`, and vice versa.
 pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 	archive: S,
@@ -71,6 +58,7 @@ pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 	Ok(())
 }
 
+// TODO: add progress bar of some kind + test functionality
 /// Downloads a resource from `url` to `dest`.
 ///
 /// Implementation notes:
@@ -79,39 +67,23 @@ pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 /// 	* The [`result`][`Result`] of [`Path::try_exists`] is immediately [`unwrapped`][`Result::unwrap`].
 /// 	* If `dest` exists and is a directory, [`remove_dir_all`] is called, and [`Path::try_exists`] is re-evaluated.
 /// 	* If `dest` does not exist, [`File::create`] is called.
-/// * Uses [`cURL`](https://curl.se/) for the HTTP(S) request.
-/// 	* [`require_program`] is always called as a safety precaution.
-/// 	* If `url` is a redirect, it is followed automagically (via the `-L` flag).
-/// 	* If `cURL`'s return value is non-success, [`Err`] is returned with [`Error::other`].
-///
-/// Platform-specific behaviour:
-/// * `cURL` is used on all platforms.
-/// 	* `cURL` is called via [`Command`], not via `libcURL`.
-/// 		* Windows has had `cURL` bundled for a while.
-/// 			* <https://devblogs.microsoft.com/commandline/tar-and-curl-come-to-windows/>
-/// 			* <https://techcommunity.microsoft.com/blog/containers/tar-and-curl-come-to-windows/382409/>
-/// 			* <https://curl.se/windows/microsoft.html>
-/// 		* macOS has had `cURL` bundled for a while.
-/// 		* If you don't have `cURL` on Linux... why?
-pub fn download<S: AsRef<OsStr>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
-	require_program("curl")?;
+pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 	let dest: &Path = dest.as_ref();
-	let mut exists: bool = dest.try_exists()?;
+	let mut exists: bool = dest.exists();
 	if exists && dest.is_dir() {
 		remove_dir_all(dest).unwrap_or_else(|_| panic!("{}", io_expect(dest, "delete")));
-		exists = dest.try_exists()?;
+		exists = dest.exists();
 	};
 	if !exists {
 		File::create(dest).unwrap_or_else(|_| panic!("{}", io_expect(dest, "create")));
 	};
-	let mut child: Child = Command::new("curl")
-		.arg("-L")
-		.arg(url)
-		.arg("-o")
-		.arg(dest.canonicalize()?)
-		.spawn()
-		.expect("Couldn't start cURL!");
-	wait_and_check_status!(child, "cURL");
+	let mut resource: BodyReader = get(url.as_ref())
+		.call()
+		.expect("Couldn't download resource!")
+		.into_body()
+		.into_reader();
+	let mut dest: File = File::open(dest).expect("Couldn't open destination file for download!");
+	copy(&mut resource, &mut dest).expect("Couldn't download resource from URL!");
 	Ok(())
 }
 

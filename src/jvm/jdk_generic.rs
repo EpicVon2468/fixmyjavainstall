@@ -1,4 +1,3 @@
-use std::ffi::OsStr;
 use std::fs::remove_file;
 use std::io::Result;
 use std::path::Path;
@@ -30,13 +29,13 @@ impl<'a> DownloadJDKArgs<'a> {
 	}
 }
 
-pub fn generic_download<S: AsRef<OsStr>>(url: S, args: DownloadJDKArgs) -> Result<()> {
-	let url: &OsStr = url.as_ref();
+pub fn generic_download<S: AsRef<str>>(url: S, args: DownloadJDKArgs) -> Result<()> {
+	let url: &str = url.as_ref();
 	let java_home: &Path = args.java_home;
 	let is_win: bool = args.is_win();
 	let archive: &Path = &java_home.with_added_extension(if is_win { "zip" } else { "tar.gz" });
 
-	println!("Downloading JDK: {}...", url.display());
+	println!("Downloading JDK: {url}...");
 	if args.dry_run {
 		return Ok(());
 	};
