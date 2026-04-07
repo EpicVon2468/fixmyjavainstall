@@ -18,13 +18,54 @@ NOTICE: You must run with `sudo -E` to preserve environment variables, else some
 
 ### Installation:
 
-`cargo install --git https://github.com/EpicVon2468/fixmyjavainstall`
+You can [download the latest release](https://github.com/EpicVon2468/fixmyjavainstall/releases/latest/) if there is one for your system and architecture.
+
+You can also install using cargo with:
+
+```shell
+cargo install --git https://github.com/EpicVon2468/fixmyjavainstall
+```
+
+Or by running:
+
+```shell
+git clone https://github.com/EpicVon2468/fixmyjavainstall
+cd fixmyjavainstall
+cargo build --profile release --path .
+```
 
 If you would like to be able to install a JVM not made for your system, add `--features multi_os` to your installation command.
 
+Additionally, please note that there is no [crates.io](https://crates.io/) listing for fuji!<br>
+That is to say, `cargo install fuji` **WILL NOT INSTALL THIS PROJECT!**
+
 ### Documentation:
 
-`cargo doc --no-deps --document-private-items --features multi_os --open`
+For rustdoc pages in a local website:
+
+```shell
+cargo doc --no-deps --document-private-items --all-features --open
+```
+
+For local UNIX `man` entries:
+
+If the `dev` feature is enabled (installs to `$PWD/man`):
+
+```shell
+fuji manual && export MANPATH="$(manpath):$PWD/man"
+```
+
+Else (installs to `/usr/share/man`):
+
+```shell
+sudo fuji manual
+```
+
+For standalone in-memory documentation:
+
+```shell
+fuji <subcommand(s)> --help | less
+```
 
 ### TODO:
 

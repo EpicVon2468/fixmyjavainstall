@@ -18,7 +18,10 @@ pub fn cmd_man(cmd: Cmd) -> Result<()> {
 	} = cmd else {
 		wrong_cmd!(cmd_man);
 	};
-	let dir: &Path = &man_dir.canonicalize().expect("canonicalise").join("man8");
+	let dir: &Path = &man_dir
+		.canonicalize()
+		.expect("canonicalise")
+		.join("man8");
 	if dir.exists() {
 		remove_dir_all(dir).expect("remove_dir_all");
 	};
@@ -28,9 +31,10 @@ pub fn cmd_man(cmd: Cmd) -> Result<()> {
 	dump_manual(Arguments::command(), dir)
 }
 
+/// Based off [`clap_mangen::generate_to`]
 fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 	fn generate(parent: Command, out_dir: &Path) -> Result<()> {
-		for child in parent.get_subcommands().filter(|s| !s.is_hide_set()).cloned() {
+		for child in parent.get_subcommands().filter(|c: &&Command| !c.is_hide_set()).cloned() {
 			generate(child, out_dir)?;
 		};
 
@@ -43,50 +47,9 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 				.expect("create man_file.gz"),
 			Compression::default(),
 		);
-		man.render_title(&mut output).expect("title");
-		man.render_name_section(&mut output).expect("name");
-		man.render_synopsis_section(&mut output).expect("synopsis");
-		man.render_description_section(&mut output).expect("description");
-		if parent.get_arguments().any(|i: &Arg| !i.is_hide_set()) {
-			man.render_options_section(&mut output).expect("options");
-		};
-		if parent.get_subcommands().any(|i| !i.is_hide_set()) {
-			let mut roff: Roff = Roff::default();
-			roff.control(
-				"SH",
-				[parent.get_subcommand_help_heading().unwrap_or("SUBCOMMANDS")],
-			);
-			let mut sorted_subcommands: Vec<&Command> = parent.get_subcommands().filter(|s| !s.is_hide_set()).collect();
-			sorted_subcommands.sort_by_key(|c| (c.get_display_order(), c.get_name()));
-			for sub in sorted_subcommands {
-				roff.control("TP", []);
-				// the built-in implementation of this part is broken
-				// fuji-manage will try to resolve fuji-jvm as though it were still called fuji-manage-jvm
-				let name: String = sub.get_display_name().map(str::to_string).unwrap_or_else(|| {
-					format!(
-						"{}-{}",
-						parent.get_display_name().unwrap_or(parent.get_name()),
-						sub.get_name(),
-					)
-				}) + "(8)";
-				roff.text([roman(name)]);
-				if let Some(about) = sub.get_about().or_else(|| sub.get_long_about()) {
-					for line in about.to_string().lines() {
-						roff.text([roman(line)]);
-					};
-				};
-			};
-			roff.to_writer(&mut output).expect("subcommands");
-		};
-		if parent.get_after_long_help().is_some() || parent.get_after_help().is_some() {
-			man.render_extra_section(&mut output).expect("extra");
-		};
-		if parent.get_version().or_else(|| parent.get_long_version()).is_some() {
-			man.render_version_section(&mut output).expect("version");
-		};
-		if parent.get_author().is_some() {
-			man.render_authors_section(&mut output).expect("authors");
-		};
+		render0(&parent, &man, &mut output);
+		render_subcommands(&parent, &mut output);
+		render1(&parent, &man, &mut output);
 		output.flush().expect("flush");
 
 		Ok(())
@@ -95,4 +58,60 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 	let mut cmd: Command = cmd.disable_help_subcommand(true);
 	cmd.build();
 	generate(cmd, out_dir.as_ref())
+}
+
+fn render0(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) {
+	man.render_title(&mut output).expect("title");
+	man.render_name_section(&mut output).expect("name");
+	man.render_synopsis_section(&mut output).expect("synopsis");
+	man.render_description_section(&mut output).expect("description");
+	if cmd.get_arguments().any(|a: &Arg| !a.is_hide_set()) {
+		man.render_options_section(&mut output).expect("options");
+	};
+}
+
+/// Slight modification of [`Man::render_subcommands_section`] to fix display names
+///
+/// TODO: PR `clap_mangen` with minimal fix?
+fn render_subcommands(cmd: &Command, mut output: &mut GzEncoder<File>) {
+	if cmd.get_subcommands().any(|c: &Command| !c.is_hide_set()) {
+		let mut roff: Roff = Roff::default();
+		roff.control(
+			"SH",
+			[cmd.get_subcommand_help_heading().unwrap_or("SUBCOMMANDS")],
+		);
+		let mut sorted_subcommands: Vec<&Command> = cmd.get_subcommands().filter(|s| !s.is_hide_set()).collect();
+		sorted_subcommands.sort_by_key(|c| (c.get_display_order(), c.get_name()));
+		for sub in sorted_subcommands {
+			roff.control("TP", []);
+			// the built-in implementation of this part is broken
+			// fuji-manage will try to resolve fuji-jvm as though it were still called fuji-manage-jvm
+			let name: String = sub.get_display_name().map(str::to_string).unwrap_or_else(|| {
+				format!(
+					"{}-{}",
+					cmd.get_display_name().unwrap_or_else(|| cmd.get_name()),
+					sub.get_name(),
+				)
+			}) + "(8)";
+			roff.text([roman(name)]);
+			if let Some(about) = sub.get_about().or_else(|| sub.get_long_about()) {
+				for line in about.to_string().lines() {
+					roff.text([roman(line)]);
+				};
+			};
+		};
+		roff.to_writer(&mut output).expect("subcommands");
+	};
+}
+
+fn render1(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) {
+	if cmd.get_after_long_help().is_some() || cmd.get_after_help().is_some() {
+		man.render_extra_section(&mut output).expect("extra");
+	};
+	if cmd.get_version().or_else(|| cmd.get_long_version()).is_some() {
+		man.render_version_section(&mut output).expect("version");
+	};
+	if cmd.get_author().is_some() {
+		man.render_authors_section(&mut output).expect("authors");
+	};
 }
