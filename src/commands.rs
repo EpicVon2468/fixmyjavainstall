@@ -28,7 +28,7 @@ pub fn has_program(name: &str) -> bool {
 /// * `dest` is [`canonicalised`][`Path::canonicalize`] before use.
 /// * No checks are performed to determine if `dest` exists – however, [`canonicalise`][`Path::canonicalize`] will panic if it does not.
 /// * If `is_zip` is true, no checks are performed to determine if `archive` ends with `.zip`, and vice versa.
-pub fn untar_jdk<S: AsRef<Path>, P: AsRef<Path>>(
+pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 	archive: S,
 	dest: P,
 	is_zip: bool,

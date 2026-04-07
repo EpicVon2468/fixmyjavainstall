@@ -1,8 +1,10 @@
+#![doc = "An enumeration of operating systems"]
 use std::fmt::{Display, Formatter, Result};
 
 use clap::ValueEnum;
 use clap::builder::OsStr;
 
+/// An enumeration of operating systems
 #[derive(ValueEnum, Clone, PartialEq)]
 pub enum OS {
 	/// Anything running the Linux kernel – <https://kernel.org/>

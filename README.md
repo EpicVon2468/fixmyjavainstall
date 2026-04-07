@@ -6,8 +6,8 @@ NOTICE: You must run with `sudo -E` to preserve environment variables, else some
 
 ## Status:
 
-- Linux: `[WORKING?]-[UNTESTED]`
-  - All core functionality _should_ be working.
+- Linux: `[WORKING]-[TESTED]`
+  - All core functionality is working, tested regularly.
 - macOS: `[BROKEN*]-[TESTED]`
   - All core functionality _should_ be working, but isn't.
   - Rootless breaks many things.

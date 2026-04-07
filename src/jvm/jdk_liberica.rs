@@ -1,3 +1,4 @@
+#![doc = "Liberica by BellSoft – <https://bell-sw.com/libericajdk/>"]
 use std::io::Result;
 
 use crate::jvm::jdk_generic::{generic_download, DownloadJDKArgs};

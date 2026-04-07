@@ -1,3 +1,4 @@
+#![doc = "fuji-kt"]
 use fuji::subcommand_entrypoint;
 
 /// `fuji-kt`

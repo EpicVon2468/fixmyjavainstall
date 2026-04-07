@@ -1,9 +1,10 @@
+#![doc = "An enumeration of CPU architectures"]
 use std::fmt::{Display, Formatter, Result};
 
 use clap::ValueEnum;
 use clap::builder::OsStr;
 
-/// An enumeration of CPU Architectures
+/// An enumeration of CPU architectures
 #[derive(ValueEnum, Clone)]
 pub enum Arch {
 	/// 64-bit (amd64)

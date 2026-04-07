@@ -1,3 +1,4 @@
+#![doc = "Java Platform, Standard Edition by Oracle – <https://www.oracle.com/java/>"]
 use std::io::Result;
 
 use crate::jvm::jdk_generic::{generic_download, DownloadJDKArgs};

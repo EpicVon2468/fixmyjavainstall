@@ -1,4 +1,9 @@
 #![allow(clippy::tabs_in_doc_comments)]
+#![doc = "
+Fix Ur Java Install – A JVM & Kotlin management utility.
+
+Developer note: despite these modules being public, THERE IS ABSOLUTELY NO EXPECTATION OF ABI COMPATIBILITY!
+"]
 pub mod arch;
 pub mod cli;
 pub mod cmd_link;

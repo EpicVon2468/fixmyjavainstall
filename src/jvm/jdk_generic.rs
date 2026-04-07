@@ -3,7 +3,7 @@ use std::io::Result;
 use std::path::Path;
 
 use crate::arch::Arch;
-use crate::commands::{download, untar_jdk};
+use crate::commands::{download, extract_jdk};
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
 use crate::os::OS;
 
@@ -49,8 +49,8 @@ pub fn generic_download<S: AsRef<str>>(url: S, args: DownloadJDKArgs) -> Result<
 	};
 	download(url, archive).expect("Couldn't download JDK!");
 
-	println!("Untaring JDK...");
-	untar_jdk(archive, java_home, is_win, args.is_mac()).expect("Couldn't untar JDK!");
+	println!("Extracting JDK...");
+	extract_jdk(archive, java_home, is_win, args.is_mac()).expect("Couldn't extract JDK!");
 
 	println!("Removing JDK archive...");
 	remove_file(archive).expect("Couldn't delete JDK archive!");

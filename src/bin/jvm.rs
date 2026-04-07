@@ -1,3 +1,4 @@
+#![doc = "fuji-jvm"]
 use fuji::subcommand_entrypoint;
 
 /// `fuji-jvm`
