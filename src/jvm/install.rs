@@ -97,7 +97,7 @@ pub fn install(op: Op) -> Result<()> {
 			continue;
 		};
 		// move JAVA_HOME/bin/java(w)(.exe) to a 'backup' file so that programs which try to run JAVA_HOME/bin/java(w)(.exe) literally can't skip the run script
-		rename(&java_executable, java_executable.with_added_extension(".bak"))
+		rename(&java_executable, java_executable.with_added_extension("bak"))
 			.expect("Couldn't backup java executable!");
 		let script_file: PathBuf = install_wrapper(script, java_home, suffix, is_win);
 		// link JAVA_HOME/bin/java(w)(.exe) to JAVA_HOME/bin/fuji_jvm_wrapper

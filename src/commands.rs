@@ -82,10 +82,10 @@ pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 
 	// https://github.com/console-rs/indicatif/blob/main/examples/download.rs
 	let pb: ProgressBar = ProgressBar::new(len);
-	pb.set_style(ProgressStyle::with_template("[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({eta})")
+	pb.set_style(ProgressStyle::with_template("[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})")
 		.unwrap()
 		.with_key("eta", |state: &ProgressState, w: &mut dyn Write| write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap())
-		.progress_chars("#>-"));
+		.progress_chars("=>-"));
 
 	let mut dest: File = File::create(dest).expect("Couldn't open destination file for download!");
 	copy(
