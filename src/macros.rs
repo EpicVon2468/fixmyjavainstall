@@ -2,7 +2,7 @@
 macro_rules! wrong_cmd {
 	($name:ident) => {
 		return core::result::Result::Err(std::io::Error::new(
-			std::io::ErrorKind::InvalidData,
+			std::io::ErrorKind::InvalidInput,
 			concat!("Function ", stringify!($name), "() had wrong parameter!"),
 		));
 	};
@@ -32,7 +32,7 @@ macro_rules! check_status {
 	};
 	($status:ident, $name:literal, $substitute_code:literal) => {
 		if (!$status.success()) {
-			return core::result::Result::Err(std::io::Error::other(format!(
+			return anyhow::Result::Err(anyhow::anyhow!(format!(
 				concat!($name, " failed with exit code: {}"),
 				$status.code().unwrap_or($substitute_code)
 			)));

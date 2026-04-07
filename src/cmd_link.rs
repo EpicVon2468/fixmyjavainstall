@@ -1,12 +1,14 @@
 use std::ffi::OsStr;
 use std::fs::{remove_dir_all, remove_file};
-use std::io::{Error, ErrorKind, Result};
+use std::io::{Error, ErrorKind};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command};
 
+use anyhow::{anyhow, Context, Result};
+
 use crate::cli::Cmd;
 use crate::commands::{has_program, io_expect};
-use crate::{wait_and_check_status, wrong_cmd};
+use crate::wait_and_check_status;
 
 #[cfg(any(not(windows), feature = "multi_os"))]
 pub fn cmd_link(command: Cmd) -> Result<()> {
@@ -17,7 +19,7 @@ pub fn cmd_link(command: Cmd) -> Result<()> {
 		#[cfg(any(target_os = "linux", feature = "multi_os"))]
 		use_update_alternatives,
 	}: Cmd = command else {
-		wrong_cmd!(cmd_link);
+		return Err(anyhow!("Function cmd_link() had wrong parameter!"))
 	};
 	#[cfg(all(windows, not(feature = "multi_os")))]
 	let link_dir: &str = "";
@@ -29,7 +31,7 @@ pub fn cmd_link(command: Cmd) -> Result<()> {
 			&path,
 			&link_dir,
 			use_update_alternatives,
-		).unwrap_or_else(|_| panic!("Failed to link '{}'!", path.display()));
+		).with_context(|| format!("Failed to link '{}'!", path.display()))?;
 	}
 	Ok(())
 }
@@ -51,10 +53,10 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	let can_use_update_alternatives: bool = cfg!(target_os = "linux") && use_update_alternatives && has_program("update-alternatives");
 	if !can_use_update_alternatives && use_update_alternatives {
 		println!("Couldn't find update-alternatives on system when explicitly requested!");
-		return Err(Error::new(
+		return Err::<(), anyhow::Error>(Error::new(
 			ErrorKind::NotFound,
 			"Couldn't find update-alternatives on system when explicitly requested!",
-		));
+		).into());
 	};
 	for entry in bin.read_dir().unwrap_or_else(|_| panic!("{}", io_expect(bin, "list directory"))) {
 		let file: &Path = &entry?.path();
@@ -69,9 +71,9 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 		};
 		let dest: PathBuf = link_dir.as_ref().join(filename);
 		if can_use_update_alternatives {
-			debian_link(file, filename, dest).expect("Couldn't link with update-alternatives!");
+			debian_link(file, filename, dest).context("Couldn't link with update-alternatives!")?;
 		} else {
-			symlink_link(file, dest).expect("Couldn't link with symlink!");
+			symlink_link(file, dest).context("Couldn't link with symlink!")?;
 		};
 	};
 	Ok(())
@@ -81,33 +83,25 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 ///
 /// Implementation notes:
 ///
-/// * if `dest` already exists, it will be removed and [`symlink_impl`] will be called again.
-/// 	* `dest` is not eagerly removed ([`symlink_impl`] is called without checking if `dest` exists already).
-/// 	* If the delegate of [`symlink_impl`] doesn't fail with [`ErrorKind::AlreadyExists`], `dest` is not deleted.
+/// * if `dest` already exists, it will be eagerly removed before [`symlink_impl`] is called.
 /// 	* If `dest` exists and is a directory, [`remove_dir_all`] is used.
 /// 	* If `dest` exists and is a file, [`remove_file`] is used.
-/// 	* if [`symlink_impl`] fails a second time, this function panics.
 pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Result<()> {
 	let source: &Path = source.as_ref();
 	let dest: &Path = dest.as_ref();
-	let result: Result<()> = symlink_impl(source, dest);
-	if let Err(error) = result {
-		if error.kind() == ErrorKind::AlreadyExists {
-			println!("Removing existing path: {}", dest.display());
-
-			let remove: Result<()> = if dest.is_file() {
-				remove_file(dest)
-			} else {
-				remove_dir_all(dest)
-			};
-			remove.unwrap_or_else(|_| panic!("{}", io_expect(dest, "remove")));
-
-			symlink_impl(source, dest).expect("Symbolic linking failed second time, panicking!");
+	if dest.exists() {
+		if dest.is_file() {
+			remove_file(dest)
 		} else {
-			return Err(error);
-		};
+			remove_dir_all(dest)
+		}.with_context(|| format!("Couldn't remove existing path '{}'!", dest.display()))?;
 	};
-	Ok(())
+	symlink_impl(source, dest).with_context(||
+		format!(
+			"Couldn't perform symbolic linking! (source: '{}', dest: '{}')",
+			source.display(), dest.display()
+		)
+	)
 }
 
 /// Cross-platform function for symbolic linking.
@@ -120,16 +114,16 @@ pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Resul
 pub fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Result<()> {
 	#[cfg(unix)] {
 		use std::os::unix::fs::symlink;
-		symlink(original, link)
+		symlink(original, link).context("UNIX symbolic linking failed!")
 	}
 	#[cfg(windows)] {
 		use std::os::windows::fs::{symlink_dir, symlink_file};
 		return if original.as_ref().is_dir() {
 			// https://doc.rust-lang.org/std/os/windows/fs/fn.symlink_dir.html
-			symlink_dir(original, link)
+			symlink_dir(original, link).context("Windows directory symbolic linking failed!")
 		} else {
 			// https://doc.rust-lang.org/std/os/windows/fs/fn.symlink_file.html
-			symlink_file(original, link)
+			symlink_file(original, link).context("Windows file symbolic linking failed!")
 		};
 	}
 }

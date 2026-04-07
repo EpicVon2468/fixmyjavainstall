@@ -21,6 +21,8 @@ pub mod win_link;
 use std::env::{args_os, set_var};
 use std::ffi::OsString;
 
+use anyhow::Result;
+
 use clap::Parser;
 
 use crate::cli::{Arguments, Cmd};
@@ -42,15 +44,14 @@ pub const FUJI_DIR: &str = if cfg!(windows) {
 	"/opt/fuji"
 };
 
-pub fn subcommand_entrypoint(extras: &[OsString]) {
+pub fn subcommand_entrypoint(extras: &[OsString]) -> Result<()> {
 	let mut args: Vec<OsString> = vec!["fuji".into()];
 	args.extend_from_slice(extras);
 	args.extend_from_slice(&args_os().skip(1).collect::<Vec<OsString>>());
-	entrypoint(Arguments::parse_from(args));
+	entrypoint(Arguments::parse_from(args))
 }
 
-// TODO: https://crates.io/crates/anyhow/
-pub fn entrypoint(args: Arguments) {
+pub fn entrypoint(args: Arguments) -> Result<()> {
 	if cfg!(windows) {
 		// Ever heard of "Never judge a book by is cover" ?
 		// It's about how you should judge based on the content of something, not what is on the outside
@@ -65,10 +66,11 @@ pub fn entrypoint(args: Arguments) {
 	if let Some(command) = args.command {
 		match command {
 			#[cfg(any(not(windows), feature = "multi_os"))]
-			Cmd::Link { .. } => cmd_link(command).unwrap(),
-			Cmd::Manage { .. } => cmd_manage(command).unwrap(),
-			Cmd::Preset { .. } => cmd_preset(command).unwrap(),
-			Cmd::Manual { .. } => cmd_man(command).unwrap(),
+			Cmd::Link { .. } => cmd_link(command)?,
+			Cmd::Manage { .. } => cmd_manage(command)?,
+			Cmd::Preset { .. } => cmd_preset(command)?,
+			Cmd::Manual { .. } => cmd_man(command)?,
 		};
 	};
+	Ok(())
 }
