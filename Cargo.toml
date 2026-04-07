@@ -1,7 +1,7 @@
 [package]
 name = "fuji"
 authors = ["Mavity The Madity"]
-version = "0.1.3"
+version = "0.1.4"
 edition = "2024"
 repository = "https://github.com/EpicVon2468/fixmyjavainstall/"
 homepage = "https://github.com/EpicVon2468/fixmyjavainstall/"
