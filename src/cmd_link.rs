@@ -3,13 +3,13 @@ use std::fs::{remove_dir_all, remove_file};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command};
 
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result};
 
 use indicatif::ProgressBar;
 
 use crate::cli::Cmd;
 use crate::commands::{has_program, io_failure, progress_bar};
-use crate::wait_and_check_status;
+use crate::{wait_and_check_status, wrong_cmd};
 
 #[cfg(any(not(windows), feature = "multi_os"))]
 pub fn cmd_link(command: Cmd) -> Result<()> {
@@ -20,15 +20,14 @@ pub fn cmd_link(command: Cmd) -> Result<()> {
 		#[cfg(any(target_os = "linux", feature = "multi_os"))]
 		use_update_alternatives,
 	}: Cmd = command else {
-		return Err(anyhow!("Function cmd_link() had wrong parameter!"))
+		wrong_cmd!(cmd_link);
 	};
 	#[cfg(all(windows, not(feature = "multi_os")))]
-	let link_dir: &str = "";
+	let link_dir: String = "".into();
 	#[cfg(all(not(target_os = "linux"), not(feature = "multi_os")))]
 	let use_update_alternatives: bool = false;
 	for path in paths {
 		println!("Linking {}...", path.display());
-		#[allow(clippy::needless_borrows_for_generic_args)]
 		link_impl(
 			&path,
 			&link_dir,
@@ -39,7 +38,6 @@ pub fn cmd_link(command: Cmd) -> Result<()> {
 	Ok(())
 }
 
-#[allow(unused_variables)]
 pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	path: P,
 	link_dir: S,
@@ -49,10 +47,8 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	println!("Linking path: {}", path.display());
 	let bin: PathBuf = path.join("bin");
 
-	#[cfg(windows)] {
-		crate::win_link::win_link(bin)?;
-		return Ok(());
-	};
+	#[cfg(windows)]
+	return crate::win_link::win_link(bin.to_str().context("I hate Windows")?);
 
 	#[allow(unreachable_code)]
 	let can_use_update_alternatives: bool = cfg!(target_os = "linux") && use_update_alternatives && has_program("update-alternatives");

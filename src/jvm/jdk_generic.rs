@@ -8,7 +8,7 @@ use crate::commands::{download, extract_jdk};
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
 use crate::os::OS;
 
-pub type DownloadJDKFn = fn(arg: DownloadJDKArgs) -> Result<()>;
+pub type DownloadJDKFn = fn(args: DownloadJDKArgs) -> Result<()>;
 
 pub struct DownloadJDKArgs<'a> {
 	pub arch: Arch,
