@@ -1,4 +1,4 @@
-use std::io::Result;
+use anyhow::{Context, Result};
 
 use crate::cli::{Cmd, Preset, Software};
 use crate::cmd_manage::cmd_manage;
@@ -79,10 +79,15 @@ fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 	features.push(Feature::JEP519);
 	#[cfg(target_os = "linux")] {
 		use std::env::var;
-		use std::fs::DirEntry;
+		use std::fs::{DirEntry, ReadDir};
 		use std::path::Path;
+		use crate::commands::io_expect;
 
-		if Path::new("/proc/driver").read_dir()?.any(|entry: Result<DirEntry>| {
+		let path: &str = "/proc/driver";
+		let mut dir: ReadDir = Path::new(path)
+			.read_dir()
+			.with_context(|| io_expect(path, "list directory"))?;
+		if dir.any(|entry: std::io::Result<DirEntry>| {
 			entry
 				.expect("Couldn't check for NVIDIA drivers!")
 				.file_name()

@@ -1,6 +1,5 @@
 use std::ffi::OsStr;
 use std::fs::{remove_dir_all, remove_file};
-use std::io::{Error, ErrorKind};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command};
 
@@ -52,23 +51,17 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	#[allow(unreachable_code)]
 	let can_use_update_alternatives: bool = cfg!(target_os = "linux") && use_update_alternatives && has_program("update-alternatives");
 	if !can_use_update_alternatives && use_update_alternatives {
-		println!("Couldn't find update-alternatives on system when explicitly requested!");
-		return Err::<(), anyhow::Error>(Error::new(
-			ErrorKind::NotFound,
+		return Err(std::io::Error::new(
+			std::io::ErrorKind::NotFound,
 			"Couldn't find update-alternatives on system when explicitly requested!",
 		).into());
 	};
-	for entry in bin.read_dir().unwrap_or_else(|_| panic!("{}", io_expect(bin, "list directory"))) {
+	for entry in bin.read_dir().with_context(|| io_expect(bin, "list directory"))? {
 		let file: &Path = &entry?.path();
-		// TODO: '--quiet'
-		println!("\n{}", file.display());
 		if file.is_dir() {
 			continue;
 		};
-		let Some(filename): Option<&OsStr> = file.file_name() else {
-			println!("Filename was none! '{}'", file.display());
-			continue;
-		};
+		let filename: &OsStr = file.file_name().context("Couldn't get filename for directory entry!")?;
 		let dest: PathBuf = link_dir.as_ref().join(filename);
 		if can_use_update_alternatives {
 			debian_link(file, filename, dest).context("Couldn't link with update-alternatives!")?;
@@ -143,14 +136,14 @@ pub fn debian_link<P: AsRef<Path>, S: AsRef<OsStr>, S2: AsRef<OsStr>>(
 		.arg(file)
 		.arg("4000")
 		.spawn()
-		.expect("Couldn't start update-alternatives!");
+		.context("Couldn't start update-alternatives!")?;
 	wait_and_check_status!(install_child, "update-alternatives");
 	let mut set_child: Child = Command::new("update-alternatives")
 		.arg("--set")
 		.arg(filename)
 		.arg(file)
 		.spawn()
-		.expect("Couldn't start update-alternatives!");
+		.context("Couldn't start update-alternatives!")?;
 	wait_and_check_status!(set_child, "update-alternatives");
 	Ok(())
 }

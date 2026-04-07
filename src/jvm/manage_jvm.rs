@@ -1,4 +1,4 @@
-use std::io::Result;
+use anyhow::Result;
 
 use clap::{Subcommand, ValueEnum};
 
@@ -70,7 +70,7 @@ pub fn manage_jvm(software: Software) -> Result<()> {
 		wrong_cmd!(manage_jvm);
 	};
 	match op {
-		Op::Install { .. } => return install(op),
+		Op::Install { .. } => install(op)?,
 		Op::Remove => {},
 	};
 	Ok(())

@@ -18,7 +18,7 @@ pub mod os;
 #[cfg(windows)]
 pub mod win_link;
 
-use std::env::{args_os, set_var};
+use std::env::args_os;
 use std::ffi::OsString;
 
 use anyhow::Result;
@@ -58,10 +58,14 @@ pub fn entrypoint(args: Arguments) -> Result<()> {
 		// Windows saw that, and said "Okay, but what if we made file extensions matter for execution instead?"
 		panic!("https://learn.microsoft.com/en-gb/windows/wsl/install/");
 	};
-	#[allow(unreachable_code)]
-	// Doing this when trying to run the binary didn't work
-	unsafe {
-		set_var("RUST_BACKTRACE", "1");
+	#[cfg(feature = "dev")] {
+		use std::env::{set_var, var};
+
+		if var("RUST_BACKTRACE").is_err() {
+			unsafe {
+				set_var("RUST_BACKTRACE", "1");
+			};
+		};
 	};
 	if let Some(command) = args.command {
 		match command {

@@ -1,4 +1,4 @@
-use std::io::Result;
+use anyhow::Result;
 
 use crate::cli::{Cmd, Software};
 use crate::jvm::manage_jvm::manage_jvm;
@@ -12,7 +12,7 @@ pub fn cmd_manage(command: Cmd) -> Result<()> {
 	};
 	if let Some(software) = option {
 		match software {
-			Software::JVM { .. } => return manage_jvm(software),
+			Software::JVM { .. } => manage_jvm(software)?,
 			Software::Kotlin { .. } => {},
 			Software::KotlinNative { .. } => {},
 		};
