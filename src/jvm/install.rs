@@ -45,20 +45,18 @@ pub fn install(op: Op) -> Result<()> {
 		);
 		ureq::get(uri)
 			.call()
-			.context("Couldn't connect to URL!")?
+			.context("No JDK was available with the requested version!")?
 			.body_mut()
 			.read_json()
-			.context("Couldn't parse JSON from response!")?
+			.context("Couldn't read JDK version information!")?
 	};
 	// FUJI_DIR/jvm/{version}
 	let java_home: &Path = &Path::new(FUJI_DIR).join("jvm").join(&java_version.major);
 	if !dry_run {
 		if exists(java_home)? {
-			remove_dir_all(java_home)
-				.with_context(|| io_failure(java_home, "remove directory"))?;
+			remove_dir_all(java_home).with_context(|| io_failure(java_home, "remove directory"))?;
 		};
-		create_dir_all(java_home)
-			.with_context(|| io_failure(java_home, "create directory"))?;
+		create_dir_all(java_home).with_context(|| io_failure(java_home, "create directory"))?;
 	};
 	let download_jdk: DownloadJDKFn = match jdk {
 		JDK::Auto => todo!(),
@@ -118,8 +116,7 @@ pub fn install(op: Op) -> Result<()> {
 	symlink_link(java_home, Path::new(FUJI_DIR).join("jvm").join("latest"))
 		.context("Couldn't symbolically link FUJI_DIR/jvm/latest to current install directory!")?;
 	println!("Installing {}/bin...", java_home.display());
-	link_impl(java_home, "/usr/bin", false)
-		.context("Couldn't install JAVA_HOME!")?;
+	link_impl(java_home, "/usr/bin", false).context("Couldn't install JAVA_HOME!")?;
 	println!("Done.\n");
 	#[cfg(target_os = "linux")] {
 		use std::fs::File;
