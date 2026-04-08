@@ -16,6 +16,16 @@ pub enum OS {
 	Windows,
 }
 
+impl OS {
+
+	#[cfg(target_os = "linux")]
+	pub const SYSTEM: OS = OS::Linux;
+	#[cfg(target_os = "macos")]
+	pub const SYSTEM: OS = OS::OSX;
+	#[cfg(target_os = "windows")]
+	pub const SYSTEM: OS = OS::Windows;
+}
+
 impl From<OS> for OsStr {
 
 	fn from(value: OS) -> Self {
@@ -37,10 +47,3 @@ impl Display for OS {
 		)
 	}
 }
-
-#[cfg(target_os = "linux")]
-pub const SYSTEM: OS = OS::Linux;
-#[cfg(target_os = "macos")]
-pub const SYSTEM: OS = OS::OSX;
-#[cfg(target_os = "windows")]
-pub const SYSTEM: OS = OS::Windows;

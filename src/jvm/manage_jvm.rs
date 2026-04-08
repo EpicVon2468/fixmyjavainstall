@@ -28,7 +28,7 @@ pub enum Op {
 		#[arg(
 			short,
 			long,
-			default_value = crate::arch::SYSTEM,
+			default_value = Arch::SYSTEM,
 		)]
 		arch: Arch,
 
@@ -38,7 +38,7 @@ pub enum Op {
 			short,
 			long,
 			alias = "os",
-			default_value = crate::os::SYSTEM,
+			default_value = OS::SYSTEM,
 		)]
 		operating_system: OS,
 

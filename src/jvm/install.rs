@@ -31,7 +31,7 @@ pub fn install(op: Op) -> Result<()> {
 		wrong_cmd!(install);
 	};
 	#[cfg(not(feature = "multi_os"))]
-	let operating_system: OS = crate::os::SYSTEM;
+	let operating_system: OS = OS::SYSTEM;
 	// Temurin & Java SE both only need major version, except for LTS/Latest where we return the major version from our endpoint
 	let java_version: JavaVersion = if (jdk == JDK::Temurin || jdk == JDK::JavaSE) && let MajorVersion::Number(version) = version {
 		JavaVersion {

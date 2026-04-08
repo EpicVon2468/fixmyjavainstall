@@ -15,6 +15,16 @@ pub enum Arch {
 	Riscv64,
 }
 
+impl Arch {
+
+	#[cfg(target_arch = "x86_64")]
+	pub const SYSTEM: Arch = Arch::X64;
+	#[cfg(any(target_arch = "aarch64", target_arch = "arm"))]
+	pub const SYSTEM: Arch = Arch::Aarch64;
+	#[cfg(target_arch = "riscv64")]
+	pub const SYSTEM: Arch = Arch::Riscv64;
+}
+
 impl From<Arch> for OsStr {
 
 	fn from(value: Arch) -> Self {
@@ -36,10 +46,3 @@ impl Display for Arch {
 		)
 	}
 }
-
-#[cfg(target_arch = "x86_64")]
-pub const SYSTEM: Arch = Arch::X64;
-#[cfg(any(target_arch = "aarch64", target_arch = "arm"))]
-pub const SYSTEM: Arch = Arch::Aarch64;
-#[cfg(target_arch = "riscv64")]
-pub const SYSTEM: Arch = Arch::Riscv64;

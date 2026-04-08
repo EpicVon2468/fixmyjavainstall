@@ -1,10 +1,13 @@
 use anyhow::{Context, Result};
 
+use crate::arch::Arch;
 use crate::cli::{Cmd, Preset, Software};
 use crate::cmd_manage::cmd_manage;
 use crate::jvm::jdk::JDK;
 use crate::jvm::major_version::MajorVersion;
 use crate::jvm::manage_jvm::{Feature, Op};
+#[cfg(feature = "multi_os")]
+use crate::os::OS;
 use crate::wrong_cmd;
 
 pub fn cmd_preset(cmd: Cmd) -> Result<()> {
@@ -20,7 +23,7 @@ pub fn cmd_preset(cmd: Cmd) -> Result<()> {
 		Preset::FastJDK => preset_fast(false),
 		Preset::LatestJRE => preset_latest(true),
 		Preset::LatestJDK => preset_latest(false),
-	}
+	}.context("Couldn't install preset!")
 }
 
 fn features(minimal: bool) -> Vec<Feature> {
@@ -44,9 +47,9 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 		software: Software::JVM {
 			op: Op::Install {
 				jdk: JDK::JBR,
-				arch: crate::arch::SYSTEM,
+				arch: Arch::SYSTEM,
 				#[cfg(feature = "multi_os")]
-				operating_system: crate::os::SYSTEM,
+				operating_system: OS::SYSTEM,
 				features,
 				include_kotlin: true,
 				dry_run: false,
@@ -63,9 +66,9 @@ fn preset_fast(minimal: bool) -> Result<()> {
 		software: Software::JVM {
 			op: Op::Install {
 				jdk: JDK::JBR,
-				arch: crate::arch::SYSTEM,
+				arch: Arch::SYSTEM,
 				#[cfg(feature = "multi_os")]
-				operating_system: crate::os::SYSTEM,
+				operating_system: OS::SYSTEM,
 				features,
 				include_kotlin: false,
 				dry_run: false,
@@ -119,9 +122,9 @@ fn preset_latest(minimal: bool) -> Result<()> {
 			op: Op::Install {
 				// FIXME: need to implement JDK::Auto so I don't have to default to JavaSE
 				jdk: JDK::JavaSE,
-				arch: crate::arch::SYSTEM,
+				arch: Arch::SYSTEM,
 				#[cfg(feature = "multi_os")]
-				operating_system: crate::os::SYSTEM,
+				operating_system: OS::SYSTEM,
 				features: features(minimal),
 				include_kotlin: false,
 				dry_run: false,
