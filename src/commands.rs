@@ -18,6 +18,8 @@ use ureq::{get, Body};
 
 use which::which;
 
+use zip::ZipArchive;
+
 /// Checks if the program `name` exists.  This is equivalent to `which(name).is_ok()`.
 pub fn has_program(name: &str) -> bool {
 	which(name).is_ok()
@@ -36,11 +38,11 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 	is_zip: bool,
 	is_mac: bool,
 ) -> Result<()> {
-	if is_zip {
-		panic!("no.");
-	};
 	let dest: PathBuf = dest.as_ref().canonicalize().context("Couldn't canonicalise destination path!")?;
 	let input: File = File::open(archive.as_ref()).context("Couldn't open JDK archive!")?;
+	if is_zip {
+		return _extract_jdk_zip(dest, input);
+	};
 	let max_len: u64 = input.metadata()?.len();
 	let pb: ProgressBar = progress_bar(max_len);
 	let mut progress: u64 = 0;
@@ -70,6 +72,14 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 	pb.finish();
 	println!("Done.\n");
 	Ok(())
+}
+
+// TODO: progress bar
+fn _extract_jdk_zip(dest: PathBuf, input: File) -> Result<()> {
+	let mut result: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JDK archive (ZIP)!")?;
+	result.extract_unwrapped_root_dir(dest, |path: &Path| {
+		path.components().count() == 1
+	}).context("Couldn't extract JDK archive (ZIP)!")
 }
 
 /// Downloads a resource from `url` to `dest`.
