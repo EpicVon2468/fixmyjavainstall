@@ -49,11 +49,16 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 	let mut reader: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
 	for entry in reader.entries().context("Couldn't iterate through JDK archive!")? {
 		let mut entry: Entry<GzDecoder<File>> = entry.context("Couldn't get entry in JDK archive!")?;
+		entry.set_unpack_xattrs(true);
+		entry.set_preserve_permissions(true);
 		let path: Cow<Path> = entry.path().context("Couldn't get path for entry in JDK archive!")?;
 		let mut components: Components = path.components();
 		// https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
 		// --strip-components 1
 		components.next();
+		if components.clone().any(|c: Component| c == Component::ParentDir) {
+			panic!("Component::ParentDir found!");
+		};
 		// macOS .tar.gz is laid out differently.  it's a '.app'...
 		if is_mac {
 			// skip "Contents"

@@ -14,7 +14,6 @@ NOTICE: You must run with `sudo -E` to preserve environment variables, else some
   - `/usr/local/bin` is not on default path.
 - Windows: `[BROKEN]-[TESTED]`
   - Symbolic links for `%JAVA_HOME%\bin\java.exe` & `%JAVA_HOME%\bin\javaw.exe` don't work and can't be fixed.
-  - Another dependency is needed for `.zip` file extraction.
   - Despite being quoted, `"\Program Files\fuji\jvm\25"` isn't treated as one path, as batch fails to handle the space in `Program Files`.
 
 ## Installation:
