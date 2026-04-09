@@ -40,9 +40,16 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 ) -> Result<()> {
 	let dest: PathBuf = dest.as_ref().canonicalize().context("Couldn't canonicalise destination path!")?;
 	let input: File = File::open(archive.as_ref()).context("Couldn't open JDK archive!")?;
-	if is_zip {
-		return _extract_jdk_zip(dest, input, is_mac);
+	let result: Result<()> = if is_zip {
+		_extract_jdk_zip(dest, input, is_mac)
+	} else {
+		_extract_jdk_tar_gz(dest, input, is_mac)
 	};
+	println!("Done.\n");
+	result
+}
+
+fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	let max_len: u64 = input.metadata()?.len();
 	let pb: ProgressBar = progress_bar(max_len);
 	let mut progress: u64 = 0;
@@ -64,7 +71,6 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 		pb.set_position(progress);
 	};
 	pb.finish();
-	println!("Done.\n");
 	Ok(())
 }
 

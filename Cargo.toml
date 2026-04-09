@@ -30,10 +30,10 @@ which = "8.0.2"
 windows-registry = "0.6.1"
 tar = "0.4.45"
 flate2 = "1.1.9"
-ureq = { version = "3.3.0", features = ["json"] }
-indicatif = "0.18.4"
+ureq = { version = "3.3.0", features = ["json", "rustls"], default-features = false }
+indicatif = { version = "0.18.4", features = ["improved_unicode"], default-features = false }
 anyhow = "1.0.102"
-zip = { version = "8.5.1", features = ["deflate-flate2", "time", "chrono"], default-features = false }
+zip = { version = "8.5.1", features = ["deflate-flate2"], default-features = false }
 
 # The profile that 'dist' will build with
 [profile.dist]
