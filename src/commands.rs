@@ -92,6 +92,7 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 				if entry.is_dir() {
 					create_dir_all(resolved).context("create_dir_all (zip)")?;
 				} else {
+					// TODO: wrap in second progress bar?
 					copy(
 						&mut entry,
 						&mut File::create(resolved).context("File::create (zip)")?,

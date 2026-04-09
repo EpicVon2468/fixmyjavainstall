@@ -1,3 +1,4 @@
+use std::cmp::min;
 use std::ffi::OsStr;
 use std::fs::{remove_dir_all, remove_file};
 use std::path::{Path, PathBuf};
@@ -58,8 +59,10 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 			"Couldn't find update-alternatives on system when explicitly requested!",
 		).into());
 	};
-	let pb: ProgressBar = progress_bar(bin.metadata()?.len());
-	for entry in pb.wrap_iter(bin.read_dir().with_context(|| io_failure(bin, "list directory"))?) {
+	let max_len: u64 = bin.metadata()?.len();
+	let pb: ProgressBar = progress_bar(max_len);
+	let mut progress: u64 = 0;
+	for entry in bin.read_dir().with_context(|| io_failure(bin, "list directory"))? {
 		let file: &Path = &entry?.path();
 		if file.is_dir() {
 			continue;
@@ -71,6 +74,8 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 		} else {
 			symlink_link(file, dest).context("Couldn't link with symlink!")?;
 		};
+		progress = min(progress + file.metadata()?.len(), max_len);
+		pb.set_position(progress);
 	};
 	pb.finish();
 	Ok(())
