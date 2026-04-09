@@ -1,3 +1,16 @@
+//! The modules responsible for (un)installing & managing the Java Virtual Machine.
+//!
+//! The modules are laid out as related to the following groups:
+//!
+//! <details><summary>JDKs:</summary>
+//!
+//! * [`jdk`] – The enumeration of supported JDKs.
+//! * [`jdk_generic`] – I don't even know at this point.
+//! * [`jdk_java_se`] – The download handler for [`Java SE`][`jdk::JDK::JavaSE`].
+//! * [`jdk_jbr`] – The download handler for [`JetBrains Runtime`][`jdk::JDK::JBR`].
+//! * [`jdk_liberica`] – The download handler for [`Liberica JDK`][`jdk::JDK::Liberica`].
+//! * [`jdk_temurin`] – The download handler for [`Eclipse Temurin`][`jdk::JDK::Temurin`].
+//! </details>
 #[cfg(target_os = "linux")]
 pub mod desktop;
 pub mod install;

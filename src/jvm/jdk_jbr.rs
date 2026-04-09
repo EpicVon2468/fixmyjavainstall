@@ -1,4 +1,4 @@
-#![doc = "JetBrains Runtime by JetBrains – <https://github.com/JetBrains/JetBrainsRuntime/>"]
+//! JetBrains Runtime by JetBrains – <https://github.com/JetBrains/JetBrainsRuntime/>
 use anyhow::Result;
 
 use crate::jvm::jdk_generic::{generic_download, DownloadJDKArgs};

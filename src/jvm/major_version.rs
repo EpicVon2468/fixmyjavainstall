@@ -1,3 +1,4 @@
+//! An enumeration data structure for representing major JVM versions
 use std::ffi::{OsStr, OsString};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;

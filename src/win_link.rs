@@ -1,5 +1,5 @@
 #![cfg(windows)]
-#![doc = "DO NOT TOUCH THIS FILE!  SERIOUSLY!  EVEN IF YOU HAVE VALID IMPROVEMENTS!  IT'S NOT WORTH IT!!!"]
+#![doc = include_str!("../.ihatewindows")]
 use anyhow::{Context, Result};
 
 macro_rules! open_env {

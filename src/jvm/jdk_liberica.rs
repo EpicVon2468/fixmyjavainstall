@@ -1,4 +1,4 @@
-#![doc = "Liberica by BellSoft – <https://bell-sw.com/libericajdk/>"]
+//! Liberica by BellSoft – <https://bell-sw.com/libericajdk/>
 use anyhow::Result;
 
 use crate::jvm::jdk_generic::{generic_download, DownloadJDKArgs};

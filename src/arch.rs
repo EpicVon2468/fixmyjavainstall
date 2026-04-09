@@ -1,4 +1,4 @@
-#![doc = "An enumeration of CPU architectures"]
+//! An enumeration of CPU architectures
 use std::fmt::{Display, Formatter, Result};
 
 use clap::ValueEnum;

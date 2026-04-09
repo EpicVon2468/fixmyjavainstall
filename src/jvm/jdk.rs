@@ -1,4 +1,4 @@
-#![doc = "An enumeration of JDKS"]
+//! An enumeration of JDKs
 use std::fmt::{Display, Formatter, Result};
 
 use clap::ValueEnum;
@@ -12,7 +12,7 @@ macro_rules! clap_doc {
 	};
 }
 
-/// An enumeration of JDKS
+/// An enumeration of JDKs
 #[derive(ValueEnum, Clone, PartialEq)]
 pub enum JDK {
 	/// Automagically pick the best JDK based on the requested version and features

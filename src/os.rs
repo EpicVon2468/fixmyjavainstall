@@ -1,4 +1,4 @@
-#![doc = "An enumeration of operating systems"]
+//! An enumeration of operating systems
 use std::fmt::{Display, Formatter, Result};
 
 use clap::ValueEnum;

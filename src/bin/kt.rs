@@ -1,4 +1,4 @@
-#![doc = "fuji-kt"]
+//! `fuji-kt`
 use anyhow::Result;
 
 use fuji::subcommand_entrypoint;

@@ -1,4 +1,4 @@
-#![doc = "Java Platform, Standard Edition by Oracle – <https://www.oracle.com/java/>"]
+//! Java Platform, Standard Edition by Oracle – <https://www.oracle.com/java/>
 use anyhow::Result;
 
 use crate::jvm::jdk_generic::{generic_download, DownloadJDKArgs};

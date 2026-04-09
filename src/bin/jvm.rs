@@ -1,4 +1,4 @@
-#![doc = "fuji-jvm"]
+//! `fuji-jvm`
 use anyhow::Result;
 
 use fuji::subcommand_entrypoint;
