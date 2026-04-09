@@ -56,7 +56,6 @@ fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	let mut reader: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
 	for entry in reader.entries().context("Couldn't iterate through JDK archive!")? {
 		let mut entry: Entry<GzDecoder<File>> = entry.context("Couldn't get entry in JDK archive!")?;
-		entry.set_unpack_xattrs(true);
 		entry.set_preserve_permissions(true);
 		_extract_jdk(
 			&dest,
