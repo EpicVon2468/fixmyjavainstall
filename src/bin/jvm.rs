@@ -1,4 +1,4 @@
-//! `fuji-jvm`
+//! The `fuji-jvm` binary.  Equivalent to running `fuji manage jvm`.
 use anyhow::Result;
 
 use fuji::subcommand_entrypoint;

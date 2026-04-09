@@ -1,4 +1,4 @@
-use std::fs::{create_dir_all, exists, remove_dir_all, rename};
+use std::fs::{create_dir_all, remove_dir_all, remove_file, rename};
 use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
@@ -15,7 +15,7 @@ use crate::jvm::major_version::MajorVersion;
 use crate::jvm::manage_jvm::{JavaVersion, Op};
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
 use crate::os::OS;
-use crate::{FUJI_DIR, wrong_cmd};
+use crate::{wrong_cmd, FUJI_DIR};
 
 pub fn install(op: Op) -> Result<()> {
 	let Op::Install {
@@ -53,8 +53,12 @@ pub fn install(op: Op) -> Result<()> {
 	// FUJI_DIR/jvm/{version}
 	let java_home: &Path = &Path::new(FUJI_DIR).join("jvm").join(&java_version.major);
 	if !dry_run {
-		if exists(java_home)? {
-			remove_dir_all(java_home).with_context(|| io_failure(java_home, "remove directory"))?;
+		if java_home.exists() {
+			if java_home.is_dir() {
+				remove_dir_all(java_home)
+			} else {
+				remove_file(java_home)
+			}.with_context(|| io_failure(java_home, "remove")).context("Couldn't remove entry which was occupying the new JAVA_HOME!")?;
 		};
 		create_dir_all(java_home).with_context(|| io_failure(java_home, "create directory"))?;
 	};
@@ -140,11 +144,11 @@ pub fn install(op: Op) -> Result<()> {
 						"Couldn't write to '/usr/share/applications/",
 						$output,
 						"'!"
-					))?
+					))?;
 			};
 		}
 		desktop_entry!("fuji.java.desktop", FREEDESKTOP_ENTRY);
-		desktop_entry!("fuji.java.terminal.desktop", FREEDESKTOP_ENTRY_TERMINAL)
+		desktop_entry!("fuji.java.terminal.desktop", FREEDESKTOP_ENTRY_TERMINAL);
 	};
 	Ok(())
 }

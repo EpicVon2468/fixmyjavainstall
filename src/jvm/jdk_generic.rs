@@ -19,7 +19,7 @@ pub struct DownloadJDKArgs<'a> {
 	pub dry_run: bool,
 }
 
-impl<'a> DownloadJDKArgs<'a> {
+impl DownloadJDKArgs<'_> {
 
 	pub fn is_win(&self) -> bool {
 		self.os == OS::Windows

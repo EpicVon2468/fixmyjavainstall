@@ -1,7 +1,7 @@
 #![allow(clippy::tabs_in_doc_comments)]
 //! Fix Ur Java Install – A JVM & Kotlin management utility.
 //!
-//! Developer note: despite these modules being public, THERE IS ABSOLUTELY NO EXPECTATION OF ABI COMPATIBILITY!
+//! Developer note: Expect regular breaking changes; Do not depend on `libfuji` as a stable API!
 pub mod arch;
 pub mod cli;
 pub mod cmd_link;
@@ -50,8 +50,8 @@ pub fn subcommand_entrypoint(extras: &[OsString]) -> Result<()> {
 }
 
 pub fn entrypoint(args: Arguments) -> Result<()> {
-	dbg!(env!("CARGO_PKG_NAME"));
-	dbg!(env!("CARGO_PKG_VERSION"));
+	// dbg!(env!("CARGO_PKG_NAME"));
+	// dbg!(env!("CARGO_PKG_VERSION"));
 	if cfg!(windows) {
 		// Ever heard of "Never judge a book by is cover" ?
 		// It's about how you should judge based on the content of something, not what is on the outside

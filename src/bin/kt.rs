@@ -1,4 +1,4 @@
-//! `fuji-kt`
+//! The `fuji-kt` binary.  Equivalent to running `fuji manage kotlin`.
 use anyhow::Result;
 
 use fuji::subcommand_entrypoint;

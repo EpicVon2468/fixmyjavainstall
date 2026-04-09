@@ -162,7 +162,8 @@ fn gen_features(
 
 pub fn install_wrapper(script: String, java_home: &Path, bin_suffix: &str, is_win: bool) -> Result<PathBuf> {
 	let script_file: PathBuf = java_home.join("bin").join(
-		format!("fuji_jvm_wrapper{bin_suffix}{}", if is_win { ".bat" } else { "" })
+		// fuji_java_wrapper instead of fuji_jvm_wrapper so anything grepping through `ps aux` will still definitely find it
+		format!("fuji_java_wrapper{bin_suffix}{}", if is_win { ".bat" } else { "" })
 	);
 	let mut result: File = OpenOptions::new()
 		.write(true)

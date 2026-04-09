@@ -89,6 +89,7 @@ pub enum Software {
 	/// Manages the Java Virtual Machine – <https://www.java.com/>
 	#[clap(
 		display_name = "fuji-jvm",
+		alias = "java",
 		author = "Mavity The Madity",
 	)]
 	JVM {
