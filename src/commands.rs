@@ -70,8 +70,10 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 
 fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	let mut result: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JDK archive (ZIP)!")?;
-	let pb: ProgressBar = progress_bar(result.len() as u64);
-	for index in pb.wrap_iter(0..result.len()) {
+	let max_len: u64 = result.decompressed_size().unwrap() as u64;
+	let pb: ProgressBar = progress_bar(max_len);
+	let mut progress: u64 = 0;
+	for index in 0..result.len() {
 		let mut entry: ZipFile<File> = result.by_index(index).context("Couldn't get entry in JDK archive (ZIP)!")?;
 		if entry.is_symlink() {
 			println!("Absolutely not go fuck yourself");
@@ -99,6 +101,8 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 				Ok(())
 			},
 		)?;
+		progress = min(progress + entry.size(), max_len);
+		pb.set_position(progress);
 	};
 	pb.finish();
 	Ok(())
