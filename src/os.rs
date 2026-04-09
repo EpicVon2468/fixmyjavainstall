@@ -1,4 +1,8 @@
-//! An enumeration of operating systems
+//! An enumeration of operating systems.
+//!
+//! The static constant [`OS::SYSTEM`] may provide the host OS on some targets.
+//!
+//!	The user-facing `multi-os` feature allows this enumeration to be used to configure installations.
 use std::fmt::{Display, Formatter, Result};
 
 use clap::ValueEnum;
@@ -22,12 +26,22 @@ pub enum OS {
 
 impl OS {
 
+	/// The [`OS`] of the host – Linux.
 	#[cfg(target_os = "linux")]
 	pub const SYSTEM: OS = OS::Linux;
+	/// The [`OS`] of the host – macOS.
 	#[cfg(target_os = "macos")]
 	pub const SYSTEM: OS = OS::OSX;
+	/// The [`OS`] of the host – Windows.
 	#[cfg(target_os = "windows")]
 	pub const SYSTEM: OS = OS::Windows;
+	/// The [`OS`] of the host – Unsupported, panic!
+	#[cfg(all(
+		not(target_os = "linux"),
+		not(target_os = "macos"),
+		not(target_os = "windows"),
+	))]
+	pub const SYSTEM: OS = panic!("Unsupported host OS!");
 }
 
 impl From<OS> for OsStr {
