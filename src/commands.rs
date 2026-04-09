@@ -1,7 +1,7 @@
 use std::borrow::Cow;
 use std::cmp::min;
 use std::fmt::Write;
-use std::fs::File;
+use std::fs::{create_dir_all, set_permissions, File, Permissions};
 use std::io::copy;
 use std::path::{Component, Components, Path, PathBuf};
 
@@ -74,12 +74,36 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 	Ok(())
 }
 
-// TODO: progress bar
 fn _extract_jdk_zip(dest: PathBuf, input: File) -> Result<()> {
 	let mut result: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JDK archive (ZIP)!")?;
-	result.extract_unwrapped_root_dir(dest, |path: &Path| {
-		path.components().count() == 1
-	}).context("Couldn't extract JDK archive (ZIP)!")
+	let pb: ProgressBar = progress_bar(result.len() as u64);
+	for index in pb.wrap_iter(0..result.len()) {
+		let mut entry = result.by_index(index).context("Couldn't get entry in JDK archive!")?;
+		if entry.is_symlink() {
+			println!("Absolutely not go fuck yourself");
+			panic!("https://www.youtube.com/watch?v=yhDMpYkML2k");
+		};
+		let path = entry.enclosed_name().context("Couldn't get path for entry in JDK archive (ZIP)!")?;
+		let mut components: Components = path.components();
+		components.next();
+		let resolved: &Path = &dest.join(components.as_path());
+		if entry.is_dir() {
+			create_dir_all(resolved)?;
+		} else {
+			copy(
+				&mut entry,
+				&mut File::create(resolved)?,
+			)?;
+		};
+		#[cfg(unix)] {
+			use std::os::unix::fs::PermissionsExt;
+			if let Some(mode) = entry.unix_mode() {
+				set_permissions(resolved, Permissions::from_mode(mode)).context("Couldn't set permissions for extracted ZIP entry!")?;
+			};
+		};
+	};
+	pb.finish();
+	Ok(())
 }
 
 /// Downloads a resource from `url` to `dest`.

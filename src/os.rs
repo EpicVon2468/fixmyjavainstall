@@ -13,6 +13,7 @@ pub enum OS {
 	#[clap(aliases = vec!["mac", "macos"])]
 	OSX,
 	/// Windows by Microslop – <https://www.microsoft.com/en-gb/windows/>
+	#[clap(aliases = vec!["win", "nt"])]
 	Windows,
 }
 
