@@ -1,4 +1,3 @@
-use std::borrow::Cow;
 use std::cmp::min;
 use std::fmt::Write;
 use std::fs::{create_dir_all, set_permissions, File, Permissions};
@@ -18,6 +17,7 @@ use ureq::{get, Body};
 
 use which::which;
 
+use zip::read::ZipFile;
 use zip::ZipArchive;
 
 /// Checks if the program `name` exists.  This is equivalent to `which(name).is_ok()`.
@@ -41,7 +41,7 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 	let dest: PathBuf = dest.as_ref().canonicalize().context("Couldn't canonicalise destination path!")?;
 	let input: File = File::open(archive.as_ref()).context("Couldn't open JDK archive!")?;
 	if is_zip {
-		return _extract_jdk_zip(dest, input);
+		return _extract_jdk_zip(dest, input, is_mac);
 	};
 	let max_len: u64 = input.metadata()?.len();
 	let pb: ProgressBar = progress_bar(max_len);
@@ -51,26 +51,15 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 		let mut entry: Entry<GzDecoder<File>> = entry.context("Couldn't get entry in JDK archive!")?;
 		entry.set_unpack_xattrs(true);
 		entry.set_preserve_permissions(true);
-		let path: Cow<Path> = entry.path().context("Couldn't get path for entry in JDK archive!")?;
-		let mut components: Components = path.components();
-		// https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
-		// --strip-components 1
-		components.next();
-		if components.clone().any(|c: Component| c == Component::ParentDir) {
-			panic!("Component::ParentDir found!");
-		};
-		// macOS .tar.gz is laid out differently.  it's a '.app'...
-		if is_mac {
-			// skip "Contents"
-			components.next();
-			// only allow paths under "Home"
-			if components.next() != Some(Component::Normal("Home".as_ref())) {
-				continue;
-			};
-		};
-		entry
-			.unpack(dest.join(components.as_path()))
-			.context("Couldn't unpack file from JDK archive!")?;
+		_extract_jdk(
+			&dest,
+			entry.path().context("Couldn't get path for entry in JDK archive!")?.to_path_buf(),
+			is_mac,
+			&mut |resolved: &Path| {
+				entry.unpack(resolved)?;
+				Ok(())
+			},
+		)?;
 		progress = min(progress + entry.size(), max_len);
 		pb.set_position(progress);
 	};
@@ -79,39 +68,62 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 	Ok(())
 }
 
-fn _extract_jdk_zip(dest: PathBuf, input: File) -> Result<()> {
+fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	let mut result: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JDK archive (ZIP)!")?;
 	let pb: ProgressBar = progress_bar(result.len() as u64);
 	for index in pb.wrap_iter(0..result.len()) {
-		let mut entry = result.by_index(index).context("Couldn't get entry in JDK archive (ZIP)!")?;
+		let mut entry: ZipFile<File> = result.by_index(index).context("Couldn't get entry in JDK archive (ZIP)!")?;
 		if entry.is_symlink() {
 			println!("Absolutely not go fuck yourself");
 			panic!("https://www.youtube.com/watch?v=yhDMpYkML2k");
 		};
-		let path = entry.enclosed_name().context("Couldn't get path for entry in JDK archive (ZIP)!")?;
-		let mut components: Components = path.components();
-		components.next();
-		if components.clone().any(|c: Component| c == Component::ParentDir) {
-			panic!("Component::ParentDir found!");
-		};
-		let resolved: &Path = &dest.join(components.as_path());
-		if entry.is_dir() {
-			create_dir_all(resolved).context("Couldn't unpack file from JDK archive (ZIP)")?;
-		} else {
-			copy(
-				&mut entry,
-				&mut File::create(resolved).context("Couldn't unpack file from JDK archive (ZIP)")?,
-			).context("Couldn't unpack file from JDK archive (ZIP)")?;
-		};
-		#[cfg(unix)] {
-			use std::os::unix::fs::PermissionsExt;
-			if let Some(mode) = entry.unix_mode() {
-				set_permissions(resolved, Permissions::from_mode(mode)).context("Couldn't set permissions for extracted ZIP entry!")?;
-			};
-		};
+		_extract_jdk(
+			&dest,
+			entry.enclosed_name().context("Couldn't get path for entry in JDK archive (ZIP)!")?,
+			is_mac,
+			&mut |resolved: &Path| {
+				if entry.is_dir() {
+					create_dir_all(resolved).context("create_dir_all (zip)")?;
+				} else {
+					copy(
+						&mut entry,
+						&mut File::create(resolved).context("File::create (zip)")?,
+					).context("copy (zip)")?;
+				};
+				#[cfg(unix)] {
+					use std::os::unix::fs::PermissionsExt;
+					if let Some(mode) = entry.unix_mode() {
+						set_permissions(resolved, Permissions::from_mode(mode)).context("set_permissions (zip)")?;
+					};
+				};
+				Ok(())
+			},
+		)?;
 	};
 	pb.finish();
 	Ok(())
+}
+
+fn _extract_jdk<F>(dest: &Path, path: PathBuf, is_mac: bool, unpack: &mut F) -> Result<()>
+where F: FnMut(&Path) -> Result<()> {
+	let mut components: Components = path.components();
+	// https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
+	// --strip-components 1
+	components.next();
+	if components.clone().any(|c: Component| c == Component::ParentDir) {
+		panic!("Component::ParentDir found!");
+	};
+	// macOS .tar.gz is laid out differently.  it's a '.app'...
+	if is_mac {
+		// skip "Contents"
+		components.next();
+		// only allow paths under "Home"
+		if components.next() != Some(Component::Normal("Home".as_ref())) {
+			return Ok(());
+		};
+	};
+	let resolved = dest.join(components.as_path());
+	unpack(&resolved).context("Couldn't unpack entry from JDK archive!")
 }
 
 /// Downloads a resource from `url` to `dest`.
