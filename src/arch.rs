@@ -1,4 +1,6 @@
-//! An enumeration of CPU architectures
+//! An enumeration of CPU architectures.
+//!
+//! The static constant [`Arch::SYSTEM`] may provide the host architecture on some targets.
 use std::fmt::{Display, Formatter, Result};
 
 use clap::ValueEnum;
@@ -17,12 +19,23 @@ pub enum Arch {
 
 impl Arch {
 
+	/// The [`Arch`] of the host – amd64.
 	#[cfg(target_arch = "x86_64")]
 	pub const SYSTEM: Arch = Arch::X64;
+	/// The [`Arch`] of the host – arm64.
 	#[cfg(any(target_arch = "aarch64", target_arch = "arm"))]
 	pub const SYSTEM: Arch = Arch::Aarch64;
+	/// The [`Arch`] of the host – aarch64.
 	#[cfg(target_arch = "riscv64")]
 	pub const SYSTEM: Arch = Arch::Riscv64;
+	/// The [`Arch`] of the host – Unsupported, panic!
+	#[cfg(all(
+		not(target_arch = "x86_64"),
+		not(target_arch = "aarch64"),
+		not(target_arch = "arm"),
+		not(target_arch = "riscv64"),
+	))]
+	pub const SYSTEM: Arch = panic!("Unsupported host architecture!");
 }
 
 impl From<Arch> for OsStr {

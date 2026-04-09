@@ -41,7 +41,7 @@ impl OS {
 		not(target_os = "macos"),
 		not(target_os = "windows"),
 	))]
-	pub const SYSTEM: OS = panic!("Unsupported host OS!");
+	pub const SYSTEM: OS = panic!("Unsupported host operating system!");
 }
 
 impl From<OS> for OsStr {
