@@ -2,7 +2,7 @@
 name = "fuji"
 description = "Fix Ur Java Install – A JVM & Kotlin management utility"
 authors = ["Mavity The Madity"]
-version = "0.1.5"
+version = "0.1.6"
 edition = "2024"
 repository = "https://github.com/EpicVon2468/fixmyjavainstall/"
 homepage = "https://github.com/EpicVon2468/fixmyjavainstall/"

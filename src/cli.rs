@@ -5,7 +5,7 @@ use clap::{Parser, Subcommand};
 #[derive(Parser)]
 #[command(
 	version,
-	long_version = "0.1.5 – \"Windows, I think we should start seeing other people (I hate Windows pt. 4)\"",
+	long_version = "0.1.6 – \"I do love a good stacktrace\"",
 	about = "Fix Ur Java Install – A JVM & Kotlin management utility",
 	long_about = "Fix Ur Java Install – A JVM & Kotlin management utility",
 	author = "Mavity The Madity",
