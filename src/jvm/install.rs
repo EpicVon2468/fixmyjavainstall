@@ -21,7 +21,7 @@ pub fn install(op: Op) -> Result<()> {
 	let Op::Install {
 		jdk,
 		arch,
-		#[cfg(feature = "multi_os")]
+		#[cfg(feature = "multi-os")]
 		operating_system,
 		features,
 		include_kotlin: _include_kotlin,
@@ -30,7 +30,7 @@ pub fn install(op: Op) -> Result<()> {
 	}: Op = op else {
 		wrong_cmd!(install);
 	};
-	#[cfg(not(feature = "multi_os"))]
+	#[cfg(not(feature = "multi-os"))]
 	let operating_system: OS = OS::SYSTEM;
 	// Temurin & Java SE both only need major version, except for LTS/Latest where we return the major version from our endpoint
 	let java_version: JavaVersion = if (jdk == JDK::Temurin || jdk == JDK::JavaSE) && let MajorVersion::Number(version) = version {

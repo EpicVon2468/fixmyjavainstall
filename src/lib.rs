@@ -26,7 +26,7 @@ use anyhow::Result;
 use clap::Parser;
 
 use crate::cli::{Arguments, Cmd};
-#[cfg(any(not(windows), feature = "multi_os"))]
+#[cfg(any(not(windows), feature = "multi-os"))]
 use crate::cmd_link::cmd_link;
 use crate::cmd_man::cmd_man;
 use crate::cmd_manage::cmd_manage;
@@ -69,7 +69,7 @@ pub fn entrypoint(args: Arguments) -> Result<()> {
 	};
 	if let Some(command) = args.command {
 		match command {
-			#[cfg(any(not(windows), feature = "multi_os"))]
+			#[cfg(any(not(windows), feature = "multi-os"))]
 			Cmd::Link { .. } => cmd_link(command)?,
 			Cmd::Manage { .. } => cmd_manage(command)?,
 			Cmd::Preset { .. } => cmd_preset(command)?,

@@ -11,20 +11,20 @@ use crate::cli::Cmd;
 use crate::commands::{has_program, io_failure, progress_bar};
 use crate::{wait_and_check_status, wrong_cmd};
 
-#[cfg(any(not(windows), feature = "multi_os"))]
+#[cfg(any(not(windows), feature = "multi-os"))]
 pub fn cmd_link(command: Cmd) -> Result<()> {
 	let Cmd::Link {
 		paths,
-		#[cfg(any(not(windows), feature = "multi_os"))]
+		#[cfg(any(not(windows), feature = "multi-os"))]
 		link_dir,
-		#[cfg(any(target_os = "linux", feature = "multi_os"))]
+		#[cfg(any(target_os = "linux", feature = "multi-os"))]
 		use_update_alternatives,
 	}: Cmd = command else {
 		wrong_cmd!(cmd_link);
 	};
-	#[cfg(all(windows, not(feature = "multi_os")))]
+	#[cfg(all(windows, not(feature = "multi-os")))]
 	let link_dir: String = "".into();
-	#[cfg(all(not(target_os = "linux"), not(feature = "multi_os")))]
+	#[cfg(all(not(target_os = "linux"), not(feature = "multi-os")))]
 	let use_update_alternatives: bool = false;
 	for path in paths {
 		println!("Linking {}...", path.display());

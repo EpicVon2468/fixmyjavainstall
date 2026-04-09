@@ -9,7 +9,7 @@ use crate::cli::Software;
 use crate::jvm::install::install;
 use crate::jvm::jdk::JDK;
 use crate::jvm::major_version::{MajorVersion, MajorVersionParser};
-#[cfg(feature = "multi_os")]
+#[cfg(feature = "multi-os")]
 use crate::os::OS;
 use crate::wrong_cmd;
 
@@ -33,7 +33,7 @@ pub enum Op {
 		arch: Arch,
 
 		/// The OS for the requested JVM
-		#[cfg(feature = "multi_os")]
+		#[cfg(feature = "multi-os")]
 		#[arg(
 			short,
 			long,
@@ -92,7 +92,7 @@ pub enum Feature {
 	/// Wayland support (requires Vulkan) – <https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype>
 	///
 	/// `-Dawt.tookit.name=WLToolkit -Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false`
-	#[cfg(any(target_os = "linux", feature = "multi_os"))]
+	#[cfg(any(target_os = "linux", feature = "multi-os"))]
 	#[clap(name = "wltoolkit", aliases = vec!["wakefield", "wayland", "wl"])]
 	WLToolkit,
 	/// OpenGL for AWT/Swing.  This has been bundled in OpenJDK for a long time, but isn't on by default
@@ -103,7 +103,7 @@ pub enum Feature {
 	/// Metal support for AWT/Swing (macOS).  If you're on macOS, use this instead of OpenGL (Apple has deprecated OpenGL on macOS)
 	///
 	/// `-Dsun.java2d.metal=true`
-	#[cfg(any(target_os = "macos", feature = "multi_os"))]
+	#[cfg(any(target_os = "macos", feature = "multi-os"))]
 	Metal,
 	/// Vulkan for AWT/Swing
 	///
@@ -127,10 +127,10 @@ pub enum Feature {
 	/// General fixes for NVIDIA GPUs on Linux
 	///
 	/// `__GL_THREADED_OPTIMIZATIONS=0`
-	#[cfg(any(target_os = "linux", feature = "multi_os"))]
+	#[cfg(any(target_os = "linux", feature = "multi-os"))]
 	NVIDIAFixes,
 	/// MUSL libc support – <https://musl.libc.org/>
-	#[cfg(any(unix, feature = "multi_os"))]
+	#[cfg(any(unix, feature = "multi-os"))]
 	MUSL,
 }
 

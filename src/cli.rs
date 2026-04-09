@@ -18,14 +18,14 @@ pub struct Arguments {
 #[derive(Subcommand)]
 #[clap(author = "Mavity The Madity")]
 pub enum Cmd {
-	#[cfg(any(not(windows), feature = "multi_os"))]
+	#[cfg(any(not(windows), feature = "multi-os"))]
 	#[clap(author = "Mavity The Madity")]
 	Link {
 		/// Input directories.  Note that on UNIX, the `/bin` suffix will be appended for each of these by the program
 		paths: Vec<PathBuf>,
 
 		/// Directory to link files into.  Does nothing on Windows
-		#[cfg(any(not(windows), feature = "multi_os"))]
+		#[cfg(any(not(windows), feature = "multi-os"))]
 		#[arg(
 			short,
 			long,
@@ -35,7 +35,7 @@ pub enum Cmd {
 		link_dir: PathBuf,
 
 		/// Whether to use update-alternatives for install.
-		#[cfg(any(target_os = "linux", feature = "multi_os"))]
+		#[cfg(any(target_os = "linux", feature = "multi-os"))]
 		#[arg(short, long, default_value = "false")]
 		use_update_alternatives: bool,
 	},

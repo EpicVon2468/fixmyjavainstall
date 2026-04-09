@@ -6,7 +6,7 @@ use crate::cmd_manage::cmd_manage;
 use crate::jvm::jdk::JDK;
 use crate::jvm::major_version::MajorVersion;
 use crate::jvm::manage_jvm::{Feature, Op};
-#[cfg(feature = "multi_os")]
+#[cfg(feature = "multi-os")]
 use crate::os::OS;
 use crate::wrong_cmd;
 
@@ -48,7 +48,7 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 			op: Op::Install {
 				jdk: JDK::JBR,
 				arch: Arch::SYSTEM,
-				#[cfg(feature = "multi_os")]
+				#[cfg(feature = "multi-os")]
 				operating_system: OS::SYSTEM,
 				features,
 				include_kotlin: true,
@@ -67,7 +67,7 @@ fn preset_fast(minimal: bool) -> Result<()> {
 			op: Op::Install {
 				jdk: JDK::JBR,
 				arch: Arch::SYSTEM,
-				#[cfg(feature = "multi_os")]
+				#[cfg(feature = "multi-os")]
 				operating_system: OS::SYSTEM,
 				features,
 				include_kotlin: false,
@@ -123,7 +123,7 @@ fn preset_latest(minimal: bool) -> Result<()> {
 				// FIXME: need to implement JDK::Auto so I don't have to default to JavaSE
 				jdk: JDK::JavaSE,
 				arch: Arch::SYSTEM,
-				#[cfg(feature = "multi_os")]
+				#[cfg(feature = "multi-os")]
 				operating_system: OS::SYSTEM,
 				features: features(minimal),
 				include_kotlin: false,

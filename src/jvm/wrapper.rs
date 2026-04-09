@@ -65,7 +65,7 @@ fn generate_wrapper_unix(java_home: &Path, features: &[Feature], bin_suffix: &st
 		format!("# {comment}\nset -- {args} \"$@\"\n\n")
 	});
 
-	#[cfg(any(target_os = "linux", feature = "multi_os"))]
+	#[cfg(any(target_os = "linux", feature = "multi-os"))]
 	if features.contains(&Feature::NVIDIAFixes) {
 		result.push_str("# General fixes for NVIDIA GPUs on Linux\n");
 		result.push_str("export __GL_THREADED_OPTIMIZATIONS=0\n\n");
@@ -102,7 +102,7 @@ fn gen_features(
 	};
 	#[allow(unused_mut)]
 	let mut requires_vulkan: bool = false;
-	#[cfg(any(target_os = "linux", feature = "multi_os"))]
+	#[cfg(any(target_os = "linux", feature = "multi-os"))]
 	if features.contains(&Feature::WLToolkit) {
 		fuji_jvm_arg(
 			"Wayland support (requires Vulkan) – https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype",
@@ -122,7 +122,7 @@ fn gen_features(
 			"-Dsun.java2d.opengl=true"
 		);
 	};
-	#[cfg(any(target_os = "macos", feature = "multi_os"))]
+	#[cfg(any(target_os = "macos", feature = "multi-os"))]
 	if features.contains(&Feature::Metal) {
 		if requires_vulkan {
 			panic!(

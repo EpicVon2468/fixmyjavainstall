@@ -36,7 +36,7 @@ cd fixmyjavainstall
 cargo build --profile release --path .
 ```
 
-If you would like to be able to install a JVM not made for your system, add `--features multi_os` to your installation command.
+If you would like to be able to install a JVM not made for your system, add `--features multi-os` to your installation command.
 
 Additionally, please note that **there is no [crates.io](https://crates.io/) listing for fuji!**<br>
 That is to say, `cargo install fuji` **WILL NOT INSTALL THIS PROJECT!**

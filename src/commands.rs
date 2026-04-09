@@ -1,6 +1,6 @@
 use std::cmp::min;
 use std::fmt::Write;
-use std::fs::{create_dir_all, set_permissions, File, Permissions};
+use std::fs::{create_dir_all, File, Permissions};
 use std::io::copy;
 use std::path::{Component, Components, Path, PathBuf};
 
@@ -98,6 +98,7 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 					).context("copy (zip)")?;
 				};
 				#[cfg(unix)] {
+					use std::fs::set_permissions;
 					use std::os::unix::fs::PermissionsExt;
 					if let Some(mode) = entry.unix_mode() {
 						set_permissions(resolved, Permissions::from_mode(mode)).context("set_permissions (zip)")?;
