@@ -1,10 +1,14 @@
 [package]
 name = "fuji"
+description = "Fix Ur Java Install – A JVM & Kotlin management utility"
 authors = ["Mavity The Madity"]
 version = "0.1.5"
 edition = "2024"
 repository = "https://github.com/EpicVon2468/fixmyjavainstall/"
 homepage = "https://github.com/EpicVon2468/fixmyjavainstall/"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+categories = ["command-line-utilities", "config"]
 
 [features]
 multi-os = []
