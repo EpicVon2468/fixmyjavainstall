@@ -83,7 +83,7 @@ fn _extract_jdk_zip(dest: PathBuf, input: File) -> Result<()> {
 	let mut result: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JDK archive (ZIP)!")?;
 	let pb: ProgressBar = progress_bar(result.len() as u64);
 	for index in pb.wrap_iter(0..result.len()) {
-		let mut entry = result.by_index(index).context("Couldn't get entry in JDK archive!")?;
+		let mut entry = result.by_index(index).context("Couldn't get entry in JDK archive (ZIP)!")?;
 		if entry.is_symlink() {
 			println!("Absolutely not go fuck yourself");
 			panic!("https://www.youtube.com/watch?v=yhDMpYkML2k");
@@ -91,14 +91,17 @@ fn _extract_jdk_zip(dest: PathBuf, input: File) -> Result<()> {
 		let path = entry.enclosed_name().context("Couldn't get path for entry in JDK archive (ZIP)!")?;
 		let mut components: Components = path.components();
 		components.next();
+		if components.clone().any(|c: Component| c == Component::ParentDir) {
+			panic!("Component::ParentDir found!");
+		};
 		let resolved: &Path = &dest.join(components.as_path());
 		if entry.is_dir() {
-			create_dir_all(resolved)?;
+			create_dir_all(resolved).context("Couldn't unpack file from JDK archive (ZIP)")?;
 		} else {
 			copy(
 				&mut entry,
-				&mut File::create(resolved)?,
-			)?;
+				&mut File::create(resolved).context("Couldn't unpack file from JDK archive (ZIP)")?,
+			).context("Couldn't unpack file from JDK archive (ZIP)")?;
 		};
 		#[cfg(unix)] {
 			use std::os::unix::fs::PermissionsExt;
