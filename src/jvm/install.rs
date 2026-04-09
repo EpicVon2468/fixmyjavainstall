@@ -77,7 +77,8 @@ pub fn install(op: Op) -> Result<()> {
 	let is_win: bool = operating_system == OS::Windows;
 	let mut executable_suffixes: Vec<&str> = vec![""];
 	if is_win {
-		executable_suffixes.push("w");
+		executable_suffixes.pop();
+		// executable_suffixes.push("w");
 	};
 	for suffix in executable_suffixes {
 		let suffix: &str = if is_win {

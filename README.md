@@ -12,7 +12,7 @@ NOTICE: You must run with `sudo -E` to preserve environment variables, else some
   - All core functionality _should_ be working, but isn't.
   - Rootless breaks many things.
   - `/usr/local/bin` is not on default path.
-- Windows: `[BROKEN]-[TESTED]`
+- Windows: `[BROKEN]-[UNTESTED]`
   - Symbolic links for `%JAVA_HOME%\bin\java.exe` & `%JAVA_HOME%\bin\javaw.exe` don't work and can't be fixed.
   - Despite being quoted, `"\Program Files\fuji\jvm\25"` isn't treated as one path, as batch fails to handle the space in `Program Files`.
 

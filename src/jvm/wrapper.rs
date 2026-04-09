@@ -52,10 +52,10 @@ fn generate_wrapper_win(java_home: &Path, features: &[Feature], bin_suffix: &str
 fn generate_wrapper_unix(java_home: &Path, features: &[Feature], bin_suffix: &str) -> String {
 	let mut result: String = String::with_capacity(500);
 
-	result.push_str("#! /usr/bin/env sh\n\n");
+	result.push_str("#!/usr/bin/env sh\n\n");
 
-	result.push_str("# shellcheck disable=SC2155\n");
-	result.push_str(&format!("export JAVA_HOME=\"{}\"\n\n", java_home.display()));
+	result.push_str(&format!("JAVA_HOME=\"{}\"\n", java_home.display()));
+	result.push_str("export JAVA_HOME\n\n");
 
 	result.push_str("if [ -n \"$CLASSPATH\" ]; then\n");
 	result.push_str("\tset -- -cp \"$CLASSPATH:.\" \"$@\"\n");
