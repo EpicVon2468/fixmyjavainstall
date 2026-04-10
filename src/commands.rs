@@ -8,7 +8,7 @@ use anyhow::{Context, Result};
 
 use flate2::read::GzDecoder;
 
-use indicatif::{ProgressBar, ProgressState, ProgressStyle};
+use indicatif::{MultiProgress, ProgressBar, ProgressState, ProgressStyle};
 
 use tar::{Archive, Entry};
 
@@ -62,6 +62,7 @@ fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 			entry.path().context("Couldn't get path for entry in JDK archive!")?.to_path_buf(),
 			is_mac,
 			&mut |resolved: &Path| {
+				// TODO: https://docs.rs/indicatif/latest/indicatif/struct.ProgressBar.html#method.enable_steady_tick ?
 				entry.unpack(resolved)?;
 				Ok(())
 			},
@@ -75,8 +76,9 @@ fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 
 fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	let mut result: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JDK archive (ZIP)!")?;
+	let m: MultiProgress = MultiProgress::new();
 	let max_len: u64 = result.decompressed_size().unwrap() as u64;
-	let pb: ProgressBar = progress_bar(max_len);
+	let pb: ProgressBar = m.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
 	for index in 0..result.len() {
 		let mut entry: ZipFile<File> = result.by_index(index).context("Couldn't get entry in JDK archive (ZIP)!")?;
@@ -84,6 +86,7 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 			println!("Absolutely not go fuck yourself");
 			panic!("https://www.youtube.com/watch?v=yhDMpYkML2k");
 		};
+		let size: u64 = entry.size();
 		_extract_jdk(
 			&dest,
 			entry.enclosed_name().context("Couldn't get path for entry in JDK archive (ZIP)!")?,
@@ -92,12 +95,14 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 				if entry.is_dir() {
 					create_dir_all(resolved).context("create_dir_all (zip)")?;
 				} else {
-					// TODO: wrap in second progress bar?
-					// 	https://github.com/console-rs/indicatif/blob/HEAD/examples/multi.rs
-					copy(
-						&mut entry,
-						&mut File::create(resolved).context("File::create (zip)")?,
-					).context("copy (zip)")?;
+					// TODO: reuse (can avoid seizure flashing?)
+					let extract_pb: ProgressBar = m.add(
+						progress_bar_template(size, ("{msg} ".to_owned() + TEMPLATE).as_str())
+							.with_message(format!("Writing {}...", resolved.display()))
+					);
+					let out: File = File::create(resolved).context("File::create (zip)")?;
+					copy(&mut entry, &mut extract_pb.wrap_write(out)).context("copy (zip)")?;
+					extract_pb.finish_and_clear();
 				};
 				#[cfg(unix)] {
 					use std::fs::set_permissions;
@@ -109,7 +114,7 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 				Ok(())
 			},
 		)?;
-		progress = min(progress + entry.size(), max_len);
+		progress = min(progress + size, max_len);
 		pb.set_position(progress);
 	};
 	pb.finish();
@@ -169,14 +174,18 @@ pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 
 const TEMPLATE: &str = "[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})";
 
-// https://github.com/console-rs/indicatif/blob/main/examples/download.rs
-pub fn progress_bar(len: u64) -> ProgressBar {
+pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
 	let pb: ProgressBar = ProgressBar::new(len);
-	pb.set_style(ProgressStyle::with_template(TEMPLATE)
+	pb.set_style(ProgressStyle::with_template(message)
 		.unwrap()
 		.with_key("eta", |state: &ProgressState, w: &mut dyn Write| write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap())
 		.progress_chars("=>-"));
 	pb
+}
+
+// https://github.com/console-rs/indicatif/blob/main/examples/download.rs
+pub fn progress_bar(len: u64) -> ProgressBar {
+	progress_bar_template(len, TEMPLATE)
 }
 
 pub fn io_failure<P: AsRef<Path>, S: AsRef<str>>(dest: P, msg: S) -> String {
