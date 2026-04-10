@@ -80,6 +80,9 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	let max_len: u64 = result.decompressed_size().unwrap() as u64;
 	let pb: ProgressBar = m.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
+	let extract_pb: ProgressBar = m.add(
+		progress_bar_template(0, &format!("Writing {{msg}}… {TEMPLATE}"))
+	);
 	for index in 0..result.len() {
 		let mut entry: ZipFile<File> = result.by_index(index).context("Couldn't get entry in JDK archive (ZIP)!")?;
 		if entry.is_symlink() {
@@ -95,14 +98,12 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 				if entry.is_dir() {
 					create_dir_all(resolved).context("create_dir_all (zip)")?;
 				} else {
-					// TODO: reuse (can avoid seizure flashing?)
-					let extract_pb: ProgressBar = m.add(
-						progress_bar_template(size, ("{msg} ".to_owned() + TEMPLATE).as_str())
-							.with_message(format!("Writing {}...", resolved.display()))
-					);
+					extract_pb.set_length(size);
+					extract_pb.reset();
+					// cloned progress bars still use the same internal state, so this call is only to appease the compiler, it serves no other purpose
+					extract_pb.clone().with_message(resolved.display().to_string());
 					let out: File = File::create(resolved).context("File::create (zip)")?;
 					copy(&mut entry, &mut extract_pb.wrap_write(out)).context("copy (zip)")?;
-					extract_pb.finish_and_clear();
 				};
 				#[cfg(unix)] {
 					use std::fs::set_permissions;
@@ -117,6 +118,7 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 		progress = min(progress + size, max_len);
 		pb.set_position(progress);
 	};
+	extract_pb.finish_and_clear();
 	pb.finish();
 	Ok(())
 }
