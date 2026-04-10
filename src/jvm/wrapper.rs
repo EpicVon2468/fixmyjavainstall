@@ -61,9 +61,11 @@ fn generate_wrapper_unix(java_home: &Path, features: &[Feature], bin_suffix: &st
 	result.push_str("\tset -- -cp \"$CLASSPATH:.\" \"$@\"\n");
 	result.push_str("fi\n\n");
 
-	gen_features(&mut result, features, &|comment: &str, args: &str| {
-		format!("# {comment}\nset -- {args} \"$@\"\n\n")
-	});
+	gen_features(
+		&mut result,
+		features,
+		&|comment: &str, args: &str| format!("# {comment}\nset -- {args} \"$@\"\n\n"),
+	);
 
 	#[cfg(any(target_os = "linux", feature = "multi-os"))]
 	if features.contains(&Feature::NVIDIAFixes) {

@@ -93,6 +93,7 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 					create_dir_all(resolved).context("create_dir_all (zip)")?;
 				} else {
 					// TODO: wrap in second progress bar?
+					// 	https://github.com/console-rs/indicatif/blob/HEAD/examples/multi.rs
 					copy(
 						&mut entry,
 						&mut File::create(resolved).context("File::create (zip)")?,
@@ -133,7 +134,7 @@ where F: FnMut(&Path) -> Result<()> {
 			return Ok(());
 		};
 	};
-	let resolved = dest.join(components.as_path());
+	let resolved: PathBuf = dest.join(components.as_path());
 	unpack(&resolved).context("Couldn't unpack entry from JDK archive!")
 }
 
