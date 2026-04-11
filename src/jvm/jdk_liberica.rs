@@ -4,6 +4,7 @@ use anyhow::Result;
 use crate::jvm::jdk_generic::{generic_download, DownloadJDKArgs};
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
 
+// TODO: https://api.bell-sw.com/
 pub fn download_liberica(args: DownloadJDKArgs) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	let version: &JavaVersion = &args.version;
