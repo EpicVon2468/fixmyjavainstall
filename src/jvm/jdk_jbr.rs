@@ -20,7 +20,7 @@ pub fn download_jbr(args: DownloadJDKArgs) -> Result<()> {
 	url.push('-');
 	url.push_str(&args.os.to_string());
 	url.push('-');
-	#[cfg(any(unix, feature = "multi-os"))]
+	#[cfg(any(target_env = "musl", feature = "multi-os"))]
 	if features.contains(&Feature::MUSL) {
 		url.push_str("musl-");
 	};

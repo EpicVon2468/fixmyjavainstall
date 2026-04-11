@@ -10,6 +10,7 @@ use crate::jvm::manage_jvm::{Feature, Op};
 use crate::os::OS;
 use crate::wrong_cmd;
 
+// TODO: move to be subcommand of fuji-jvm ?
 pub fn cmd_preset(cmd: Cmd) -> Result<()> {
 	let Cmd::Preset {
 		preset,
@@ -109,6 +110,8 @@ fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 			Feature::OpenGL
 		});
 	};
+	#[cfg(target_env = "musl")]
+	features.push(Feature::MUSL);
 	#[cfg(target_os = "macos")]
 	features.push(Feature::Metal);
 	#[cfg(windows)]

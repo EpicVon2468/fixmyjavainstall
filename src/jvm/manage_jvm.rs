@@ -130,7 +130,7 @@ pub enum Feature {
 	#[cfg(any(target_os = "linux", feature = "multi-os"))]
 	NVIDIAFixes,
 	/// MUSL libc support – <https://musl.libc.org/>
-	#[cfg(any(unix, feature = "multi-os"))]
+	#[cfg(any(target_env = "musl", feature = "multi-os"))]
 	MUSL,
 }
 
