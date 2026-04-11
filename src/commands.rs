@@ -1,6 +1,6 @@
 use std::cmp::min;
 use std::fmt::Write;
-use std::fs::{create_dir_all, File, Permissions};
+use std::fs::{File, Permissions, create_dir_all};
 use std::io::copy;
 use std::path::{Component, Components, Path, PathBuf};
 use std::time::Duration;
@@ -11,15 +11,15 @@ use flate2::read::GzDecoder;
 
 use indicatif::{MultiProgress, ProgressBar, ProgressState, ProgressStyle};
 
-use tar::{Archive, Entry};
+use tar::{Archive, Entries, Entry};
 
 use ureq::http::Response;
-use ureq::{get, Body};
+use ureq::{Body, get};
 
 use which::which;
 
-use zip::read::ZipFile;
 use zip::ZipArchive;
+use zip::read::ZipFile;
 
 /// Checks if the program `name` exists.  This is equivalent to `which(name).is_ok()`.
 pub fn has_program(name: &str) -> bool {
@@ -39,7 +39,10 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 	is_zip: bool,
 	is_mac: bool,
 ) -> Result<()> {
-	let dest: PathBuf = dest.as_ref().canonicalize().context("Couldn't canonicalise destination path!")?;
+	let dest: PathBuf = dest
+		.as_ref()
+		.canonicalize()
+		.context("Couldn't canonicalise destination path!")?;
 	let input: File = File::open(archive.as_ref()).context("Couldn't open JDK archive!")?;
 	let result: Result<()> = if is_zip {
 		_extract_jdk_zip(dest, input, is_mac)
@@ -56,15 +59,22 @@ fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	let pb: ProgressBar = m.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
 	let mut archive: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
-	let extract_pb: ProgressBar = m.add(
-		progress_bar_template(0, "[{elapsed_precise}] {spinner:.cyan} Writing {msg}...")
-	);
+	let extract_pb: ProgressBar = m.add(progress_bar_template(
+		0,
+		"[{elapsed_precise}] {spinner:.cyan} Writing {msg}...",
+	));
 	extract_pb.enable_steady_tick(Duration::from_millis(125));
-	for entry in archive.entries().context("Couldn't iterate through JDK archive!")? {
+	let entries: Entries<GzDecoder<File>> = archive
+		.entries()
+		.context("Couldn't iterate through JDK archive!")?;
+	for entry in entries {
 		let mut entry: Entry<GzDecoder<File>> = entry.context("Couldn't get entry in JDK archive!")?;
 		_extract_jdk(
 			&dest,
-			entry.path().context("Couldn't get path for entry in JDK archive!")?.to_path_buf(),
+			entry
+				.path()
+				.context("Couldn't get path for entry in JDK archive!")?
+				.to_path_buf(),
 			is_mac,
 			&mut |resolved: &Path| {
 				extract_pb.clone().with_message(resolved.display().to_string());
@@ -92,11 +102,14 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	let max_len: u64 = archive.decompressed_size().unwrap() as u64;
 	let pb: ProgressBar = m.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
-	let extract_pb: ProgressBar = m.add(
-		progress_bar_template(0, &format!("Writing {{msg}}… {TEMPLATE}"))
-	);
+	let extract_pb: ProgressBar = m.add(progress_bar_template(
+		0,
+		&format!("Writing {{msg}}… {TEMPLATE}"),
+	));
 	for index in 0..archive.len() {
-		let mut entry: ZipFile<File> = archive.by_index(index).context("Couldn't get entry in JDK archive (ZIP)!")?;
+		let mut entry: ZipFile<File> = archive
+			.by_index(index)
+			.context("Couldn't get entry in JDK archive (ZIP)!")?;
 		if entry.is_symlink() {
 			println!("Absolutely not go fuck yourself");
 			panic!("https://www.youtube.com/watch?v=yhDMpYkML2k");
@@ -104,7 +117,9 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 		let size: u64 = entry.size();
 		_extract_jdk(
 			&dest,
-			entry.enclosed_name().context("Couldn't get path for entry in JDK archive (ZIP)!")?,
+			entry
+				.enclosed_name()
+				.context("Couldn't get path for entry in JDK archive (ZIP)!")?,
 			is_mac,
 			&mut |resolved: &Path| {
 				if entry.is_dir() {
@@ -147,7 +162,8 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 		// rw-r--r--
 		0o644
 	};
-	set_permissions(path, Permissions::from_mode(new_mode)).with_context(|| io_failure(path, "set permissions for"))
+	set_permissions(path, Permissions::from_mode(new_mode))
+		.with_context(|| io_failure(path, "set permissions for"))
 }
 
 fn _extract_jdk<F>(dest: &Path, path: PathBuf, is_mac: bool, unpack: &mut F) -> Result<()>
@@ -208,7 +224,9 @@ pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
 	pb.set_style(
 		ProgressStyle::with_template(message)
 			.unwrap()
-			.with_key("eta", |state: &ProgressState, w: &mut dyn Write| write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap())
+			.with_key("eta", |state: &ProgressState, w: &mut dyn Write| {
+				write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap()
+			})
 			.progress_chars("=>-")
 			.tick_chars("⠙⠚⠓⠋ ")
 	);
