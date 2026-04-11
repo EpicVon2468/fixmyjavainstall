@@ -3,6 +3,7 @@ use std::fmt::Write;
 use std::fs::{create_dir_all, File, Permissions};
 use std::io::copy;
 use std::path::{Component, Components, Path, PathBuf};
+use std::time::Duration;
 
 use anyhow::{Context, Result};
 
@@ -50,10 +51,15 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 }
 
 fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
+	let m: MultiProgress = MultiProgress::new();
 	let max_len: u64 = input.metadata()?.len();
-	let pb: ProgressBar = progress_bar(max_len);
+	let pb: ProgressBar = m.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
 	let mut archive: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
+	let extract_pb: ProgressBar = m.add(
+		progress_bar_template(0, "[{elapsed_precise}] {spinner:.cyan} Writing {msg}...")
+	);
+	extract_pb.enable_steady_tick(Duration::from_millis(125));
 	for entry in archive.entries().context("Couldn't iterate through JDK archive!")? {
 		let mut entry: Entry<GzDecoder<File>> = entry.context("Couldn't get entry in JDK archive!")?;
 		_extract_jdk(
@@ -61,7 +67,7 @@ fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 			entry.path().context("Couldn't get path for entry in JDK archive!")?.to_path_buf(),
 			is_mac,
 			&mut |resolved: &Path| {
-				// TODO: https://docs.rs/indicatif/latest/indicatif/struct.ProgressBar.html#method.enable_steady_tick ?
+				extract_pb.clone().with_message(resolved.display().to_string());
 				entry.unpack(resolved)?;
 				#[cfg(unix)] {
 					use tar::Header;
@@ -75,6 +81,7 @@ fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 		progress = min(progress + entry.size(), max_len);
 		pb.set_position(progress);
 	};
+	extract_pb.finish_and_clear();
 	pb.finish();
 	Ok(())
 }
@@ -140,7 +147,7 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 		// rw-r--r--
 		0o644
 	};
-	set_permissions(path, Permissions::from_mode(new_mode)).context("set_permissions")
+	set_permissions(path, Permissions::from_mode(new_mode)).with_context(|| io_failure(path, "set permissions for"))
 }
 
 fn _extract_jdk<F>(dest: &Path, path: PathBuf, is_mac: bool, unpack: &mut F) -> Result<()>
@@ -203,8 +210,9 @@ pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
 			.unwrap()
 			.with_key("eta", |state: &ProgressState, w: &mut dyn Write| write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap())
 			.progress_chars("=>-")
+			.tick_chars("⠙⠚⠓⠋ ")
 	);
-	pb.set_tab_width(4);
+	// pb.set_tab_width(4);
 	pb
 }
 
