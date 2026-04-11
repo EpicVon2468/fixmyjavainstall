@@ -40,7 +40,6 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 ) -> Result<()> {
 	let dest: PathBuf = dest.as_ref().canonicalize().context("Couldn't canonicalise destination path!")?;
 	let input: File = File::open(archive.as_ref()).context("Couldn't open JDK archive!")?;
-	// TODO: set `0o755` instead of retaining original perms?
 	let result: Result<()> = if is_zip {
 		_extract_jdk_zip(dest, input, is_mac)
 	} else {
@@ -64,6 +63,7 @@ fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 			is_mac,
 			&mut |resolved: &Path| {
 				// TODO: https://docs.rs/indicatif/latest/indicatif/struct.ProgressBar.html#method.enable_steady_tick ?
+				// entry.header().mode()
 				entry.unpack(resolved)?;
 				Ok(())
 			},
@@ -109,9 +109,18 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 				#[cfg(unix)] {
 					use std::fs::set_permissions;
 					use std::os::unix::fs::PermissionsExt;
-					if let Some(mode) = entry.unix_mode() {
-						set_permissions(resolved, Permissions::from_mode(mode)).context("set_permissions (zip)")?;
+					// check if executable (need to figure out how to rewrite this so directory isn't a separate branch)
+					let mode: u32 = if let Some(mode) = entry.unix_mode() && (mode & 0o111) != 0 {
+						// rwxr-xr-x
+						0o755
+					} else if entry.is_dir() {
+						// rwxr-xr-x
+						0o755
+					} else {
+						// rw-r--r--
+						0o644
 					};
+					set_permissions(resolved, Permissions::from_mode(mode)).context("set_permissions")?;
 				};
 				Ok(())
 			},
