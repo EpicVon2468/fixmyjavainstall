@@ -53,9 +53,12 @@ fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	let max_len: u64 = input.metadata()?.len();
 	let pb: ProgressBar = progress_bar(max_len);
 	let mut progress: u64 = 0;
-	let mut reader: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
-	for entry in reader.entries().context("Couldn't iterate through JDK archive!")? {
+	let mut archive: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
+	archive.set_preserve_permissions(true);
+	archive.set_preserve_ownerships(true);
+	for entry in archive.entries().context("Couldn't iterate through JDK archive!")? {
 		let mut entry: Entry<GzDecoder<File>> = entry.context("Couldn't get entry in JDK archive!")?;
+		// keep this line just in case
 		entry.set_preserve_permissions(true);
 		_extract_jdk(
 			&dest,
@@ -178,10 +181,13 @@ const TEMPLATE: &str = "[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{tot
 
 pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
 	let pb: ProgressBar = ProgressBar::new(len);
-	pb.set_style(ProgressStyle::with_template(message)
-		.unwrap()
-		.with_key("eta", |state: &ProgressState, w: &mut dyn Write| write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap())
-		.progress_chars("=>-"));
+	pb.set_style(
+		ProgressStyle::with_template(message)
+			.unwrap()
+			.with_key("eta", |state: &ProgressState, w: &mut dyn Write| write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap())
+			.progress_chars("=>-")
+	);
+	pb.set_tab_width(4);
 	pb
 }
 
