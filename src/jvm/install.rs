@@ -113,6 +113,7 @@ pub fn install(op: Op) -> Result<()> {
 		symlink_link(script_file, java_executable).context(
 			"Couldn't symbolically link JAVA_HOME/bin/java to point to JAVA_HOME/bin/fuji_jvm_wrapper!",
 		)?;
+		println!("Done.\n");
 	}
 	if dry_run {
 		return Ok(());

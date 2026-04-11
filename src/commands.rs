@@ -54,7 +54,6 @@ fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	let pb: ProgressBar = progress_bar(max_len);
 	let mut progress: u64 = 0;
 	let mut archive: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
-	archive.set_preserve_permissions(true);
 	for entry in archive.entries().context("Couldn't iterate through JDK archive!")? {
 		let mut entry: Entry<GzDecoder<File>> = entry.context("Couldn't get entry in JDK archive!")?;
 		_extract_jdk(
@@ -63,8 +62,13 @@ fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 			is_mac,
 			&mut |resolved: &Path| {
 				// TODO: https://docs.rs/indicatif/latest/indicatif/struct.ProgressBar.html#method.enable_steady_tick ?
-				// entry.header().mode()
 				entry.unpack(resolved)?;
+				#[cfg(unix)] {
+					use tar::Header;
+
+					let header: &Header = entry.header();
+					update_perms(resolved, header.mode().ok(), header.entry_type().is_dir())?;
+				};
 				Ok(())
 			},
 		)?;
@@ -107,20 +111,7 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 					copy(&mut entry, &mut extract_pb.wrap_write(out)).context("copy (zip)")?;
 				};
 				#[cfg(unix)] {
-					use std::fs::set_permissions;
-					use std::os::unix::fs::PermissionsExt;
-					// check if executable (need to figure out how to rewrite this so directory isn't a separate branch)
-					let mode: u32 = if let Some(mode) = entry.unix_mode() && (mode & 0o111) != 0 {
-						// rwxr-xr-x
-						0o755
-					} else if entry.is_dir() {
-						// rwxr-xr-x
-						0o755
-					} else {
-						// rw-r--r--
-						0o644
-					};
-					set_permissions(resolved, Permissions::from_mode(mode)).context("set_permissions")?;
+					update_perms(resolved, entry.unix_mode(), entry.is_dir())?;
 				};
 				Ok(())
 			},
@@ -131,6 +122,25 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	extract_pb.finish_and_clear();
 	pb.finish();
 	Ok(())
+}
+
+#[cfg(unix)]
+pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> {
+	use std::fs::set_permissions;
+	use std::os::unix::fs::PermissionsExt;
+
+	// check if executable (need to figure out how to rewrite this so directory isn't a separate branch)
+	let new_mode: u32 = if let Some(old_mode) = mode && (old_mode & 0o111) != 0 {
+		// rwxr-xr-x
+		0o755
+	} else if is_dir {
+		// rwxr-xr-x
+		0o755
+	} else {
+		// rw-r--r--
+		0o644
+	};
+	set_permissions(path, Permissions::from_mode(new_mode)).context("set_permissions")
 }
 
 fn _extract_jdk<F>(dest: &Path, path: PathBuf, is_mac: bool, unpack: &mut F) -> Result<()>

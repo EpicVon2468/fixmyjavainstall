@@ -45,7 +45,6 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	use_update_alternatives: bool,
 ) -> Result<()> {
 	let path: &Path = path.as_ref();
-	println!("Linking path: {}", path.display());
 	let bin: PathBuf = path.join("bin");
 
 	#[cfg(windows)]
