@@ -40,6 +40,7 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 ) -> Result<()> {
 	let dest: PathBuf = dest.as_ref().canonicalize().context("Couldn't canonicalise destination path!")?;
 	let input: File = File::open(archive.as_ref()).context("Couldn't open JDK archive!")?;
+	// TODO: set `0o755` instead of retaining original perms?
 	let result: Result<()> = if is_zip {
 		_extract_jdk_zip(dest, input, is_mac)
 	} else {
@@ -55,11 +56,8 @@ fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	let mut progress: u64 = 0;
 	let mut archive: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
 	archive.set_preserve_permissions(true);
-	archive.set_preserve_ownerships(true);
 	for entry in archive.entries().context("Couldn't iterate through JDK archive!")? {
 		let mut entry: Entry<GzDecoder<File>> = entry.context("Couldn't get entry in JDK archive!")?;
-		// keep this line just in case
-		entry.set_preserve_permissions(true);
 		_extract_jdk(
 			&dest,
 			entry.path().context("Couldn't get path for entry in JDK archive!")?.to_path_buf(),
@@ -78,16 +76,16 @@ fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 }
 
 fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
-	let mut result: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JDK archive (ZIP)!")?;
+	let mut archive: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JDK archive (ZIP)!")?;
 	let m: MultiProgress = MultiProgress::new();
-	let max_len: u64 = result.decompressed_size().unwrap() as u64;
+	let max_len: u64 = archive.decompressed_size().unwrap() as u64;
 	let pb: ProgressBar = m.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
 	let extract_pb: ProgressBar = m.add(
 		progress_bar_template(0, &format!("Writing {{msg}}… {TEMPLATE}"))
 	);
-	for index in 0..result.len() {
-		let mut entry: ZipFile<File> = result.by_index(index).context("Couldn't get entry in JDK archive (ZIP)!")?;
+	for index in 0..archive.len() {
+		let mut entry: ZipFile<File> = archive.by_index(index).context("Couldn't get entry in JDK archive (ZIP)!")?;
 		if entry.is_symlink() {
 			println!("Absolutely not go fuck yourself");
 			panic!("https://www.youtube.com/watch?v=yhDMpYkML2k");
