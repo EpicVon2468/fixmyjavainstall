@@ -41,7 +41,7 @@ use crate::cmd_manage::cmd_manage;
 
 /// The installation directory for fuji-managed programs.
 ///
-/// # Platform-Specific Behaviour:
+/// # Platform-Specific Behaviour
 ///
 /// * UNIX-likes: `/opt/fuji`
 /// * Windows: `\Program Files\fuji`

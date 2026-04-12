@@ -19,13 +19,20 @@
 /// 		* <value description>
 /// 		* <value description>
 ///
+/// # Implementation Notes
+///
+/// * <thingy>.
+/// * <other thingy>:
+/// 	* <thingy the third>.
+/// 	* <thingy four: return of the thing>
+///
 /// # Panics
 ///
 /// * <panic condition 1>.
 /// * <panic condition 2>.
 /// * <panic condition 3>.
 ///
-/// # Platform-Specific Behaviour:
+/// # Platform-Specific Behaviour
 ///
 /// * Linux: foo bar baz
 /// * macOS: other thing

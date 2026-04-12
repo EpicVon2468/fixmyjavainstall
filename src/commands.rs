@@ -27,13 +27,76 @@ pub fn has_program(name: &str) -> bool {
 	which(name).is_ok()
 }
 
-/// Extracts `archive` into `dest`, stripping one component.
+/// Extracts `archive` into `dest`, stripping one or more components.
 ///
-/// Implementation notes:
+/// # Arguments
+///
+/// * `archive`: The path to a `.zip` or `.tar.gz` file containing the JVM.
+/// * `dest`: The destination folder to extract into.
+/// * `is_zip`: Whether `archive` is a `.zip` file.
+/// * `is_mac`: Whether `archive` is a macOS JVM.
+///
+/// # Errors
+///
+/// Error type: Dynamic (see [`anyhow::Error`]).
+///
+/// Error value(s):
+///
+/// * Propagated up from the following functions (if they return [`Err`]):
+/// 	* [`Path::canonicalise`][`Path::canonicalize`]
+/// 	* [`File::open`]
+/// * If `is_zip` is true:
+/// 	* Propagated up from [`extract_jvm_zip`].
+/// * If `is_zip` is false:
+/// 	* Propagated up from [`extract_jvm_tar_gz`].
+///
+/// # Implementation Notes
 ///
 /// * `dest` is [`canonicalised`][`Path::canonicalize`] before use.
-/// * No checks are performed to determine if `dest` exists – however, [`canonicalise`][`Path::canonicalize`] will panic if it does not.
+/// * No checks are performed to determine if `dest` exists.
 /// * If `is_zip` is true, no checks are performed to determine if `archive` ends with `.zip`, and vice versa.
+///
+/// # Platform-Specific Behaviour
+///
+/// * UNIX-likes: [`extract_jvm_zip`] is used.
+/// * Windows: [`extract_jvm_tar_gz`] is used.
+///
+/// # Returns
+///
+/// Return type: [`Result<()>`]
+///
+/// Return value(s):
+///
+/// * Propagated up from the following functions (if they return [`Err`]):
+/// 	* [`Path::canonicalise`][`Path::canonicalize`]
+/// 	* [`File::open`]
+/// * If `is_zip` is true:
+/// 	* Propagated up from [`extract_jvm_zip`].
+/// * If `is_zip` is false:
+/// 	* Propagated up from [`extract_jvm_tar_gz`].
+///
+/// # Examples
+///
+/// Extractiong a Linux JVM:
+/// ```
+/// use fuji::commands::extract_jvm;
+///
+/// extract_jvm("java-25-linux.tar.gz", "./java-25-linux", false, false).unwrap();
+/// ```
+///
+/// Extracting a macOS JVM:
+/// ```
+/// use fuji::commands::extract_jvm;
+///
+/// extract_jvm("java-25-osx.tar.gz", "./java-25-osx", false, true).unwrap();
+/// ```
+///
+/// Extracting a Windows JVM:
+/// ```
+/// use fuji::commands::extract_jvm;
+///
+/// extract_jvm("java-25-win.zip", "./java-25-win", true, false).unwrap();
+/// ```
 pub fn extract_jvm<S: AsRef<Path>, P: AsRef<Path>>(
 	archive: S,
 	dest: P,
@@ -54,7 +117,7 @@ pub fn extract_jvm<S: AsRef<Path>, P: AsRef<Path>>(
 	result
 }
 
-fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> {
+pub fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> {
 	let m: MultiProgress = MultiProgress::new();
 	let max_len: u64 = input.metadata()?.len();
 	let pb: ProgressBar = m.add(progress_bar(max_len));
@@ -98,7 +161,7 @@ fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> {
 	Ok(())
 }
 
-fn extract_jvm_zip(dest: &Path, input: File, is_mac: bool) -> Result<()> {
+pub fn extract_jvm_zip(dest: &Path, input: File, is_mac: bool) -> Result<()> {
 	let mut archive: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JVM archive (ZIP)!")?;
 	let m: MultiProgress = MultiProgress::new();
 	// A JVM `.zip` bigger than u64::MAX would be a zip bomb.  Bad clippy!
@@ -172,7 +235,7 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 		.with_context(|| io_failure(path, "set permissions for"))
 }
 
-fn extract_jvm_entry<F>(dest: &Path, path: &Path, is_mac: bool, unpack: &mut F) -> Result<()>
+pub fn extract_jvm_entry<F>(dest: &Path, path: &Path, is_mac: bool, unpack: &mut F) -> Result<()>
 where F: FnMut(&Path) -> Result<()> {
 	let mut components: Components = path.components();
 	// https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
@@ -221,7 +284,7 @@ pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 	Ok(())
 }
 
-const TEMPLATE: &str = "[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})";
+pub const TEMPLATE: &str = "[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})";
 
 #[must_use]
 pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
