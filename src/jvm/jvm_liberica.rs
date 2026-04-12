@@ -6,7 +6,7 @@ use anyhow::Result;
 use serde::{Deserialize as Deserialise, Serialize as Serialise};
 
 use crate::arch::Arch;
-use crate::jvm::jvm_generic::{jvm_download_impl, DownloadJVMArgs};
+use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};
 use crate::jvm::major_version::MajorVersion;
 use crate::jvm::manage_jvm::Feature;
 use crate::os::OS;
@@ -21,16 +21,16 @@ pub fn get_liberica_endpoint(
 	arch: &Arch,
 	version: &MajorVersion,
 ) -> Result<String> {
-	let mut url: String = String::with_capacity(150);
-	let _ = write!(url, "https://api.bell-sw.com/v1/liberica/releases?bundle-type=");
-	url.push_str(if features.contains(&Feature::Minimal) {
-		"jre"
-	} else {
-		"jdk"
-	});
-	url.push_str("&bitness=64");
-	url.push_str("&version-modifier=latest");
-	url.push_str("&os=");
+	let mut url: String = String::with_capacity(175);
+	let _ = write!(
+		url,
+		"https://api.bell-sw.com/v1/liberica/releases?bundle-type={}&bitness=64&version-modifier=latest&os=",
+		if features.contains(&Feature::Minimal) {
+			"jre"
+		} else {
+			"jdk"
+		},
+	);
 	let os_name: &str = &os.to_string();
 	url.push_str(match os_name {
 		"osx" => "macos",
@@ -61,6 +61,7 @@ pub fn get_liberica_endpoint(
 	Ok(url)
 }
 
+/// 1:1 mapping of Liberica's endpoint @ <https://api.bell-sw.com/v1/liberica/releases/>
 #[allow(non_snake_case, clippy::struct_excessive_bools)]
 #[derive(Serialise, Deserialise, Debug)]
 pub struct LibericaReleaseInfo {
