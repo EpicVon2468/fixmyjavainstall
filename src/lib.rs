@@ -75,6 +75,7 @@ pub const FUJI_DIR: &str = if cfg!(windows) {
 ///
 /// # Examples
 ///
+/// Creating a shorthand / alias for `fuji foo bar baz`:
 /// ```
 /// use fuji::alias_entrypoint;
 ///
@@ -82,6 +83,7 @@ pub const FUJI_DIR: &str = if cfg!(windows) {
 /// alias_entrypoint(&["foo".into(), "bar".into(), "baz".into()]).unwrap();
 /// ```
 ///
+/// Creating a shorthand / alias for `fuji manage jvm preset`:
 /// ```
 /// use fuji::alias_entrypoint;
 ///
