@@ -86,7 +86,7 @@ pub fn get_liberica_version(
 }
 
 #[allow(non_snake_case, clippy::struct_excessive_bools)]
-#[derive(Serialise, Deserialise)]
+#[derive(Serialise, Deserialise, Debug)]
 pub struct LibericaReleaseInfo {
 	pub bitness: u8,
 	pub latestLTS: bool,
