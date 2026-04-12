@@ -18,7 +18,7 @@ NOTICE: You must run with `sudo -E` to preserve environment variables, else some
 
 ## Installation:
 
-Latest version: `v0.1.6: "I do love a good stacktrace"`
+Latest version: `v0.2.0: "Move slow and still break stuff (somehow)"`
 
 You can [download the latest release](https://github.com/EpicVon2468/fixmyjavainstall/releases/latest/) if there is one for your system and architecture.
 
