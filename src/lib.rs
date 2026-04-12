@@ -10,7 +10,7 @@
 	// 'JetBrains' and 'AdoptOpenJDK' are not identifiers I'm referencing.  Bad clippy!
 	clippy::doc_markdown,
 )]
-//! Fix Ur Java Install – A JVM & Kotlin management utility.
+//! # Fix Ur Java Install – A JVM & Kotlin management utility.
 //!
 //! Developer note: Expect regular breaking changes; Do not depend on `libfuji` as a stable API!
 pub mod arch;
@@ -41,7 +41,7 @@ use crate::cmd_manage::cmd_manage;
 
 /// The installation directory for fuji-managed programs.
 ///
-/// Platform-specific behaviour:
+/// # Platform-specific behaviour:
 ///
 /// * UNIX-likes: `/opt/fuji`
 /// * Windows: `\Program Files\fuji`
@@ -51,6 +51,25 @@ pub const FUJI_DIR: &str = if cfg!(windows) {
 	"/opt/fuji"
 };
 
+/// Wrapper for [`entrypoint`], taking in additional arguments for a shorthand / alias.
+///
+/// # Arguments
+///
+/// * `extras`: Additional arguments to append in-between `fuji` and the rest of the user's args.
+///
+/// # Errors
+///
+/// Errors are propagated up from [`entrypoint`].
+///
+/// returns: [`Result<()>`]
+///
+/// # Examples
+///
+/// ```
+/// use fuji::subcommand_entrypoint;
+///
+/// subcommand_entrypoint(&["foo".into(), "bar".into(), "baz".into()]).unwrap();
+/// ```
 pub fn subcommand_entrypoint(extras: &[OsString]) -> Result<()> {
 	let mut args: Vec<OsString> = vec!["fuji".into()];
 	args.extend_from_slice(extras);
@@ -58,6 +77,34 @@ pub fn subcommand_entrypoint(extras: &[OsString]) -> Result<()> {
 	entrypoint(Arguments::parse_from(args))
 }
 
+/// A `main`-like function, taking in [`Arguments`] and performing the operation(s) specified in them.
+///
+/// # Arguments
+///
+/// * `args`:
+///
+/// # Errors
+///
+/// Errors are propagated up from the following functions (if they are called):
+///
+/// * [`cmd_link`]
+/// * [`cmd_manage`]
+/// * [`cmd_man`]
+///
+/// # Panics
+///
+/// returns: [`Result<()>`]
+///
+/// # Examples
+///
+/// ```
+/// use clap::Parser;
+///
+/// use fuji::cli::Arguments;
+/// use fuji::entrypoint;
+///
+/// entrypoint(Arguments::parse()).unwrap();
+/// ```
 pub fn entrypoint(args: Arguments) -> Result<()> {
 	// dbg!(env!("CARGO_PKG_NAME"));
 	// dbg!(env!("CARGO_PKG_VERSION"));
