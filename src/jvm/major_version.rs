@@ -59,6 +59,7 @@ impl Default for MajorVersionParser {
 
 impl MajorVersionParser {
 
+	#[must_use]
 	pub fn new() -> MajorVersionParser {
 		MajorVersionParser {}
 	}

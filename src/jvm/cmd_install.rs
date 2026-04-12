@@ -12,7 +12,7 @@ use crate::jvm::jvm_jbr::download_jbr;
 use crate::jvm::jvm_liberica::download_liberica;
 use crate::jvm::jvm_temurin::download_temurin;
 use crate::jvm::major_version::MajorVersion;
-use crate::jvm::manage_jvm::{JavaVersion, Op};
+use crate::jvm::manage_jvm::{Feature, JavaVersion, Op};
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
 use crate::os::OS;
 use crate::{FUJI_DIR, wrong_cmd};
@@ -36,8 +36,8 @@ pub fn cmd_install(op: Op) -> Result<()> {
 	let java_version: JavaVersion = if (jvm == JVM::Temurin || jvm == JVM::JavaSE) && let MajorVersion::Number(version) = version {
 		JavaVersion {
 			major: version.to_string(),
-			specific: "".into(),
-			revision: "".into(),
+			specific: String::new(),
+			revision: String::new(),
 		}
 	} else {
 		let uri: String = format!(
@@ -53,15 +53,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 	// FUJI_DIR/jvm/{version}
 	let java_home: &Path = &Path::new(FUJI_DIR).join("jvm").join(&java_version.major);
 	if !dry_run {
-		if java_home.exists() {
-			let result: Result<()> = if java_home.is_dir() {
-				remove_dir_all(java_home)
-			} else {
-				remove_file(java_home)
-			}.with_context(|| io_failure(java_home, "remove"));
-			result.context("Couldn't remove entry which was occupying the new JAVA_HOME!")?;
-		};
-		create_dir_all(java_home).with_context(|| io_failure(java_home, "create directory"))?;
+		clean_java_home(java_home).context("Couldn't clean JAVA_HOME!")?;
 	};
 	let download_jvm: DownloadJVMFn = match jvm {
 		JVM::Auto => todo!(),
@@ -85,37 +77,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		executable_suffixes.pop();
 		// executable_suffixes.push("w");
 	};
-	for suffix in executable_suffixes {
-		let suffix: &str = if is_win {
-			// `java.exe` & `javaw.exe`
-			&format!("{suffix}.exe")
-		} else {
-			// `java`
-			suffix
-		};
-		// $JAVA_HOME/bin/java(w)(.exe)
-		let java_executable: PathBuf = java_home.join("bin").join(format!("java{suffix}"));
-		println!("Writing script to {}...", java_executable.display());
-		if dry_run {
-			continue;
-		};
-		// move JAVA_HOME/bin/java(w)(.exe) to a 'backup' file so that programs which try to run JAVA_HOME/bin/java(w)(.exe) literally can't skip the run script
-		rename(
-			&java_executable,
-			java_executable.with_added_extension("bak"),
-		).context("Couldn't backup java executable!")?;
-		let script_file: PathBuf = install_wrapper(
-			generate_wrapper(java_home, &features, is_win, suffix),
-			java_home,
-			suffix,
-			is_win,
-		).context("Couldn't install JVM wrapper script!")?;
-		// link JAVA_HOME/bin/java(w)(.exe) to JAVA_HOME/bin/fuji_jvm_wrapper
-		symlink_link(script_file, java_executable).context(
-			"Couldn't symbolically link JAVA_HOME/bin/java to point to JAVA_HOME/bin/fuji_jvm_wrapper!",
-		)?;
-		println!("Done.\n");
-	}
+	wrap_executables(&features, dry_run, java_home, is_win, executable_suffixes)?;
 	if dry_run {
 		return Ok(());
 	};
@@ -126,31 +88,59 @@ pub fn cmd_install(op: Op) -> Result<()> {
 	link_impl(java_home, "/usr/bin", false).context("Couldn't install JAVA_HOME!")?;
 	println!("Done.\n");
 	#[cfg(target_os = "linux")] {
-		use std::fs::File;
-		use std::io::Write;
+		use crate::jvm::desktop::install_desktop_entries;
 
-		let base: &Path = Path::new("/usr/share/applications");
-		if !base.exists() {
-			return Ok(());
-		};
-		macro_rules! desktop_entry {
-			($output:literal, $ident:ident) => {
-				File::create(base.join($output))
-					.context(concat!(
-						"Couldn't create/write '/usr/share/applications/",
-						$output,
-						"'!"
-					))?
-					.write_all($crate::jvm::desktop::$ident.as_bytes())
-					.context(concat!(
-						"Couldn't write to '/usr/share/applications/",
-						$output,
-						"'!"
-					))?;
-			};
-		}
-		desktop_entry!("fuji.java.desktop", FREEDESKTOP_ENTRY);
-		desktop_entry!("fuji.java.terminal.desktop", FREEDESKTOP_ENTRY_TERMINAL);
+		install_desktop_entries().context("Couldn't install .desktop entries!")?;
 	};
 	Ok(())
+}
+
+fn wrap_executables(
+	features: &[Feature],
+	dry_run: bool,
+	java_home: &Path,
+	is_win: bool,
+	executable_suffixes: Vec<&str>
+) -> Result<()> {
+	for suffix in executable_suffixes {
+		let suffix: &str = if is_win {
+			// `java.exe` & `javaw.exe`
+			&format!("{suffix}.exe")
+		} else {
+			// `java`
+			suffix
+		};
+		// $JAVA_HOME/bin/java(w)(.exe)
+		let java_executable: &Path = &java_home.join("bin").join(format!("java{suffix}"));
+		println!("Writing script to {}...", java_executable.display());
+		if dry_run {
+			continue;
+		};
+		// move JAVA_HOME/bin/java(w)(.exe) to a 'backup' file so that programs which try to run JAVA_HOME/bin/java(w)(.exe) literally can't skip the run script
+		rename(java_executable, java_executable.with_added_extension("bak")).context("Couldn't backup java executable!")?;
+		let script_file: PathBuf = install_wrapper(
+			generate_wrapper(java_home, features, is_win, suffix).as_str(),
+			java_home,
+			suffix,
+			is_win,
+		).context("Couldn't install JVM wrapper script!")?;
+		// link JAVA_HOME/bin/java(w)(.exe) to JAVA_HOME/bin/fuji_jvm_wrapper
+		symlink_link(script_file, java_executable).context(
+			"Couldn't symbolically link JAVA_HOME/bin/java to point to JAVA_HOME/bin/fuji_jvm_wrapper!",
+		)?;
+		println!("Done.\n");
+	};
+	Ok(())
+}
+
+fn clean_java_home(java_home: &Path) -> Result<()> {
+	if java_home.exists() {
+		let result: Result<()> = if java_home.is_dir() {
+			remove_dir_all(java_home)
+		} else {
+			remove_file(java_home)
+		}.with_context(|| io_failure(java_home, "remove"));
+		result.context("Couldn't remove entry which was occupying the new JAVA_HOME!")?;
+	};
+	create_dir_all(java_home).with_context(|| io_failure(java_home, "create directory"))
 }

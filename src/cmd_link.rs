@@ -24,7 +24,7 @@ pub fn cmd_link(command: Cmd) -> Result<()> {
 		wrong_cmd!(cmd_link);
 	};
 	#[cfg(all(windows, not(feature = "multi-os")))]
-	let link_dir: String = "".into();
+	let link_dir: String = String::new();
 	#[cfg(all(not(target_os = "linux"), not(feature = "multi-os")))]
 	let use_update_alternatives: bool = false;
 	for path in paths {

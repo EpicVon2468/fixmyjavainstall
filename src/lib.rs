@@ -1,4 +1,15 @@
-#![allow(clippy::tabs_in_doc_comments)]
+#![warn(clippy::pedantic)]
+#![allow(
+	// Why???  Bad clippy!
+	clippy::tabs_in_doc_comments,
+	// Consistency & uniformity looks better.  Bad clippy!
+	clippy::unnecessary_semicolon,
+	// I'll get to writing doc comments when I get to them.
+	clippy::missing_errors_doc,
+	clippy::missing_panics_doc,
+	// 'JetBrains' and 'AdoptOpenJDK' are not identifiers I'm referencing.  Bad clippy!
+	clippy::doc_markdown,
+)]
 //! Fix Ur Java Install – A JVM & Kotlin management utility.
 //!
 //! Developer note: Expect regular breaking changes; Do not depend on `libfuji` as a stable API!
@@ -50,11 +61,11 @@ pub fn subcommand_entrypoint(extras: &[OsString]) -> Result<()> {
 pub fn entrypoint(args: Arguments) -> Result<()> {
 	// dbg!(env!("CARGO_PKG_NAME"));
 	// dbg!(env!("CARGO_PKG_VERSION"));
-	if cfg!(windows) {
+	const {
 		// Ever heard of "Never judge a book by is cover" ?
 		// It's about how you should judge based on the content of something, not what is on the outside
 		// Windows saw that, and said "Okay, but what if we made file extensions matter for execution instead?"
-		panic!("https://learn.microsoft.com/en-gb/windows/wsl/install/");
+		assert!(cfg!(not(windows)), "https://learn.microsoft.com/en-gb/windows/wsl/install/");
 	};
 	#[cfg(feature = "dev")] {
 		use std::env::{set_var, var};
@@ -68,10 +79,11 @@ pub fn entrypoint(args: Arguments) -> Result<()> {
 	if let Some(command) = args.command {
 		match command {
 			#[cfg(any(not(windows), feature = "multi-os"))]
-			Cmd::Link { .. } => cmd_link(command)?,
-			Cmd::Manage { .. } => cmd_manage(command)?,
-			Cmd::Manual { .. } => cmd_man(command)?,
-		};
-	};
-	Ok(())
+			Cmd::Link { .. } => cmd_link(command),
+			Cmd::Manage { .. } => cmd_manage(command),
+			Cmd::Manual { .. } => cmd_man(command),
+		}
+	} else {
+		Ok(())
+	}
 }

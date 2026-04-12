@@ -7,6 +7,7 @@ use anyhow::{Context, Result};
 use crate::commands::io_failure;
 use crate::jvm::manage_jvm::Feature;
 
+#[must_use]
 pub fn generate_wrapper(
 	java_home: &Path,
 	features: &[Feature],
@@ -32,10 +33,11 @@ fn generate_wrapper_win(java_home: &Path, features: &[Feature], bin_suffix: &str
 	result.push_str("@echo off\r\n\r\n");
 	result.push_str("setlocal enableextensions\r\n\r\n");
 
-	result.push_str(&format!(
-		"set JAVA_HOME=\"{}\"\r\n\r\n",
-		java_home.display()
-	));
+	{
+		use std::fmt::Write;
+
+		let _ = write!(result, "set JAVA_HOME=\"{}\"\r\n\r\n", java_home.display());
+	}
 
 	result.push_str("if defined CLASSPATH (\r\n");
 	result.push_str("\tset FUJI_CLASSPATH_ARG=\"-cp %CLASSPATH%;.\"\r\n");
@@ -57,7 +59,11 @@ fn generate_wrapper_unix(java_home: &Path, features: &[Feature], bin_suffix: &st
 
 	result.push_str("#!/usr/bin/env sh\n\n");
 
-	result.push_str(&format!("JAVA_HOME=\"{}\"\n", java_home.display()));
+	{
+		use std::fmt::Write;
+
+		let _ = writeln!(result, "JAVA_HOME=\"{}\"", java_home.display());
+	}
 	result.push_str("export JAVA_HOME\n\n");
 
 	result.push_str("if [ -n \"$CLASSPATH\" ]; then\n");
@@ -115,11 +121,10 @@ fn gen_features(
 	};
 	// https://docs.oracle.com/en/java/javase/25/troubleshoot/java-2d-properties.html
 	if features.contains(&Feature::OpenGL) {
-		if requires_vulkan {
-			panic!(
-				"Vulkan required for WLToolkit, but OpenGL was also explicitly requested.  Resolve incompatible args and try again."
-			);
-		};
+		assert!(
+			!requires_vulkan,
+			"Vulkan required for WLToolkit, but OpenGL was also explicitly requested.  Resolve incompatible args and try again.",
+		);
 		fuji_jvm_arg(
 			"OpenGL for AWT/Swing.  This has been bundled in OpenJDK for a long time, but isn't on by default",
 			"-Dsun.java2d.opengl=true",
@@ -127,11 +132,10 @@ fn gen_features(
 	};
 	#[cfg(any(target_os = "macos", feature = "multi-os"))]
 	if features.contains(&Feature::Metal) {
-		if requires_vulkan {
-			panic!(
-				"Vulkan required for WLToolkit, but Metal was also explicitly requested.  Resolve incompatible args and try again."
-			);
-		};
+		assert!(
+			!requires_vulkan,
+			"Vulkan required for WLToolkit, but Metal was also explicitly requested.  Resolve incompatible args and try again.",
+		);
 		fuji_jvm_arg(
 			"Metal support for AWT/Swing (macOS).  If you're on macOS, use this instead of OpenGL (Apple has deprecated OpenGL on macOS)",
 			"-Dsun.java2d.metal=true",
@@ -164,7 +168,7 @@ fn gen_features(
 }
 
 pub fn install_wrapper(
-	script: String,
+	script: &str,
 	java_home: &Path,
 	bin_suffix: &str,
 	is_win: bool,

@@ -1,16 +1,16 @@
-use std::fs::{File, create_dir_all, remove_dir_all};
+use std::fs::{create_dir_all, remove_dir_all, File};
 use std::io::Write;
-use std::iter::{Cloned, Filter};
+use std::iter::Filter;
 use std::path::Path;
 
 use anyhow::{Context, Result};
 
 use clap::{Arg, Command, CommandFactory};
+use clap_mangen::roff::{roman, Roff};
 use clap_mangen::Man;
-use clap_mangen::roff::{Roff, roman};
 
-use flate2::Compression;
 use flate2::read::GzEncoder;
+use flate2::Compression;
 
 use crate::cli::{Arguments, Cmd};
 use crate::wrong_cmd;
@@ -33,11 +33,10 @@ pub fn cmd_man(cmd: Cmd) -> Result<()> {
 
 /// Based off [`clap_mangen::generate_to`]
 fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
-	fn generate(parent: Command, out_dir: &Path) -> Result<()> {
-		let children: Cloned<Filter<_, _>> = parent
+	fn generate(parent: &Command, out_dir: &Path) -> Result<()> {
+		let children: Filter<_, _> = parent
 			.get_subcommands()
-			.filter(|c: &&Command| !c.is_hide_set())
-			.cloned();
+			.filter(|c: &&Command| !c.is_hide_set());
 		for child in children {
 			generate(child, out_dir)?;
 		};
@@ -49,9 +48,9 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 				.context("create man_file.gz")?,
 			Compression::default(),
 		);
-		render0(&parent, &man, &mut output)?;
-		render_subcommands(&parent, &mut output)?;
-		render1(&parent, &man, &mut output)?;
+		render0(parent, &man, &mut output)?;
+		render_subcommands(parent, &mut output)?;
+		render1(parent, &man, &mut output)?;
 		output.flush().context("flush")?;
 
 		Ok(())
@@ -59,7 +58,7 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 
 	let mut cmd: Command = cmd.disable_help_subcommand(true);
 	cmd.build();
-	generate(cmd, out_dir.as_ref())
+	generate(&cmd, out_dir.as_ref())
 }
 
 fn render0(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) -> Result<()> {
@@ -90,16 +89,16 @@ fn render_subcommands(cmd: &Command, mut output: &mut GzEncoder<File>) -> Result
 			roff.control("TP", []);
 			// the built-in implementation of this part is broken
 			// fuji-manage will try to resolve fuji-jvm as though it were still called fuji-manage-jvm
-			let name: String = sub
-				.get_display_name()
-				.map(str::to_string)
-				.unwrap_or_else(|| {
+			let name: String = sub.get_display_name().map_or_else(
+				|| {
 					format!(
 						"{}-{}",
 						cmd.get_display_name().unwrap_or_else(|| cmd.get_name()),
 						sub.get_name(),
 					)
-				}) + "(8)";
+				},
+				str::to_string,
+			) + "(8)";
 			roff.text([roman(name)]);
 			if let Some(about) = sub.get_about().or_else(|| sub.get_long_about()) {
 				for line in about.to_string().lines() {

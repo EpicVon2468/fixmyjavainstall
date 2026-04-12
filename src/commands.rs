@@ -22,6 +22,7 @@ use zip::ZipArchive;
 use zip::read::ZipFile;
 
 /// Checks if the program `name` exists.  This is equivalent to `which(name).is_ok()`.
+#[must_use]
 pub fn has_program(name: &str) -> bool {
 	which(name).is_ok()
 }
@@ -45,15 +46,15 @@ pub fn extract_jvm<S: AsRef<Path>, P: AsRef<Path>>(
 		.context("Couldn't canonicalise destination path!")?;
 	let input: File = File::open(archive.as_ref()).context("Couldn't open JVM archive!")?;
 	let result: Result<()> = if is_zip {
-		_extract_jvm_zip(dest, input, is_mac)
+		extract_jvm_zip(&dest, input, is_mac)
 	} else {
-		_extract_jvm_tar_gz(dest, input, is_mac)
+		extract_jvm_tar_gz(&dest, input, is_mac)
 	};
 	println!("Done.\n");
 	result
 }
 
-fn _extract_jvm_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
+fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> {
 	let m: MultiProgress = MultiProgress::new();
 	let max_len: u64 = input.metadata()?.len();
 	let pb: ProgressBar = m.add(progress_bar(max_len));
@@ -69,12 +70,13 @@ fn _extract_jvm_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 		.context("Couldn't iterate through JVM archive!")?;
 	for entry in entries {
 		let mut entry: Entry<GzDecoder<File>> = entry.context("Couldn't get entry in JVM archive!")?;
-		_extract_jvm(
-			&dest,
+		extract_jvm_entry(
+			dest,
 			entry
 				.path()
 				.context("Couldn't get path for entry in JVM archive!")?
-				.to_path_buf(),
+				.to_path_buf()
+				.as_path(),
 			is_mac,
 			&mut |resolved: &Path| {
 				extract_pb.clone().with_message(resolved.display().to_string());
@@ -96,9 +98,11 @@ fn _extract_jvm_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	Ok(())
 }
 
-fn _extract_jvm_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
+fn extract_jvm_zip(dest: &Path, input: File, is_mac: bool) -> Result<()> {
 	let mut archive: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JVM archive (ZIP)!")?;
 	let m: MultiProgress = MultiProgress::new();
+	// A JVM `.zip` bigger than u64::MAX would be a zip bomb.  Bad clippy!
+	#[allow(clippy::cast_possible_truncation)]
 	let max_len: u64 = archive.decompressed_size().unwrap() as u64;
 	let pb: ProgressBar = m.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
@@ -115,11 +119,12 @@ fn _extract_jvm_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 			panic!("https://www.youtube.com/watch?v=yhDMpYkML2k");
 		};
 		let size: u64 = entry.size();
-		_extract_jvm(
-			&dest,
+		extract_jvm_entry(
+			dest,
 			entry
 				.enclosed_name()
-				.context("Couldn't get path for entry in JVM archive (ZIP)!")?,
+				.context("Couldn't get path for entry in JVM archive (ZIP)!")?
+				.as_path(),
 			is_mac,
 			&mut |resolved: &Path| {
 				if entry.is_dir() {
@@ -166,15 +171,13 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 		.with_context(|| io_failure(path, "set permissions for"))
 }
 
-fn _extract_jvm<F>(dest: &Path, path: PathBuf, is_mac: bool, unpack: &mut F) -> Result<()>
+fn extract_jvm_entry<F>(dest: &Path, path: &Path, is_mac: bool, unpack: &mut F) -> Result<()>
 where F: FnMut(&Path) -> Result<()> {
 	let mut components: Components = path.components();
 	// https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
 	// --strip-components 1
 	components.next();
-	if components.clone().any(|c: Component| c == Component::ParentDir) {
-		panic!("Component::ParentDir found!");
-	};
+	assert!(!components.clone().any(|c: Component| c == Component::ParentDir), "Component::ParentDir found!");
 	// macOS .tar.gz is laid out differently.  it's a '.app'...
 	if is_mac {
 		// skip "Contents"
@@ -219,13 +222,14 @@ pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 
 const TEMPLATE: &str = "[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})";
 
+#[must_use]
 pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
 	let pb: ProgressBar = ProgressBar::new(len);
 	pb.set_style(
 		ProgressStyle::with_template(message)
 			.unwrap()
 			.with_key("eta", |state: &ProgressState, w: &mut dyn Write| {
-				write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap()
+				write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap();
 			})
 			.progress_chars("=>-")
 			.tick_chars("⠙⠚⠓⠋ ")
@@ -235,6 +239,7 @@ pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
 }
 
 // https://github.com/console-rs/indicatif/blob/main/examples/download.rs
+#[must_use]
 pub fn progress_bar(len: u64) -> ProgressBar {
 	progress_bar_template(len, TEMPLATE)
 }
