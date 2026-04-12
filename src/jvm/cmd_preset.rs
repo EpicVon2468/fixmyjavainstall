@@ -3,7 +3,7 @@ use anyhow::{Context, Result};
 use crate::arch::Arch;
 use crate::cli::{Cmd, Preset, Software};
 use crate::cmd_manage::cmd_manage;
-use crate::jvm::jdk::JDK;
+use crate::jvm::jvm::JVM;
 use crate::jvm::major_version::MajorVersion;
 use crate::jvm::manage_jvm::{Feature, Op};
 #[cfg(feature = "multi-os")]
@@ -46,7 +46,7 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 	cmd_manage(Cmd::Manage {
 		software: Software::JVM {
 			op: Op::Install {
-				jdk: JDK::JBR,
+				jvm: JVM::JBR,
 				arch: Arch::SYSTEM,
 				#[cfg(feature = "multi-os")]
 				operating_system: OS::SYSTEM,
@@ -65,7 +65,7 @@ fn preset_fast(minimal: bool) -> Result<()> {
 	cmd_manage(Cmd::Manage {
 		software: Software::JVM {
 			op: Op::Install {
-				jdk: JDK::JBR,
+				jvm: JVM::JBR,
 				arch: Arch::SYSTEM,
 				#[cfg(feature = "multi-os")]
 				operating_system: OS::SYSTEM,
@@ -123,8 +123,8 @@ fn preset_latest(minimal: bool) -> Result<()> {
 	cmd_manage(Cmd::Manage {
 		software: Software::JVM {
 			op: Op::Install {
-				// FIXME: need to implement JDK::Auto so I don't have to default to JavaSE
-				jdk: JDK::JavaSE,
+				// FIXME: need to implement JVM::Auto so I don't have to default to JavaSE
+				jvm: JVM::JavaSE,
 				arch: Arch::SYSTEM,
 				#[cfg(feature = "multi-os")]
 				operating_system: OS::SYSTEM,

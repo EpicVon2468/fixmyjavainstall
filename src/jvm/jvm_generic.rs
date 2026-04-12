@@ -4,13 +4,13 @@ use std::path::Path;
 use anyhow::{Context, Result};
 
 use crate::arch::Arch;
-use crate::commands::{download, extract_jdk};
+use crate::commands::{download, extract_jvm};
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
 use crate::os::OS;
 
-pub type DownloadJDKFn = fn(args: DownloadJDKArgs) -> Result<()>;
+pub type DownloadJVMFn = fn(args: DownloadJVMArgs) -> Result<()>;
 
-pub struct DownloadJDKArgs<'a> {
+pub struct DownloadJVMArgs<'a> {
 	pub arch: Arch,
 	pub version: JavaVersion,
 	pub features: &'a [Feature],
@@ -19,7 +19,7 @@ pub struct DownloadJDKArgs<'a> {
 	pub dry_run: bool,
 }
 
-impl DownloadJDKArgs<'_> {
+impl DownloadJVMArgs<'_> {
 
 	pub fn is_win(&self) -> bool {
 		self.os == OS::Windows
@@ -30,13 +30,13 @@ impl DownloadJDKArgs<'_> {
 	}
 }
 
-pub fn generic_download<S: AsRef<str>>(url: S, args: DownloadJDKArgs) -> Result<()> {
+pub fn jvm_download_impl<S: AsRef<str>>(url: S, args: DownloadJVMArgs) -> Result<()> {
 	let url: &str = url.as_ref();
 	let java_home: &Path = args.java_home;
 	let is_win: bool = args.is_win();
 	let archive: &Path = &java_home.with_added_extension(if is_win { "zip" } else { "tar.gz" });
 
-	println!("Downloading JDK: {url}...");
+	println!("Downloading JVM: {url}...");
 	if args.dry_run {
 		return Ok(());
 	};
@@ -46,15 +46,15 @@ pub fn generic_download<S: AsRef<str>>(url: S, args: DownloadJDKArgs) -> Result<
 			remove_dir_all(archive)
 		} else {
 			remove_file(archive)
-		}.context("Couldn't remove unexpected pre-existing JDK archive!")?;
+		}.context("Couldn't remove unexpected pre-existing JVM archive!")?;
 	};
-	download(url, archive).context("Couldn't download JDK archive!")?;
+	download(url, archive).context("Couldn't download JVM archive!")?;
 
-	println!("Extracting JDK...");
-	extract_jdk(archive, java_home, is_win, args.is_mac()).context("Couldn't extract JDK!")?;
+	println!("Extracting JVM...");
+	extract_jvm(archive, java_home, is_win, args.is_mac()).context("Couldn't extract JVM!")?;
 
-	println!("Removing JDK archive...");
-	remove_file(archive).context("Couldn't delete JDK archive!")?;
+	println!("Removing JVM archive...");
+	remove_file(archive).context("Couldn't delete JVM archive!")?;
 	println!("Done.\n");
 
 	Ok(())

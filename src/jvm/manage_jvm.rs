@@ -8,7 +8,7 @@ use crate::arch::Arch;
 use crate::cli::{Preset, Software};
 use crate::jvm::cmd_install::cmd_install;
 use crate::jvm::cmd_preset::cmd_preset;
-use crate::jvm::jdk::JDK;
+use crate::jvm::jvm::JVM;
 use crate::jvm::major_version::{MajorVersion, MajorVersionParser};
 #[cfg(feature = "multi-os")]
 use crate::os::OS;
@@ -21,11 +21,11 @@ pub enum Op {
 	/// Installs a new JVM
 	#[clap(author = "Mavity The Madity")]
 	Install {
-		/// The JDK for the requested JVM
-		#[arg(short, long = "java-dev-kit", default_value = "jbr")]
-		jdk: JDK,
+		/// The build/vendor for the requested JVM
+		#[arg(short, long, alias = "java-virtual-machine", default_value = "jbr")]
+		jvm: JVM,
 
-		/// The architecture for the requested JVM.  Note that not every JDK may support every architecture, and some JDKs may not offer certain features for all architectures.  Generally speaking, x64 (amd64) has the highest level of support overall
+		/// The architecture for the requested JVM.  Note that not every JVM may support every architecture, and some JVMs may not offer certain features for all architectures.  Generally speaking, x64 (amd64) has the highest level of support overall
 		#[arg(
 			short,
 			long,
@@ -43,7 +43,7 @@ pub enum Op {
 		)]
 		operating_system: OS,
 
-		/// The features for the requested JVM.  Note that not every JDK may support every feature, and some JDKs may only offer features for certain versions or with incompatibilities with other features
+		/// The features for the requested JVM.  Note that not every JVM may support every feature, and some JVMs may only offer features for certain versions or with incompatibilities with other features
 		#[arg(short, long)]
 		features: Vec<Feature>,
 

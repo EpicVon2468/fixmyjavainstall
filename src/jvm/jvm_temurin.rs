@@ -1,11 +1,11 @@
 //! Temurin (previously AdoptOpenJDK) by Eclipse/Adoptium – <https://adoptium.net/>
 use anyhow::Result;
 
-use crate::jvm::jdk_generic::{DownloadJDKArgs, generic_download};
+use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};
 use crate::jvm::manage_jvm::Feature;
 
 // https://github.com/adoptium/api.adoptium.net/blob/main/docs/cookbook.adoc
-pub fn download_temurin(args: DownloadJDKArgs) -> Result<()> {
+pub fn download_temurin(args: DownloadJVMArgs) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	url.push_str("https://api.adoptium.net/v3/binary/latest/");
 	url.push_str(&args.version.major);
@@ -25,5 +25,5 @@ pub fn download_temurin(args: DownloadJDKArgs) -> Result<()> {
 	});
 	// returns a .zip instead of a .tar.gz for windows
 	url.push_str("/hotspot/normal/eclipse");
-	generic_download(url, args)
+	jvm_download_impl(url, args)
 }

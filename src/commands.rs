@@ -33,7 +33,7 @@ pub fn has_program(name: &str) -> bool {
 /// * `dest` is [`canonicalised`][`Path::canonicalize`] before use.
 /// * No checks are performed to determine if `dest` exists – however, [`canonicalise`][`Path::canonicalize`] will panic if it does not.
 /// * If `is_zip` is true, no checks are performed to determine if `archive` ends with `.zip`, and vice versa.
-pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
+pub fn extract_jvm<S: AsRef<Path>, P: AsRef<Path>>(
 	archive: S,
 	dest: P,
 	is_zip: bool,
@@ -43,17 +43,17 @@ pub fn extract_jdk<S: AsRef<Path>, P: AsRef<Path>>(
 		.as_ref()
 		.canonicalize()
 		.context("Couldn't canonicalise destination path!")?;
-	let input: File = File::open(archive.as_ref()).context("Couldn't open JDK archive!")?;
+	let input: File = File::open(archive.as_ref()).context("Couldn't open JVM archive!")?;
 	let result: Result<()> = if is_zip {
-		_extract_jdk_zip(dest, input, is_mac)
+		_extract_jvm_zip(dest, input, is_mac)
 	} else {
-		_extract_jdk_tar_gz(dest, input, is_mac)
+		_extract_jvm_tar_gz(dest, input, is_mac)
 	};
 	println!("Done.\n");
 	result
 }
 
-fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
+fn _extract_jvm_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	let m: MultiProgress = MultiProgress::new();
 	let max_len: u64 = input.metadata()?.len();
 	let pb: ProgressBar = m.add(progress_bar(max_len));
@@ -66,14 +66,14 @@ fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	extract_pb.enable_steady_tick(Duration::from_millis(125));
 	let entries: Entries<GzDecoder<File>> = archive
 		.entries()
-		.context("Couldn't iterate through JDK archive!")?;
+		.context("Couldn't iterate through JVM archive!")?;
 	for entry in entries {
-		let mut entry: Entry<GzDecoder<File>> = entry.context("Couldn't get entry in JDK archive!")?;
-		_extract_jdk(
+		let mut entry: Entry<GzDecoder<File>> = entry.context("Couldn't get entry in JVM archive!")?;
+		_extract_jvm(
 			&dest,
 			entry
 				.path()
-				.context("Couldn't get path for entry in JDK archive!")?
+				.context("Couldn't get path for entry in JVM archive!")?
 				.to_path_buf(),
 			is_mac,
 			&mut |resolved: &Path| {
@@ -96,8 +96,8 @@ fn _extract_jdk_tar_gz(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	Ok(())
 }
 
-fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
-	let mut archive: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JDK archive (ZIP)!")?;
+fn _extract_jvm_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
+	let mut archive: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JVM archive (ZIP)!")?;
 	let m: MultiProgress = MultiProgress::new();
 	let max_len: u64 = archive.decompressed_size().unwrap() as u64;
 	let pb: ProgressBar = m.add(progress_bar(max_len));
@@ -109,17 +109,17 @@ fn _extract_jdk_zip(dest: PathBuf, input: File, is_mac: bool) -> Result<()> {
 	for index in 0..archive.len() {
 		let mut entry: ZipFile<File> = archive
 			.by_index(index)
-			.context("Couldn't get entry in JDK archive (ZIP)!")?;
+			.context("Couldn't get entry in JVM archive (ZIP)!")?;
 		if entry.is_symlink() {
 			println!("Absolutely not go fuck yourself");
 			panic!("https://www.youtube.com/watch?v=yhDMpYkML2k");
 		};
 		let size: u64 = entry.size();
-		_extract_jdk(
+		_extract_jvm(
 			&dest,
 			entry
 				.enclosed_name()
-				.context("Couldn't get path for entry in JDK archive (ZIP)!")?,
+				.context("Couldn't get path for entry in JVM archive (ZIP)!")?,
 			is_mac,
 			&mut |resolved: &Path| {
 				if entry.is_dir() {
@@ -166,7 +166,7 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 		.with_context(|| io_failure(path, "set permissions for"))
 }
 
-fn _extract_jdk<F>(dest: &Path, path: PathBuf, is_mac: bool, unpack: &mut F) -> Result<()>
+fn _extract_jvm<F>(dest: &Path, path: PathBuf, is_mac: bool, unpack: &mut F) -> Result<()>
 where F: FnMut(&Path) -> Result<()> {
 	let mut components: Components = path.components();
 	// https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
@@ -185,7 +185,7 @@ where F: FnMut(&Path) -> Result<()> {
 		};
 	};
 	let resolved: PathBuf = dest.join(components.as_path());
-	unpack(&resolved).context("Couldn't unpack entry from JDK archive!")
+	unpack(&resolved).context("Couldn't unpack entry from JVM archive!")
 }
 
 /// Downloads a resource from `url` to `dest`.

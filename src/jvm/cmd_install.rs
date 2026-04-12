@@ -5,12 +5,12 @@ use anyhow::{Context, Result};
 
 use crate::cmd_link::{link_impl, symlink_link};
 use crate::commands::io_failure;
-use crate::jvm::jdk::JDK;
-use crate::jvm::jdk_generic::{DownloadJDKArgs, DownloadJDKFn};
-use crate::jvm::jdk_java_se::download_java_se;
-use crate::jvm::jdk_jbr::download_jbr;
-use crate::jvm::jdk_liberica::download_liberica;
-use crate::jvm::jdk_temurin::download_temurin;
+use crate::jvm::jvm::JVM;
+use crate::jvm::jvm_generic::{DownloadJVMArgs, DownloadJVMFn};
+use crate::jvm::jvm_java_se::download_java_se;
+use crate::jvm::jvm_jbr::download_jbr;
+use crate::jvm::jvm_liberica::download_liberica;
+use crate::jvm::jvm_temurin::download_temurin;
 use crate::jvm::major_version::MajorVersion;
 use crate::jvm::manage_jvm::{JavaVersion, Op};
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
@@ -19,7 +19,7 @@ use crate::{FUJI_DIR, wrong_cmd};
 
 pub fn cmd_install(op: Op) -> Result<()> {
 	let Op::Install {
-		jdk,
+		jvm,
 		arch,
 		#[cfg(feature = "multi-os")]
 		operating_system,
@@ -33,7 +33,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 	#[cfg(not(feature = "multi-os"))]
 	let operating_system: OS = OS::SYSTEM;
 	// Temurin & Java SE both only need major version, except for LTS/Latest where we return the major version from our endpoint
-	let java_version: JavaVersion = if (jdk == JDK::Temurin || jdk == JDK::JavaSE) && let MajorVersion::Number(version) = version {
+	let java_version: JavaVersion = if (jvm == JVM::Temurin || jvm == JVM::JavaSE) && let MajorVersion::Number(version) = version {
 		JavaVersion {
 			major: version.to_string(),
 			specific: "".into(),
@@ -41,14 +41,14 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		}
 	} else {
 		let uri: String = format!(
-			"https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{jdk}/{version}.json"
+			"https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{jvm}/{version}.json"
 		);
 		ureq::get(uri)
 			.call()
-			.context("No JDK was available with the requested version!")?
+			.context("No JVM was available with the requested version!")?
 			.body_mut()
 			.read_json()
-			.context("Couldn't read JDK version information!")?
+			.context("Couldn't read JVM version information!")?
 	};
 	// FUJI_DIR/jvm/{version}
 	let java_home: &Path = &Path::new(FUJI_DIR).join("jvm").join(&java_version.major);
@@ -63,21 +63,21 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		};
 		create_dir_all(java_home).with_context(|| io_failure(java_home, "create directory"))?;
 	};
-	let download_jdk: DownloadJDKFn = match jdk {
-		JDK::Auto => todo!(),
-		JDK::JBR => download_jbr,
-		JDK::JavaSE => download_java_se,
-		JDK::Temurin => download_temurin,
-		JDK::Liberica => download_liberica,
+	let download_jvm: DownloadJVMFn = match jvm {
+		JVM::Auto => todo!(),
+		JVM::JBR => download_jbr,
+		JVM::JavaSE => download_java_se,
+		JVM::Temurin => download_temurin,
+		JVM::Liberica => download_liberica,
 	};
-	download_jdk(DownloadJDKArgs {
+	download_jvm(DownloadJVMArgs {
 		arch,
 		version: java_version,
 		features: &features,
 		os: operating_system.clone(),
 		java_home,
 		dry_run,
-	}).context("Couldn't download JDK!")?;
+	}).context("Couldn't download JVM!")?;
 	// https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
 	let is_win: bool = operating_system == OS::Windows;
 	let mut executable_suffixes: Vec<&str> = vec![""];

@@ -1,4 +1,4 @@
-//! An enumeration of JDKs
+//! An enumeration of JVM builds/vendors
 use std::fmt::{Display, Formatter, Result};
 
 use clap::ValueEnum;
@@ -9,16 +9,16 @@ macro_rules! clap_doc {
 	};
 	($name:ident, $suffix:literal) => {
 		concat!(
-			include_str!(concat!("../../doc/jdk/", stringify!($name), ".txt")),
+			include_str!(concat!("../../doc/jvm/", stringify!($name), ".txt")),
 			$suffix
 		)
 	};
 }
 
-/// An enumeration of JDKs
+/// An enumeration of JVM builds/vendors
 #[derive(ValueEnum, Clone, PartialEq)]
-pub enum JDK {
-	/// Automagically pick the best JDK based on the requested version and features
+pub enum JVM {
+	/// Automagically pick the best JVM based on the requested version and features
 	Auto,
 	/// JetBrains Runtime by JetBrains – <https://github.com/JetBrains/JetBrainsRuntime/>
 	///
@@ -135,18 +135,18 @@ pub enum JDK {
 	Liberica,
 }
 
-impl Display for JDK {
+impl Display for JVM {
 
 	fn fmt(&self, f: &mut Formatter<'_>) -> Result {
 		write!(
 			f,
 			"{}",
 			match self {
-				JDK::Auto => "auto",
-				JDK::JBR => "jbr",
-				JDK::JavaSE => "java-se",
-				JDK::Temurin => "temurin",
-				JDK::Liberica => "liberica",
+				JVM::Auto => "auto",
+				JVM::JBR => "jbr",
+				JVM::JavaSE => "java-se",
+				JVM::Temurin => "temurin",
+				JVM::Liberica => "liberica",
 			}
 		)
 	}

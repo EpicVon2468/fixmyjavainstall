@@ -1,10 +1,10 @@
 //! JetBrains Runtime by JetBrains – <https://github.com/JetBrains/JetBrainsRuntime/>
 use anyhow::Result;
 
-use crate::jvm::jdk_generic::{DownloadJDKArgs, generic_download};
+use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
 
-pub fn download_jbr(args: DownloadJDKArgs) -> Result<()> {
+pub fn download_jbr(args: DownloadJVMArgs) -> Result<()> {
 	let features: &[Feature] = args.features;
 	let version: &JavaVersion = &args.version;
 	let mut url: String = String::with_capacity(100);
@@ -28,5 +28,5 @@ pub fn download_jbr(args: DownloadJDKArgs) -> Result<()> {
 	url.push('-');
 	url.push_str(&version.revision);
 	url.push_str(if args.is_win() { ".zip" } else { ".tar.gz" });
-	generic_download(url, args)
+	jvm_download_impl(url, args)
 }
