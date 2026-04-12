@@ -40,15 +40,15 @@ pub fn extract_jvm<S: AsRef<Path>, P: AsRef<Path>>(
 	is_zip: bool,
 	is_mac: bool,
 ) -> Result<()> {
-	let dest: PathBuf = dest
+	let dest: &Path = &dest
 		.as_ref()
 		.canonicalize()
 		.context("Couldn't canonicalise destination path!")?;
 	let input: File = File::open(archive.as_ref()).context("Couldn't open JVM archive!")?;
 	let result: Result<()> = if is_zip {
-		extract_jvm_zip(&dest, input, is_mac)
+		extract_jvm_zip(dest, input, is_mac)
 	} else {
-		extract_jvm_tar_gz(&dest, input, is_mac)
+		extract_jvm_tar_gz(dest, input, is_mac)
 	};
 	println!("Done.\n");
 	result

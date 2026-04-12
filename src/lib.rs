@@ -41,7 +41,7 @@ use crate::cmd_manage::cmd_manage;
 
 /// The installation directory for fuji-managed programs.
 ///
-/// # Platform-specific behaviour:
+/// # Platform-Specific Behaviour:
 ///
 /// * UNIX-likes: `/opt/fuji`
 /// * Windows: `\Program Files\fuji`
@@ -129,6 +129,7 @@ pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 /// 		* [`cmd_link`][`cmd_link()`]
 ///			* [`cmd_manage`][`cmd_manage()`]
 /// 		* [`cmd_man`][`cmd_man()`]
+///
 /// # Examples
 ///
 /// ```

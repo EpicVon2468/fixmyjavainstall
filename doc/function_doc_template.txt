@@ -1,0 +1,61 @@
+/// Short description here.
+///
+/// # Arguments
+///
+/// * `arg1`: <arg description>.
+/// * `arg2`: <arg description>.
+/// * `arg3`: <arg description>.
+///
+/// # Errors
+///
+/// Error type: Dynamic (see [`anyhow::Error`]).
+///
+/// Error value(s):
+///
+/// * Always: <value description>.
+/// * If <condition description 1>:
+/// 	* Propagated up from the following functions (if they are called):
+/// 		* <value description>
+/// 		* <value description>
+/// 		* <value description>
+///
+/// # Panics
+///
+/// * <panic condition 1>.
+/// * <panic condition 2>.
+/// * <panic condition 3>.
+///
+/// # Platform-Specific Behaviour:
+///
+/// * Linux: foo bar baz
+/// * macOS: other thing
+/// * Windows: baz foo bar
+///
+/// # Returns
+///
+/// Return type: [`FooBar`]
+///
+/// Return value(s):
+///
+/// * Always: <value description>
+/// * If <condition description 1>: <value description>
+/// * If <condition description 2>:
+/// 	* <subcondition/enumeration 1>:
+/// 		* <value description>
+/// 		* <value description>
+/// 		* <value description>
+/// * If <condition description 3>:
+/// 	* Propagated up from the following functions (if they are called):
+/// 		* <function link>
+/// 		* <function link>
+/// 		* <function link>
+///
+/// # Examples
+///
+/// ```
+/// // Example code here
+/// ```
+///
+/// ```
+/// // Another example here
+/// ```
