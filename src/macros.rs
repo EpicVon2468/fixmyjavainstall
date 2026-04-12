@@ -1,10 +1,12 @@
 #[macro_export]
 macro_rules! wrong_cmd {
 	($name:ident) => {
-		return anyhow::Result::Err(std::io::Error::new(
-			std::io::ErrorKind::InvalidInput,
-			concat!("Function ", stringify!($name), "() had wrong parameter!"),
-		).into());
+		return anyhow::Result::Err(
+			std::io::Error::new(
+				std::io::ErrorKind::InvalidInput,
+				concat!("Function ", stringify!($name), "() had wrong parameter!"),
+			).into(),
+		);
 	};
 }
 

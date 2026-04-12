@@ -84,6 +84,7 @@ fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 		use std::env::var;
 		use std::fs::{DirEntry, ReadDir};
 		use std::path::Path;
+
 		use crate::commands::io_failure;
 
 		let path: &str = "/proc/driver";

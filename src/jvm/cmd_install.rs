@@ -15,7 +15,7 @@ use crate::jvm::major_version::MajorVersion;
 use crate::jvm::manage_jvm::{JavaVersion, Op};
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
 use crate::os::OS;
-use crate::{wrong_cmd, FUJI_DIR};
+use crate::{FUJI_DIR, wrong_cmd};
 
 pub fn cmd_install(op: Op) -> Result<()> {
 	let Op::Install {
@@ -54,11 +54,12 @@ pub fn cmd_install(op: Op) -> Result<()> {
 	let java_home: &Path = &Path::new(FUJI_DIR).join("jvm").join(&java_version.major);
 	if !dry_run {
 		if java_home.exists() {
-			if java_home.is_dir() {
+			let result: Result<()> = if java_home.is_dir() {
 				remove_dir_all(java_home)
 			} else {
 				remove_file(java_home)
-			}.with_context(|| io_failure(java_home, "remove")).context("Couldn't remove entry which was occupying the new JAVA_HOME!")?;
+			}.with_context(|| io_failure(java_home, "remove"));
+			result.context("Couldn't remove entry which was occupying the new JAVA_HOME!")?;
 		};
 		create_dir_all(java_home).with_context(|| io_failure(java_home, "create directory"))?;
 	};

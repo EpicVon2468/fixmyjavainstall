@@ -1,7 +1,7 @@
 //! Liberica by BellSoft – <https://bell-sw.com/libericajdk/>
 use anyhow::Result;
 
-use crate::jvm::jdk_generic::{generic_download, DownloadJDKArgs};
+use crate::jvm::jdk_generic::{DownloadJDKArgs, generic_download};
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
 
 // TODO: https://api.bell-sw.com/
@@ -9,7 +9,9 @@ pub fn download_liberica(args: DownloadJDKArgs) -> Result<()> {
 	let mut url: String = String::with_capacity(100);
 	let version: &JavaVersion = &args.version;
 	let target: &str = &format!("{}{}", version.specific, version.revision);
-	url.push_str(&format!("https://download.bell-sw.com/java/{target}/bellsoft-"));
+	url.push_str(&format!(
+		"https://download.bell-sw.com/java/{target}/bellsoft-"
+	));
 	url.push_str(if args.features.contains(&Feature::Minimal) {
 		"jre"
 	} else {

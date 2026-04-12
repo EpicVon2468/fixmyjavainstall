@@ -30,12 +30,14 @@ pub fn win_link<P: AsRef<str>>(bin_dir: P) -> Result<()> {
 		.context("Couldn't get PATH environment variable!")?;
 	if prev_path.contains(bin_dir) {
 		println!("PATH environment variable already contains directory, skipping!");
-		return Ok(())
+		return Ok(());
 	};
 	// technically I'm supposed to broadcast a message about this, but uh... no.
 	environment
 		.set_string("PATH", format!("{bin_dir};{prev_path}"))
 		.context("Couldn't set PATH environment variable!")?;
-	println!("Updated PATH environment variable!  Restart your current shell or open a new one for the change to take effect!");
+	println!(
+		"Updated PATH environment variable!  Restart your current shell or open a new one for the change to take effect!"
+	);
 	Ok(())
 }

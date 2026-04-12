@@ -32,7 +32,10 @@ fn generate_wrapper_win(java_home: &Path, features: &[Feature], bin_suffix: &str
 	result.push_str("@echo off\r\n\r\n");
 	result.push_str("setlocal enableextensions\r\n\r\n");
 
-	result.push_str(&format!("set JAVA_HOME=\"{}\"\r\n\r\n", java_home.display()));
+	result.push_str(&format!(
+		"set JAVA_HOME=\"{}\"\r\n\r\n",
+		java_home.display()
+	));
 
 	result.push_str("if defined CLASSPATH (\r\n");
 	result.push_str("\tset FUJI_CLASSPATH_ARG=\"-cp %CLASSPATH%;.\"\r\n");
@@ -61,11 +64,9 @@ fn generate_wrapper_unix(java_home: &Path, features: &[Feature], bin_suffix: &st
 	result.push_str("\tset -- -cp \"$CLASSPATH:.\" \"$@\"\n");
 	result.push_str("fi\n\n");
 
-	gen_features(
-		&mut result,
-		features,
-		&|comment: &str, args: &str| format!("# {comment}\nset -- {args} \"$@\"\n\n"),
-	);
+	gen_features(&mut result, features, &|comment: &str, args: &str| {
+		format!("# {comment}\nset -- {args} \"$@\"\n\n")
+	});
 
 	#[cfg(any(target_os = "linux", feature = "multi-os"))]
 	if features.contains(&Feature::NVIDIAFixes) {
@@ -93,13 +94,13 @@ fn gen_features(
 	if features.contains(&Feature::DCEVM) {
 		fuji_jvm_arg(
 			"Dynamic Code Evolution Virtual Machine (enhanced runtime class redefinition) – https://ssw.jku.at/dcevm/",
-			"-XX:+AllowEnhancedClassRedefinition"
+			"-XX:+AllowEnhancedClassRedefinition",
 		);
 	};
 	if features.contains(&Feature::JEP519) {
 		fuji_jvm_arg(
 			"JDK Enhancement Proposal 519 (Compact Object Headers) – https://openjdk.org/jeps/519",
-			"-XX:+UseCompactObjectHeaders"
+			"-XX:+UseCompactObjectHeaders",
 		);
 	};
 	#[allow(unused_mut)]
@@ -108,7 +109,7 @@ fn gen_features(
 	if features.contains(&Feature::WLToolkit) {
 		fuji_jvm_arg(
 			"Wayland support (requires Vulkan) – https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype",
-			"-Dawt.tookit.name=WLToolkit"
+			"-Dawt.tookit.name=WLToolkit",
 		);
 		requires_vulkan = true;
 	};
@@ -121,7 +122,7 @@ fn gen_features(
 		};
 		fuji_jvm_arg(
 			"OpenGL for AWT/Swing.  This has been bundled in OpenJDK for a long time, but isn't on by default",
-			"-Dsun.java2d.opengl=true"
+			"-Dsun.java2d.opengl=true",
 		);
 	};
 	#[cfg(any(target_os = "macos", feature = "multi-os"))]
@@ -133,39 +134,47 @@ fn gen_features(
 		};
 		fuji_jvm_arg(
 			"Metal support for AWT/Swing (macOS).  If you're on macOS, use this instead of OpenGL (Apple has deprecated OpenGL on macOS)",
-			"-Dsun.java2d.metal=true"
+			"-Dsun.java2d.metal=true",
 		);
 	};
 	if requires_vulkan || features.contains(&Feature::Vulkan) {
 		fuji_jvm_arg(
 			"Vulkan for AWT/Swing",
-			"-Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false"
+			"-Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false",
 		);
 	};
 	if features.contains(&Feature::AllowNative) {
 		fuji_jvm_arg(
 			"Allows all Java modules to use the (soon to be) restricted native library access",
-			"--enable-native-access=ALL-UNNAMED"
+			"--enable-native-access=ALL-UNNAMED",
 		);
 	};
 	if features.contains(&Feature::AllowUnsafe) {
 		fuji_jvm_arg(
 			"Allows use of the (soon to be) restricted sun.misc.Unsafe API access",
-			"--sun-misc-unsafe-memory-access=allow"
+			"--sun-misc-unsafe-memory-access=allow",
 		);
 	};
 	if features.contains(&Feature::FontAntiAliasing) {
 		fuji_jvm_arg(
 			"Enables AWT font antialiasing.  This can improve readability and quality of text",
-			"-Dawt.useSystemAAFontSettings=on"
+			"-Dawt.useSystemAAFontSettings=on",
 		);
 	};
 }
 
-pub fn install_wrapper(script: String, java_home: &Path, bin_suffix: &str, is_win: bool) -> Result<PathBuf> {
+pub fn install_wrapper(
+	script: String,
+	java_home: &Path,
+	bin_suffix: &str,
+	is_win: bool,
+) -> Result<PathBuf> {
 	let script_file: PathBuf = java_home.join("bin").join(
 		// fuji_java_wrapper instead of fuji_jvm_wrapper so anything grepping through `ps aux` will still definitely find it
-		format!("fuji_java_wrapper{bin_suffix}{}", if is_win { ".bat" } else { "" })
+		format!(
+			"fuji_java_wrapper{bin_suffix}{}",
+			if is_win { ".bat" } else { "" }
+		),
 	);
 	let mut result: File = OpenOptions::new()
 		.write(true)

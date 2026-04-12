@@ -1,7 +1,7 @@
 //! JetBrains Runtime by JetBrains – <https://github.com/JetBrains/JetBrainsRuntime/>
 use anyhow::Result;
 
-use crate::jvm::jdk_generic::{generic_download, DownloadJDKArgs};
+use crate::jvm::jdk_generic::{DownloadJDKArgs, generic_download};
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
 
 pub fn download_jbr(args: DownloadJDKArgs) -> Result<()> {

@@ -1,6 +1,6 @@
 use std::cmp::min;
 use std::ffi::OsStr;
-use std::fs::{remove_dir_all, remove_file};
+use std::fs::{ReadDir, remove_dir_all, remove_file};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command};
 
@@ -29,11 +29,8 @@ pub fn cmd_link(command: Cmd) -> Result<()> {
 	let use_update_alternatives: bool = false;
 	for path in paths {
 		println!("Linking {}...", path.display());
-		link_impl(
-			&path,
-			&link_dir,
-			use_update_alternatives,
-		).with_context(|| format!("Failed to link '{}'!", path.display()))?;
+		link_impl(&path, &link_dir, use_update_alternatives)
+			.with_context(|| format!("Failed to link '{}'!", path.display()))?;
 		println!("Done.\n");
 	}
 	Ok(())
@@ -51,7 +48,8 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	return crate::win_link::win_link(bin.to_str().context("I hate Windows")?);
 
 	#[allow(unreachable_code)]
-	let can_use_update_alternatives: bool = cfg!(target_os = "linux") && use_update_alternatives && has_program("update-alternatives");
+	let can_use_update_alternatives: bool =
+		use_update_alternatives && has_program("update-alternatives");
 	if !can_use_update_alternatives && use_update_alternatives {
 		return Err(std::io::Error::new(
 			std::io::ErrorKind::NotFound,
@@ -61,12 +59,17 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	let max_len: u64 = bin.metadata()?.len();
 	let pb: ProgressBar = progress_bar(max_len);
 	let mut progress: u64 = 0;
-	for entry in bin.read_dir().with_context(|| io_failure(bin, "list directory"))? {
+	let entries: ReadDir = bin
+		.read_dir()
+		.with_context(|| io_failure(bin, "list directory"))?;
+	for entry in entries {
 		let file: &Path = &entry?.path();
 		if file.is_dir() {
 			continue;
 		};
-		let filename: &OsStr = file.file_name().context("Couldn't get filename for directory entry!")?;
+		let filename: &OsStr = file
+			.file_name()
+			.context("Couldn't get filename for directory entry!")?;
 		let dest: PathBuf = link_dir.as_ref().join(filename);
 		if can_use_update_alternatives {
 			debian_link(file, filename, dest).context("Couldn't link with update-alternatives!")?;
@@ -97,12 +100,13 @@ pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Resul
 			remove_dir_all(dest)
 		}.with_context(|| format!("Couldn't remove existing path '{}'!", dest.display()))?;
 	};
-	symlink_impl(source, dest).with_context(||
+	symlink_impl(source, dest).with_context(|| {
 		format!(
 			"Couldn't perform symbolic linking! (source: '{}', dest: '{}')",
-			source.display(), dest.display()
+			source.display(),
+			dest.display()
 		)
-	)
+	})
 }
 
 /// Cross-platform function for symbolic linking.

@@ -8,7 +8,10 @@ macro_rules! clap_doc {
 		clap_doc!($name, '\n')
 	};
 	($name:ident, $suffix:literal) => {
-		concat!(include_str!(concat!("../../doc/jdk/", stringify!($name), ".txt")), $suffix)
+		concat!(
+			include_str!(concat!("../../doc/jdk/", stringify!($name), ".txt")),
+			$suffix
+		)
 	};
 }
 

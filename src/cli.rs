@@ -8,7 +8,7 @@ use clap::{Parser, Subcommand};
 	long_version = "0.1.6 – \"I do love a good stacktrace\"",
 	about = "Fix Ur Java Install – A JVM & Kotlin management utility",
 	long_about = "Fix Ur Java Install – A JVM & Kotlin management utility",
-	author = "Mavity The Madity",
+	author = "Mavity The Madity"
 )]
 pub struct Arguments {
 	#[command(subcommand)]
@@ -26,12 +26,7 @@ pub enum Cmd {
 
 		/// Directory to link files into.  Does nothing on Windows
 		#[cfg(any(not(windows), feature = "multi-os"))]
-		#[arg(
-			short,
-			long,
-			value_name = "DIR",
-			default_value = "/usr/bin",
-		)]
+		#[arg(short, long, value_name = "DIR", default_value = "/usr/bin")]
 		link_dir: PathBuf,
 
 		/// Whether to use update-alternatives for install.
@@ -84,23 +79,17 @@ pub enum Software {
 	#[clap(
 		display_name = "fuji-jvm",
 		alias = "java",
-		author = "Mavity The Madity",
+		author = "Mavity The Madity"
 	)]
 	JVM {
 		#[command(subcommand)]
 		op: crate::jvm::manage_jvm::Op,
 	},
 	/// Manages the Kotlin Programming Language – <https://kotlinlang.org/>
-	#[clap(
-		display_name = "fuji-kt",
-		alias = "kt",
-		author = "Mavity The Madity",
-	)]
-	Kotlin {
-	},
+	#[clap(display_name = "fuji-kt", alias = "kt", author = "Mavity The Madity")]
+	Kotlin {},
 	// TODO: merge into Kotlin
 	/// Manages the Kotlin/Native compiler – <https://kotlinlang.org/docs/native-overview.html>
 	#[clap(author = "Mavity The Madity", hide = true)]
-	KotlinNative {
-	},
+	KotlinNative {},
 }
