@@ -77,7 +77,7 @@ pub fn has_program(name: &str) -> bool {
 ///
 /// # Examples
 ///
-/// Extractiong a Linux JVM:
+/// Extracting a Linux JVM:
 /// ```
 /// use fuji::commands::extract_jvm;
 ///
