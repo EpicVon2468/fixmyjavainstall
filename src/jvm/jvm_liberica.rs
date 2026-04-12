@@ -3,6 +3,8 @@ use std::fmt::Write;
 
 use anyhow::Result;
 
+use serde::{Serialize as Serialise, Deserialize as Deserialise};
+
 use crate::arch::Arch;
 use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};
 use crate::jvm::major_version::MajorVersion;
@@ -81,4 +83,35 @@ pub fn get_liberica_version(
 	url.push_str(if os == &OS::Windows { "zip" } else { "tar.gz" });
 	url.push_str("&installation-type=archive");
 	Ok(url)
+}
+
+#[allow(non_snake_case, clippy::struct_excessive_bools)]
+#[derive(Serialise, Deserialise)]
+pub struct LibericaReleaseInfo {
+	pub bitness: u8,
+	pub latestLTS: bool,
+	pub updateVersion: i32,
+	pub downloadUrl: String,
+	pub latestInFeatureVersion: bool,
+	pub LTS: bool,
+	pub bundleType: String,
+	pub featureVersion: u32,
+	pub packageType: String,
+	pub FX: bool,
+	pub GA: bool,
+	pub architecture: String,
+	pub latest: bool,
+	pub extraVersion: i32,
+	pub buildVersion: i32,
+	pub EOL: bool,
+	pub os: String,
+	pub interimVersion: i32,
+	pub version: String,
+	pub sha1: String,
+	pub filename: String,
+	pub installationType: String,
+	pub size: u64,
+	pub patchVersion: i32,
+	pub TCK: bool,
+	pub updateType: String,
 }
