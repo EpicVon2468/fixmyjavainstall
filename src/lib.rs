@@ -51,7 +51,7 @@ pub const FUJI_DIR: &str = if cfg!(windows) {
 	"/opt/fuji"
 };
 
-/// Wrapper for [`entrypoint`], taking in additional arguments for a shorthand / alias.
+/// Wrapper for [`entrypoint`], which takes in additional arguments for a shorthand / alias.
 ///
 /// # Arguments
 ///
@@ -63,7 +63,7 @@ pub const FUJI_DIR: &str = if cfg!(windows) {
 ///
 /// Error value(s):
 ///
-/// * Always: Errors are propagated up from [`entrypoint`].
+/// * Always: Propagated up from [`entrypoint`].
 ///
 /// # Returns
 ///
@@ -76,18 +76,26 @@ pub const FUJI_DIR: &str = if cfg!(windows) {
 /// # Examples
 ///
 /// ```
-/// use fuji::subcommand_entrypoint;
+/// use fuji::alias_entrypoint;
 ///
-/// subcommand_entrypoint(&["foo".into(), "bar".into(), "baz".into()]).unwrap();
+/// // Becomes 'fuji foo bar baz <user args here>'
+/// alias_entrypoint(&["foo".into(), "bar".into(), "baz".into()]).unwrap();
 /// ```
-pub fn subcommand_entrypoint(extras: &[OsString]) -> Result<()> {
+///
+/// ```
+/// use fuji::alias_entrypoint;
+///
+/// // Becomes 'fuji manage jvm preset <user args here>'
+/// alias_entrypoint(&["manage".into(), "jvm".into(), "preset".into()]).unwrap();
+/// ```
+pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 	let mut args: Vec<OsString> = vec!["fuji".into()];
 	args.extend_from_slice(extras);
 	args.extend_from_slice(&args_os().skip(1).collect::<Vec<OsString>>());
 	entrypoint(Arguments::parse_from(args))
 }
 
-/// A `main`-like function, taking in [`Arguments`] and executes the operation(s) specified in them.
+/// A `main`-like function, which takes in [`Arguments`] and executes the operation(s) specified in them.
 ///
 /// # Arguments
 ///

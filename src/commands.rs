@@ -102,6 +102,7 @@ fn extract_jvm_zip(dest: &Path, input: File, is_mac: bool) -> Result<()> {
 	let mut archive: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JVM archive (ZIP)!")?;
 	let m: MultiProgress = MultiProgress::new();
 	// A JVM `.zip` bigger than u64::MAX would be a zip bomb.  Bad clippy!
+	// For reference: u64::MAX is 16384 pebibytes.
 	#[allow(clippy::cast_possible_truncation)]
 	let max_len: u64 = archive.decompressed_size().unwrap() as u64;
 	let pb: ProgressBar = m.add(progress_bar(max_len));

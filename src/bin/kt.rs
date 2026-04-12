@@ -1,9 +1,9 @@
 //! The `fuji-kt` binary.  Equivalent to running `fuji manage kotlin`.
 use anyhow::Result;
 
-use fuji::subcommand_entrypoint;
+use fuji::alias_entrypoint;
 
 /// `fuji-kt`
 pub fn main() -> Result<()> {
-	subcommand_entrypoint(&["manage".into(), "kotlin".into()])
+	alias_entrypoint(&["manage".into(), "kotlin".into()])
 }
