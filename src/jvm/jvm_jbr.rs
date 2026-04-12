@@ -27,6 +27,7 @@ pub fn download_jbr(args: DownloadJVMArgs) -> Result<()> {
 	url.push_str(&args.arch.to_string());
 	url.push('-');
 	url.push_str(&version.revision);
-	url.push_str(if args.is_win() { ".zip" } else { ".tar.gz" });
+	url.push('.');
+	url.push_str(if args.is_win() { "zip" } else { "tar.gz" });
 	jvm_download_impl(url, args)
 }

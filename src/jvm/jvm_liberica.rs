@@ -3,8 +3,10 @@ use std::fmt::Write;
 
 use anyhow::Result;
 
+use crate::arch::Arch;
 use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
+use crate::os::OS;
 
 // TODO: https://api.bell-sw.com/
 pub fn download_liberica(args: DownloadJVMArgs) -> Result<()> {
@@ -32,4 +34,47 @@ pub fn download_liberica(args: DownloadJVMArgs) -> Result<()> {
 	});
 	url.push_str(if args.is_win() { ".zip" } else { ".tar.gz" });
 	jvm_download_impl(url, args)
+}
+
+pub fn get_liberica_version(
+	features: &[Feature],
+	os: &OS,
+	arch: &Arch,
+	is_lts: bool,
+	version_num: Option<u32>,
+) -> Result<String> {
+	let mut url: String = String::with_capacity(150);
+	let _ = write!(url, "https://api.bell-sw.com/v1/liberica/releases?bundle-type=");
+	url.push_str(if features.contains(&Feature::Minimal) {
+		"jre"
+	} else {
+		"jdk"
+	});
+	url.push_str("&bitness=64");
+	url.push_str("&version-modifier=latest");
+	url.push_str("&os=");
+	let os_name: &str = &os.to_string();
+	url.push_str(match os_name {
+		"osx" => "macos",
+		_ => os_name,
+	});
+	
+	if is_lts {
+		url.push_str("&release-type=lts");
+	};
+	if let Some(num) = version_num {
+		let _ = write!(url, "&version-feature={num}");
+	}
+	url.push_str("&arch=");
+	let arch_name: &str = &arch.to_string();
+	url.push_str(match arch_name {
+		"x64" => "x86",
+		"aarch64" => "arm",
+		"riscv64" => "riscv",
+		_ => arch_name,
+	});
+	url.push_str("&package-type=");
+	url.push_str(if os == &OS::Windows { "zip" } else { "tar.gz" });
+	url.push_str("&installation-type=archive");
+	Ok(url)
 }
