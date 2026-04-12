@@ -9,7 +9,7 @@ use crate::jvm::jvm::JVM;
 use crate::jvm::jvm_generic::{DownloadJVMArgs, DownloadJVMFn};
 use crate::jvm::jvm_java_se::download_java_se;
 use crate::jvm::jvm_jbr::download_jbr;
-use crate::jvm::jvm_liberica::download_liberica;
+use crate::jvm::jvm_liberica::{download_liberica, get_liberica_endpoint, LibericaReleaseInfo};
 use crate::jvm::jvm_temurin::download_temurin;
 use crate::jvm::major_version::MajorVersion;
 use crate::jvm::manage_jvm::{Feature, JavaVersion, Op};
@@ -32,8 +32,27 @@ pub fn cmd_install(op: Op) -> Result<()> {
 	};
 	#[cfg(not(feature = "multi-os"))]
 	let operating_system: OS = OS::SYSTEM;
-	// Temurin & Java SE both only need major version, except for LTS/Latest where we return the major version from our endpoint
-	let java_version: JavaVersion = if (jvm == JVM::Temurin || jvm == JVM::JavaSE) && let MajorVersion::Number(version) = version {
+	let java_version: JavaVersion = if jvm == JVM::Liberica {
+		let uri: String = get_liberica_endpoint(&features, &operating_system, &arch, &version)?;
+		let values: Vec<LibericaReleaseInfo> = ureq::get(uri)
+			.call()
+			.context("No Liberica JVM was available for the provided request!")?
+			.body_mut()
+			.read_json()
+			.context("Couldn't read Liberica JVM version information!")?;
+		let the_one: &LibericaReleaseInfo = values
+			.first()
+			.context("No Liberica JVM was available for the provided request!")?;
+		if the_one.EOL {
+			eprintln!("The requested JVM is at End Of Life!  Consider upgrading to a newer version!");
+		};
+		JavaVersion {
+			major: the_one.downloadUrl.clone(),
+			specific: String::new(),
+			revision: String::new(),
+		}
+	} else if (jvm == JVM::Temurin || jvm == JVM::JavaSE) && let MajorVersion::Number(version) = version {
+		// Temurin & Java SE both only need major version, except for LTS/Latest where we return the major version from our endpoint
 		JavaVersion {
 			major: version.to_string(),
 			specific: String::new(),
@@ -45,7 +64,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		);
 		ureq::get(uri)
 			.call()
-			.context("No JVM was available with the requested version!")?
+			.context("No JVM was available for the provided request!")?
 			.body_mut()
 			.read_json()
 			.context("Couldn't read JVM version information!")?

@@ -3,43 +3,19 @@ use std::fmt::Write;
 
 use anyhow::Result;
 
-use serde::{Serialize as Serialise, Deserialize as Deserialise};
+use serde::{Deserialize as Deserialise, Serialize as Serialise};
 
 use crate::arch::Arch;
-use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};
+use crate::jvm::jvm_generic::{jvm_download_impl, DownloadJVMArgs};
 use crate::jvm::major_version::MajorVersion;
-use crate::jvm::manage_jvm::{Feature, JavaVersion};
+use crate::jvm::manage_jvm::Feature;
 use crate::os::OS;
 
-// TODO: https://api.bell-sw.com/
 pub fn download_liberica(args: DownloadJVMArgs) -> Result<()> {
-	let mut url: String = String::with_capacity(100);
-	let version: &JavaVersion = &args.version;
-	let target: &str = &format!("{}{}", version.specific, version.revision);
-	let _ = write!(url, "https://download.bell-sw.com/java/{target}/bellsoft-");
-	url.push_str(if args.features.contains(&Feature::Minimal) {
-		"jre"
-	} else {
-		"jdk"
-	});
-	url.push_str(target);
-	url.push('-');
-	let os_name: &str = &args.os.to_string();
-	url.push_str(match os_name {
-		"osx" => "macos",
-		_ => os_name,
-	});
-	url.push('-');
-	let arch_name: &str = &args.arch.to_string();
-	url.push_str(match arch_name {
-		"x64" => "amd64",
-		_ => arch_name,
-	});
-	url.push_str(if args.is_win() { ".zip" } else { ".tar.gz" });
-	jvm_download_impl(url, args)
+	jvm_download_impl(args.version.major.clone(), args)
 }
 
-pub fn get_liberica_version(
+pub fn get_liberica_endpoint(
 	features: &[Feature],
 	os: &OS,
 	arch: &Arch,
