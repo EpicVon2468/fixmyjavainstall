@@ -58,8 +58,8 @@ pub fn has_program(name: &str) -> bool {
 ///
 /// # Platform-Specific Behaviour
 ///
-/// * UNIX-likes: [`extract_jvm_zip`] is used.
-/// * Windows: [`extract_jvm_tar_gz`] is used.
+/// * UNIX-likes: [`extract_jvm_tar_gz`] is used.
+/// * Windows: [`extract_jvm_zip`] is used.
 ///
 /// # Returns
 ///
