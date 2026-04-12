@@ -1,12 +1,13 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 use clap::{Subcommand, ValueEnum};
 
 use serde::{Deserialize as Deserialise, Serialize as Serialise};
 
 use crate::arch::Arch;
-use crate::cli::Software;
-use crate::jvm::install::install;
+use crate::cli::{Preset, Software};
+use crate::jvm::cmd_install::cmd_install;
+use crate::jvm::cmd_preset::cmd_preset;
 use crate::jvm::jdk::JDK;
 use crate::jvm::major_version::{MajorVersion, MajorVersionParser};
 #[cfg(feature = "multi-os")]
@@ -59,8 +60,14 @@ pub enum Op {
 		version: MajorVersion,
 	},
 	/// Removes the currently installed JVM (only affects JVMs installed via fuji)
-	#[clap(author = "Mavity The Madity")]
+	#[clap(author = "Mavity The Madity", alias = "uninstall")]
 	Remove,
+	/// Installs a new JVM from a selection of presets
+	#[clap(author = "Mavity The Madity", alias = "presets")]
+	Preset {
+		#[command(subcommand)]
+		preset: Preset,
+	},
 }
 
 pub fn manage_jvm(software: Software) -> Result<()> {
@@ -70,10 +77,10 @@ pub fn manage_jvm(software: Software) -> Result<()> {
 		wrong_cmd!(manage_jvm);
 	};
 	match op {
-		Op::Install { .. } => install(op)?,
-		Op::Remove => {},
-	};
-	Ok(())
+		Op::Install { .. } => cmd_install(op).context("cmd_install"),
+		Op::Remove => todo!(),
+		Op::Preset { .. } => cmd_preset(op).context("cmd_preset"),
+	}
 }
 
 #[derive(ValueEnum, Clone, PartialEq)]

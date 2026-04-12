@@ -45,12 +45,6 @@ pub enum Cmd {
 		#[command(subcommand)]
 		software: Option<Software>,
 	},
-	/// Management presets
-	#[clap(author = "Mavity The Madity", alias = "presets")]
-	Preset {
-		#[command(subcommand)]
-		preset: Preset,
-	},
 	/// UNIX `man` page generation
 	#[clap(author = "Mavity The Madity", hide = true)]
 	Manual {

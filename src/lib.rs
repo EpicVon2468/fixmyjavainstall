@@ -7,7 +7,6 @@ pub mod cli;
 pub mod cmd_link;
 pub mod cmd_man;
 pub mod cmd_manage;
-pub mod cmd_preset;
 pub mod commands;
 pub mod jvm;
 pub mod kotlin;
@@ -28,7 +27,6 @@ use crate::cli::{Arguments, Cmd};
 use crate::cmd_link::cmd_link;
 use crate::cmd_man::cmd_man;
 use crate::cmd_manage::cmd_manage;
-use crate::cmd_preset::cmd_preset;
 
 /// The installation directory for fuji-managed programs.
 ///
@@ -72,7 +70,6 @@ pub fn entrypoint(args: Arguments) -> Result<()> {
 			#[cfg(any(not(windows), feature = "multi-os"))]
 			Cmd::Link { .. } => cmd_link(command)?,
 			Cmd::Manage { .. } => cmd_manage(command)?,
-			Cmd::Preset { .. } => cmd_preset(command)?,
 			Cmd::Manual { .. } => cmd_man(command)?,
 		};
 	};

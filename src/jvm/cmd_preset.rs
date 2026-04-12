@@ -10,11 +10,10 @@ use crate::jvm::manage_jvm::{Feature, Op};
 use crate::os::OS;
 use crate::wrong_cmd;
 
-// TODO: move to be subcommand of fuji-jvm ?
-pub fn cmd_preset(cmd: Cmd) -> Result<()> {
-	let Cmd::Preset {
+pub fn cmd_preset(op: Op) -> Result<()> {
+	let Op::Preset {
 		preset,
-	}: Cmd = cmd else {
+	}: Op = op else {
 		wrong_cmd!(cmd_preset);
 	};
 	match preset {

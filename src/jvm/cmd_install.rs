@@ -17,7 +17,7 @@ use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
 use crate::os::OS;
 use crate::{wrong_cmd, FUJI_DIR};
 
-pub fn install(op: Op) -> Result<()> {
+pub fn cmd_install(op: Op) -> Result<()> {
 	let Op::Install {
 		jdk,
 		arch,
@@ -28,7 +28,7 @@ pub fn install(op: Op) -> Result<()> {
 		dry_run,
 		version,
 	}: Op = op else {
-		wrong_cmd!(install);
+		wrong_cmd!(cmd_install);
 	};
 	#[cfg(not(feature = "multi-os"))]
 	let operating_system: OS = OS::SYSTEM;

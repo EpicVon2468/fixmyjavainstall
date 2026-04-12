@@ -11,9 +11,10 @@
 //! * [`jdk_liberica`] – The download handler for [`Liberica`][`jdk::JDK::Liberica`].
 //! * [`jdk_temurin`] – The download handler for [`Eclipse Temurin`][`jdk::JDK::Temurin`].
 //! </details>
+pub mod cmd_install;
+pub mod cmd_preset;
 #[cfg(target_os = "linux")]
 pub mod desktop;
-pub mod install;
 pub mod jdk;
 pub mod jdk_generic;
 pub mod jdk_java_se;
