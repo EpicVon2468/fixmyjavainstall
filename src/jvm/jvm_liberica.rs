@@ -5,6 +5,7 @@ use anyhow::Result;
 
 use crate::arch::Arch;
 use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};
+use crate::jvm::major_version::MajorVersion;
 use crate::jvm::manage_jvm::{Feature, JavaVersion};
 use crate::os::OS;
 
@@ -40,8 +41,7 @@ pub fn get_liberica_version(
 	features: &[Feature],
 	os: &OS,
 	arch: &Arch,
-	is_lts: bool,
-	version_num: Option<u32>,
+	version: &MajorVersion,
 ) -> Result<String> {
 	let mut url: String = String::with_capacity(150);
 	let _ = write!(url, "https://api.bell-sw.com/v1/liberica/releases?bundle-type=");
@@ -58,13 +58,17 @@ pub fn get_liberica_version(
 		"osx" => "macos",
 		_ => os_name,
 	});
-	
-	if is_lts {
-		url.push_str("&release-type=lts");
+	#[cfg(any(target_env = "musl", feature = "multi-os"))]
+	if features.contains(&Feature::MUSL) {
+		url.push_str("-musl");
 	};
-	if let Some(num) = version_num {
-		let _ = write!(url, "&version-feature={num}");
-	}
+	match version {
+		MajorVersion::Number(num) => {
+			let _ = write!(url, "&version-feature={num}");
+		},
+		MajorVersion::Latest => (),
+		MajorVersion::LTS => url.push_str("&release-type=lts"),
+	};
 	url.push_str("&arch=");
 	let arch_name: &str = &arch.to_string();
 	url.push_str(match arch_name {
