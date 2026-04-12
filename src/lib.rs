@@ -59,9 +59,19 @@ pub const FUJI_DIR: &str = if cfg!(windows) {
 ///
 /// # Errors
 ///
-/// Errors are propagated up from [`entrypoint`].
+/// Error type: Dynamic (see [`anyhow::Error`]).
 ///
-/// returns: [`Result<()>`]
+/// Error value(s):
+///
+/// * Always: Errors are propagated up from [`entrypoint`].
+///
+/// # Returns
+///
+/// Return type: [`Result<()>`]
+///
+/// Return value(s):
+///
+/// * Always: Propagated up from [`entrypoint`].
 ///
 /// # Examples
 ///
@@ -77,24 +87,40 @@ pub fn subcommand_entrypoint(extras: &[OsString]) -> Result<()> {
 	entrypoint(Arguments::parse_from(args))
 }
 
-/// A `main`-like function, taking in [`Arguments`] and performing the operation(s) specified in them.
+/// A `main`-like function, taking in [`Arguments`] and executes the operation(s) specified in them.
 ///
 /// # Arguments
 ///
-/// * `args`:
+/// * `args`: The [`Arguments`] to execute using.
 ///
 /// # Errors
 ///
-/// Errors are propagated up from the following functions (if they are called):
+/// Error type: Dynamic (see [`anyhow::Error`]).
 ///
-/// * [`cmd_link`]
-/// * [`cmd_manage`]
-/// * [`cmd_man`]
+/// Error value(s):
+///
+/// * If [`Arguments::command`][`field@Arguments::command`] is [`Some`]:
+/// 	* Propagated up from the following functions (if they are called):
+/// 		* [`cmd_link`][`cmd_link()`]
+///			* [`cmd_manage`][`cmd_manage()`]
+/// 		* [`cmd_man`][`cmd_man()`]
 ///
 /// # Panics
 ///
-/// returns: [`Result<()>`]
+/// * A `const` panic will occur if this function is called on Windows.  Windows support is not yet ready, so this is a countermeasure to prevent premature usage.
 ///
+/// # Returns
+///
+/// Return type: [`Result<()>`]
+///
+/// Return value(s):
+///
+/// * If [`Arguments::command`][`field@Arguments::command`] is [`None`]: [`Ok`]
+/// * If [`Arguments::command`][`field@Arguments::command`] is [`Some`]:
+/// 	* Propagated up from the following functions (if they are called):
+/// 		* [`cmd_link`][`cmd_link()`]
+///			* [`cmd_manage`][`cmd_manage()`]
+/// 		* [`cmd_man`][`cmd_man()`]
 /// # Examples
 ///
 /// ```
