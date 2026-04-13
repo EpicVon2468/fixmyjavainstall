@@ -83,7 +83,7 @@ pub enum Software {
 	)]
 	JVM {
 		#[command(subcommand)]
-		op: crate::jvm::manage_jvm::Op,
+		op: crate::jvm::Op,
 	},
 	/// Manages the Kotlin Programming Language – <https://kotlinlang.org/>
 	#[clap(display_name = "fuji-kt", alias = "kt", author = "Mavity The Madity")]

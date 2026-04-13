@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use anyhow::{Context, Result};
 
 use crate::commands::io_failure;
-use crate::jvm::manage_jvm::Feature;
+use crate::jvm::Feature;
 
 #[must_use]
 pub fn generate_wrapper(

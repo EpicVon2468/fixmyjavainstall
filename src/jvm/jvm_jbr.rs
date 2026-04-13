@@ -2,7 +2,7 @@
 use anyhow::Result;
 
 use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};
-use crate::jvm::manage_jvm::{Feature, JavaVersion};
+use crate::jvm::{Feature, JavaVersion};
 
 pub fn download_jbr(args: DownloadJVMArgs) -> Result<()> {
 	let features: &[Feature] = args.features;

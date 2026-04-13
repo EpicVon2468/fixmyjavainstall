@@ -12,8 +12,8 @@ use crate::jvm::jvm_jbr::download_jbr;
 use crate::jvm::jvm_liberica::{LibericaReleaseInfo, download_liberica, get_liberica_version};
 use crate::jvm::jvm_temurin::download_temurin;
 use crate::jvm::major_version::MajorVersion;
-use crate::jvm::manage_jvm::{Feature, JavaVersion, Op};
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
+use crate::jvm::{Feature, JavaVersion, Op};
 use crate::os::OS;
 use crate::{FUJI_DIR, wrong_cmd};
 
@@ -22,7 +22,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		jvm,
 		arch,
 		#[cfg(feature = "multi-os")]
-		operating_system,
+		operating_system: os,
 		features,
 		include_kotlin: _include_kotlin,
 		dry_run,
@@ -31,9 +31,9 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		wrong_cmd!(cmd_install);
 	};
 	#[cfg(not(feature = "multi-os"))]
-	let operating_system: OS = OS::SYSTEM;
+	let os: OS = OS::SYSTEM;
 	let java_version: JavaVersion = if jvm == JVM::Liberica {
-		let the_one: LibericaReleaseInfo = get_liberica_version(&features, &operating_system, &arch, &version)?;
+		let the_one: LibericaReleaseInfo = get_liberica_version(&features, &os, &arch, &version)?;
 		JavaVersion {
 			major: the_one.downloadUrl,
 			specific: String::new(),
@@ -73,12 +73,12 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		arch,
 		version: java_version,
 		features: &features,
-		os: operating_system.clone(),
+		os: os.clone(),
 		java_home,
 		dry_run,
 	}).context("Couldn't download JVM!")?;
 	// https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
-	let is_win: bool = operating_system == OS::Windows;
+	let is_win: bool = os == OS::Windows;
 	let mut executable_suffixes: Vec<&str> = vec![""];
 	if is_win {
 		executable_suffixes.pop();

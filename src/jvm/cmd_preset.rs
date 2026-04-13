@@ -5,7 +5,7 @@ use crate::cli::{Cmd, Preset, Software};
 use crate::cmd_manage::cmd_manage;
 use crate::jvm::jvm::JVM;
 use crate::jvm::major_version::MajorVersion;
-use crate::jvm::manage_jvm::{Feature, Op};
+use crate::jvm::{Feature, Op};
 #[cfg(feature = "multi-os")]
 use crate::os::OS;
 use crate::wrong_cmd;
