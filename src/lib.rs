@@ -11,9 +11,20 @@
 	clippy::exit,
 	clippy::float_cmp,
 	clippy::float_cmp_const,
+	clippy::while_float,
+	clippy::integer_division,
+	clippy::integer_division_remainder_used,
+	clippy::unreadable_literal,
+	clippy::unnecessary_literal_bound,
 	clippy::missing_const_for_fn,
 	clippy::needless_collect,
 	clippy::needless_for_each,
+	clippy::as_underscore,
+	clippy::branches_sharing_code,
+	clippy::infinite_loop,
+	clippy::linkedlist,
+	clippy::pub_use,
+	clippy::wildcard_imports,
 )]
 #![allow(clippy::tabs_in_doc_comments, reason = "Why???  Bad clippy!")]
 #![allow(
