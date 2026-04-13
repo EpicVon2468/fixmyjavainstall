@@ -123,6 +123,7 @@ pub fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> 
 	let pb: ProgressBar = m.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
 	let mut archive: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
+	#[allow(clippy::literal_string_with_formatting_args)] // Don't even.  Bad clippy!
 	let extract_pb: ProgressBar = m.add(progress_bar_template(
 		0,
 		"[{elapsed_precise}] {spinner:.cyan} Writing {msg}...",

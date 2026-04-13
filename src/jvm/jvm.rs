@@ -16,7 +16,7 @@ macro_rules! clap_doc {
 }
 
 /// An enumeration of JVM builds/vendors
-#[derive(ValueEnum, Clone, PartialEq)]
+#[derive(ValueEnum, Clone, PartialEq, Eq)]
 pub enum JVM {
 	/// Automagically pick the best JVM based on the requested version and features
 	Auto,
@@ -142,11 +142,11 @@ impl Display for JVM {
 			f,
 			"{}",
 			match self {
-				JVM::Auto => "auto",
-				JVM::JBR => "jbr",
-				JVM::JavaSE => "java-se",
-				JVM::Temurin => "temurin",
-				JVM::Liberica => "liberica",
+				Self::Auto => "auto",
+				Self::JBR => "jbr",
+				Self::JavaSE => "java-se",
+				Self::Temurin => "temurin",
+				Self::Liberica => "liberica",
 			}
 		)
 	}

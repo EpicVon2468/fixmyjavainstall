@@ -9,7 +9,7 @@ use clap::ValueEnum;
 use clap::builder::OsStr;
 
 /// An enumeration of operating systems
-#[derive(ValueEnum, Clone, PartialEq)]
+#[derive(ValueEnum, Clone, PartialEq, Eq)]
 pub enum OS {
 	/// Anything running the Linux kernel – <https://kernel.org/>
 	Linux,
@@ -28,20 +28,20 @@ impl OS {
 
 	/// The [`OS`] of the host – Linux.
 	#[cfg(target_os = "linux")]
-	pub const SYSTEM: OS = OS::Linux;
+	pub const SYSTEM: Self = Self::Linux;
 	/// The [`OS`] of the host – macOS.
 	#[cfg(target_os = "macos")]
-	pub const SYSTEM: OS = OS::OSX;
+	pub const SYSTEM: Self = Self::OSX;
 	/// The [`OS`] of the host – Windows.
 	#[cfg(target_os = "windows")]
-	pub const SYSTEM: OS = OS::Windows;
+	pub const SYSTEM: Self = Self::Windows;
 	/// The [`OS`] of the host – Unsupported, panic!
 	#[cfg(all(
 		not(target_os = "linux"),
 		not(target_os = "macos"),
 		not(target_os = "windows"),
 	))]
-	pub const SYSTEM: OS = panic!("Unsupported host operating system!");
+	pub const SYSTEM: Self = panic!("Unsupported host operating system!");
 }
 
 impl From<OS> for OsStr {
@@ -58,9 +58,9 @@ impl Display for OS {
 			f,
 			"{}",
 			match self {
-				OS::Linux => "linux",
-				OS::OSX => "osx",
-				OS::Windows => "windows",
+				Self::Linux => "linux",
+				Self::OSX => "osx",
+				Self::Windows => "windows",
 			}
 		)
 	}

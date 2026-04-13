@@ -108,7 +108,7 @@ pub fn manage_jvm(software: Software) -> Result<()> {
 	}
 }
 
-#[derive(ValueEnum, Clone, PartialEq)]
+#[derive(ValueEnum, Clone, PartialEq, Eq)]
 pub enum Feature {
 	/// Minimal JVM (JRE or no-Javadoc JDK).  If you don't know what this means & aren't a developer, you probably want this
 	Minimal,

@@ -24,13 +24,13 @@ impl Arch {
 
 	/// The [`Arch`] of the host – amd64.
 	#[cfg(target_arch = "x86_64")]
-	pub const SYSTEM: Arch = Arch::X64;
+	pub const SYSTEM: Self = Self::X64;
 	/// The [`Arch`] of the host – arm64.
 	#[cfg(any(target_arch = "aarch64", target_arch = "arm"))]
-	pub const SYSTEM: Arch = Arch::Aarch64;
+	pub const SYSTEM: Self = Self::Aarch64;
 	/// The [`Arch`] of the host – aarch64.
 	#[cfg(target_arch = "riscv64")]
-	pub const SYSTEM: Arch = Arch::Riscv64;
+	pub const SYSTEM: Self = Self::Riscv64;
 	/// The [`Arch`] of the host – Unsupported, panic!
 	#[cfg(all(
 		not(target_arch = "x86_64"),
@@ -38,7 +38,7 @@ impl Arch {
 		not(target_arch = "arm"),
 		not(target_arch = "riscv64"),
 	))]
-	pub const SYSTEM: Arch = panic!("Unsupported host architecture!");
+	pub const SYSTEM: Self = panic!("Unsupported host architecture!");
 }
 
 impl From<Arch> for OsStr {
@@ -55,9 +55,9 @@ impl Display for Arch {
 			f,
 			"{}",
 			match self {
-				Arch::X64 => "x64",
-				Arch::Aarch64 => "aarch64",
-				Arch::Riscv64 => "riscv64",
+				Self::X64 => "x64",
+				Self::Aarch64 => "aarch64",
+				Self::Riscv64 => "riscv64",
 			}
 		)
 	}

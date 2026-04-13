@@ -8,7 +8,7 @@ use clap::error::{ContextKind, ContextValue, ErrorKind};
 use clap::{Arg, Command, Error};
 
 /// The major version of a JVM
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq)]
 pub enum MajorVersion {
 	/// Some arbitrary numeric version
 	Number(u32),
@@ -22,11 +22,11 @@ impl MajorVersion {
 
 	fn to_possible_value(&self) -> Option<PossibleValue> {
 		match self {
-			MajorVersion::Number(_) => PossibleValue::new("[0..4_294_967_295]")
+			Self::Number(_) => PossibleValue::new("[0..4_294_967_295]")
 				.help("Some arbitrary numeric version"),
-			MajorVersion::Latest => PossibleValue::new("latest")
+			Self::Latest => PossibleValue::new("latest")
 				.help("The latest version"),
-			MajorVersion::LTS => PossibleValue::new("lts")
+			Self::LTS => PossibleValue::new("lts")
 				.help("The latest Long Term Support version"),
 		}.into()
 	}
@@ -39,9 +39,9 @@ impl Display for MajorVersion {
 			f,
 			"{}",
 			match self {
-				MajorVersion::Number(value) => value.to_string(),
-				MajorVersion::Latest => "latest".into(),
-				MajorVersion::LTS => "lts".into(),
+				Self::Number(value) => value.to_string(),
+				Self::Latest => "latest".into(),
+				Self::LTS => "lts".into(),
 			}
 		)
 	}
@@ -60,8 +60,8 @@ impl Default for MajorVersionParser {
 impl MajorVersionParser {
 
 	#[must_use]
-	pub fn new() -> MajorVersionParser {
-		MajorVersionParser {}
+	pub const fn new() -> Self {
+		Self {}
 	}
 
 	fn possible_values() -> impl Iterator<Item = PossibleValue> {
@@ -131,13 +131,13 @@ impl FromStr for MajorVersion {
 	type Err = String;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		match s.parse() {
-			Ok(num) => Ok(MajorVersion::Number(num)),
-			Err(_) => match s {
-				"latest" => Ok(MajorVersion::Latest),
-				"lts" => Ok(MajorVersion::LTS),
+		s.parse().map_or_else(
+			|_| match s {
+				"latest" => Ok(Self::Latest),
+				"lts" => Ok(Self::LTS),
 				_ => Err(s.into()),
 			},
-		}
+			|num: u32| Ok(Self::Number(num)),
+		)
 	}
 }

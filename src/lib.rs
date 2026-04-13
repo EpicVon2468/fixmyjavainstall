@@ -1,4 +1,4 @@
-#![warn(clippy::pedantic)]
+#![warn(clippy::pedantic, clippy::nursery)]
 #![allow(
 	// Why???  Bad clippy!
 	clippy::tabs_in_doc_comments,
@@ -160,14 +160,13 @@ pub fn entrypoint(args: Arguments) -> Result<()> {
 			};
 		};
 	};
-	if let Some(command) = args.command {
-		match command {
+	args.command.map_or_else(
+		|| Ok(()),
+		|command: Cmd| match command {
 			#[cfg(any(not(windows), feature = "multi-os"))]
 			Cmd::Link { .. } => cmd_link(command),
 			Cmd::Manage { .. } => cmd_manage(command),
 			Cmd::Manual { .. } => cmd_man(command),
-		}
-	} else {
-		Ok(())
-	}
+		},
+	)
 }
