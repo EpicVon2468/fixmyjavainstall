@@ -15,12 +15,12 @@ pub fn download_liberica(args: DownloadJVMArgs) -> Result<()> {
 	jvm_download_impl(args.version.major.clone(), args)
 }
 
-pub fn get_liberica_version(
+pub fn get_liberica_download(
 	features: &[Feature],
 	os: &OS,
 	arch: &Arch,
 	version: &MajorVersion,
-) -> Result<LibericaReleaseInfo> {
+) -> Result<String> {
 	let uri: String = get_liberica_endpoint(features, os, arch, version)?;
 	let values: Vec<LibericaReleaseInfo> = ureq::get(uri)
 		.call()
@@ -28,14 +28,13 @@ pub fn get_liberica_version(
 		.body_mut()
 		.read_json()
 		.context("Couldn't read Liberica JVM version information!")?;
-	let the_one: LibericaReleaseInfo = values
+	let the_one: &LibericaReleaseInfo = values
 		.first()
-		.context("No Liberica JVM was available for the provided request!")?
-		.clone();
+		.context("No Liberica JVM was available for the provided request!")?;
 	if the_one.EOL {
 		eprintln!("The requested JVM is at End Of Life!  Consider upgrading to a newer version!");
 	};
-	Ok(the_one)
+	Ok(the_one.downloadUrl.clone())
 }
 
 pub fn get_liberica_endpoint(
@@ -86,7 +85,7 @@ pub fn get_liberica_endpoint(
 
 /// 1:1 mapping of Liberica's endpoint @ <https://api.bell-sw.com/v1/liberica/releases/>
 #[allow(non_snake_case, clippy::struct_excessive_bools)]
-#[derive(Serialise, Deserialise, Debug, Clone)]
+#[derive(Serialise, Deserialise)]
 pub struct LibericaReleaseInfo {
 	pub bitness: u8,
 	pub latestLTS: bool,

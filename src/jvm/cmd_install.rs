@@ -9,7 +9,7 @@ use crate::jvm::jvm::JVM;
 use crate::jvm::jvm_generic::{DownloadJVMArgs, DownloadJVMFn};
 use crate::jvm::jvm_java_se::download_java_se;
 use crate::jvm::jvm_jbr::download_jbr;
-use crate::jvm::jvm_liberica::{LibericaReleaseInfo, download_liberica, get_liberica_version};
+use crate::jvm::jvm_liberica::{download_liberica, get_liberica_download};
 use crate::jvm::jvm_temurin::download_temurin;
 use crate::jvm::major_version::MajorVersion;
 use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
@@ -33,9 +33,9 @@ pub fn cmd_install(op: Op) -> Result<()> {
 	#[cfg(not(feature = "multi-os"))]
 	let os: OS = OS::SYSTEM;
 	let java_version: JavaVersion = if jvm == JVM::Liberica {
-		let the_one: LibericaReleaseInfo = get_liberica_version(&features, &os, &arch, &version)?;
+		let download_uri: String = get_liberica_download(&features, &os, &arch, &version)?;
 		JavaVersion {
-			major: the_one.downloadUrl,
+			major: download_uri,
 			specific: String::new(),
 			revision: String::new(),
 		}
