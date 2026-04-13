@@ -22,13 +22,13 @@ pub enum Arch {
 
 impl Arch {
 
-	/// The [`Arch`] of the host – amd64.
+	/// The [`Arch`] of the host – `x64`.
 	#[cfg(target_arch = "x86_64")]
 	pub const SYSTEM: Self = Self::X64;
-	/// The [`Arch`] of the host – arm64.
+	/// The [`Arch`] of the host – `aarch64`.
 	#[cfg(any(target_arch = "aarch64", target_arch = "arm"))]
 	pub const SYSTEM: Self = Self::Aarch64;
-	/// The [`Arch`] of the host – aarch64.
+	/// The [`Arch`] of the host – `riscv64`.
 	#[cfg(target_arch = "riscv64")]
 	pub const SYSTEM: Self = Self::Riscv64;
 	/// The [`Arch`] of the host – Unsupported, panic!
