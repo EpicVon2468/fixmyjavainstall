@@ -22,12 +22,20 @@ pub fn generate_wrapper(
 	}
 }
 
-// PowerShell is NOT an option. '-XX:+UseCompactObjectHeaders' is forcibly split into '-XX' and '+UseCompactObjectHeaders'.  With and without escapes & quotations & brackets.
 // https://stackoverflow.com/questions/25122484/how-do-i-emulate-a-wrapper-script-on-windows
-// https://superuser.com/questions/1500272/equivalent-of-export-command-in-windows
 // https://stackoverflow.com/questions/12990480/shift-doesn-t-affect
-// Oh dear...
 // https://serverfault.com/questions/315077/is-there-a-windows-cmd-equivalent-of-unix-shells-exec
+// @echo off
+//
+// setlocal enableextensions
+//
+// if defined CLASSPATH (
+// 	echo foo
+// ) else (
+// 	echo bar
+// )
+//
+// start /b /wait "" "%JAVA_HOME%\bin\java.exe" %*
 fn generate_wrapper_win(java_home: &Path, features: &[Feature], bin_suffix: &str) -> String {
 	let mut result: String = String::with_capacity(500);
 
