@@ -123,7 +123,7 @@ pub fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> 
 	let pb: ProgressBar = multi.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
 	let mut archive: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
-	#[expect(clippy::literal_string_with_formatting_args)] // Don't even.  Bad clippy!
+	#[expect(clippy::literal_string_with_formatting_args, reason = "False positive.")]
 	let extract_pb: ProgressBar = multi.add(progress_bar_template(
 		0,
 		"[{elapsed_precise}] {spinner:.cyan} Writing {msg}...",
@@ -165,9 +165,11 @@ pub fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> 
 pub fn extract_jvm_zip(dest: &Path, input: File, is_mac: bool) -> Result<()> {
 	let mut archive: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JVM archive (ZIP)!")?;
 	let multi: MultiProgress = MultiProgress::new();
-	// A JVM `.zip` bigger than u64::MAX would be a zip bomb.  Bad clippy!
-	// For reference: u64::MAX is 16384 pebibytes.
-	#[expect(clippy::cast_possible_truncation, clippy::as_conversions)]
+	#[expect(
+		clippy::cast_possible_truncation,
+		clippy::as_conversions,
+		reason = "A JVM `.zip` bigger than u64::MAX (16384 pebibytes) would be a zip bomb.  Bad clippy!"
+	)]
 	let max_len: u64 = archive.decompressed_size().unwrap() as u64;
 	let pb: ProgressBar = multi.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
@@ -288,7 +290,6 @@ pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 pub const TEMPLATE: &str = "[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})";
 
 #[must_use]
-#[expect(clippy::unwrap_used, clippy::non_ascii_literal)]
 pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
 	let pb: ProgressBar = ProgressBar::new(len);
 	pb.set_style(

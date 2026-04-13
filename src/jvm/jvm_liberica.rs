@@ -84,7 +84,11 @@ pub fn get_liberica_endpoint(
 }
 
 /// 1:1 mapping of Liberica's endpoint @ <https://api.bell-sw.com/v1/liberica/releases/>
-#[allow(non_snake_case, clippy::struct_excessive_bools)]
+#[allow(
+	non_snake_case,
+	clippy::struct_excessive_bools,
+	reason = "Serialisation representation."
+)]
 #[derive(Serialise, Deserialise)]
 pub struct LibericaReleaseInfo {
 	pub bitness: u8,

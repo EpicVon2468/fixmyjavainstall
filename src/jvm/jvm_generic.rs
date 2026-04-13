@@ -32,8 +32,10 @@ impl DownloadJVMArgs<'_> {
 	}
 }
 
-// Literally nothing else is (or ever will be) using the args after I'm done with them.  Bad clippy!
-#[expect(clippy::needless_pass_by_value)]
+#[expect(
+	clippy::needless_pass_by_value,
+	reason = "Literally nothing else is (or ever will be) using the args after I'm done with them.  Bad clippy!"
+)]
 pub fn jvm_download_impl<S: AsRef<str>>(url: S, args: DownloadJVMArgs) -> Result<()> {
 	let url: &str = url.as_ref();
 	let java_home: &Path = args.java_home;

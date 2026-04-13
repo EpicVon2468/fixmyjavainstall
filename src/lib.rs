@@ -1,22 +1,33 @@
+// Group lints
+#![warn(clippy::pedantic, clippy::nursery, clippy::suspicious)]
+// Specific lints
 #![warn(
-	clippy::pedantic,
-	clippy::nursery,
 	clippy::as_conversions,
 	clippy::min_ident_chars,
 	clippy::pattern_type_mismatch,
 	clippy::use_self,
 	clippy::unused_trait_names,
+	clippy::create_dir,
+	clippy::exit,
+	clippy::float_cmp,
+	clippy::float_cmp_const,
+	clippy::missing_const_for_fn,
+	clippy::needless_collect,
+	clippy::needless_for_each,
+)]
+#![allow(clippy::tabs_in_doc_comments, reason = "Why???  Bad clippy!")]
+#![allow(
+	clippy::unnecessary_semicolon,
+	reason = "Consistency & uniformity looks better!  Bad clippy!"
 )]
 #![allow(
-	// Why???  Bad clippy!
-	clippy::tabs_in_doc_comments,
-	// Consistency & uniformity looks better.  Bad clippy!
-	clippy::unnecessary_semicolon,
-	// I'll get to writing doc comments when I get to them.
 	clippy::missing_errors_doc,
 	clippy::missing_panics_doc,
-	// 'JetBrains' and 'AdoptOpenJDK' are not identifiers I'm referencing.  Bad clippy!
+	reason = "I'll get to writing doc comments when I get to them."
+)]
+#![allow(
 	clippy::doc_markdown,
+	reason = "'JetBrains' and 'AdoptOpenJDK' are not identifiers I'm referencing.  Bad clippy!"
 )]
 //! # Fix Ur Java Install – A JVM & Kotlin management utility.
 //!

@@ -47,7 +47,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	#[cfg(windows)]
 	return crate::win_link::win_link(bin.to_str().context("I hate Windows")?);
 
-	#[allow(unreachable_code)]
+	#[allow(unreachable_code, reason = "Windows.")]
 	let can_use_update_alternatives: bool =
 		use_update_alternatives && has_program("update-alternatives");
 	if !can_use_update_alternatives && use_update_alternatives {
@@ -115,7 +115,7 @@ pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Resul
 ///
 /// * UNIX-likes: Delegates to [`std::os::unix::fs::symlink`].
 /// * Windows: Checks if `original` is a directory.  If `true`, delegates to [`std::os::windows::fs::symlink_dir`], else [`std::os::windows::fs::symlink_file`].
-#[allow(rustdoc::broken_intra_doc_links)]
+#[allow(rustdoc::broken_intra_doc_links, reason = "Conditionally compiled code.")]
 pub fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Result<()> {
 	#[cfg(unix)] {
 		use std::os::unix::fs::symlink;
