@@ -1,7 +1,7 @@
 //! Liberica by BellSoft – <https://bell-sw.com/libericajdk/>
 use std::fmt::Write;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 use serde::{Deserialize as Deserialise, Serialize as Serialise};
 
@@ -13,6 +13,31 @@ use crate::os::OS;
 
 pub fn download_liberica(args: DownloadJVMArgs) -> Result<()> {
 	jvm_download_impl(args.version.major.clone(), args)
+}
+
+pub fn get_liberica_version(
+	features: &[Feature],
+	os: &OS,
+	arch: &Arch,
+	version: &MajorVersion,
+) -> Result<LibericaReleaseInfo> {
+	let uri: String = get_liberica_endpoint(features, os, arch, version)?;
+	let values: Vec<LibericaReleaseInfo> = ureq::get(uri)
+		.call()
+		.context("No Liberica JVM was available for the provided request!")?
+		.body_mut()
+		.read_json()
+		.context("Couldn't read Liberica JVM version information!")?;
+	let the_one: LibericaReleaseInfo = values
+		.first()
+		.context("No Liberica JVM was available for the provided request!")?
+		.clone();
+	if the_one.EOL {
+		eprintln!(
+			"The requested JVM is at End Of Life!  Consider upgrading to a newer version!"
+		);
+	};
+	Ok(the_one)
 }
 
 pub fn get_liberica_endpoint(
@@ -63,7 +88,7 @@ pub fn get_liberica_endpoint(
 
 /// 1:1 mapping of Liberica's endpoint @ <https://api.bell-sw.com/v1/liberica/releases/>
 #[allow(non_snake_case, clippy::struct_excessive_bools)]
-#[derive(Serialise, Deserialise, Debug)]
+#[derive(Serialise, Deserialise, Debug, Clone)]
 pub struct LibericaReleaseInfo {
 	pub bitness: u8,
 	pub latestLTS: bool,
