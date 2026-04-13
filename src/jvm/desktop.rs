@@ -1,9 +1,9 @@
 #![cfg(target_os = "linux")]
 use std::fs::File;
-use std::io::Write;
+use std::io::Write as _;
 use std::path::Path;
 
-use anyhow::{Context, Result};
+use anyhow::{Context as _, Result};
 
 // https://specifications.freedesktop.org/desktop-entry/latest/
 // /usr/share/applications

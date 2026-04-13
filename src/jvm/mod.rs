@@ -15,7 +15,7 @@ pub mod cmd_install;
 pub mod cmd_preset;
 #[cfg(target_os = "linux")]
 pub mod desktop;
-#[allow(clippy::module_inception)]
+#[expect(clippy::module_inception)]
 pub mod jvm;
 pub mod jvm_generic;
 pub mod jvm_java_se;
@@ -25,7 +25,7 @@ pub mod jvm_temurin;
 pub mod major_version;
 pub mod wrapper;
 
-use anyhow::{Context, Result};
+use anyhow::{Context as _, Result};
 
 use clap::{Subcommand, ValueEnum};
 

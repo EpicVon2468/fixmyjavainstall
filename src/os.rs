@@ -53,11 +53,11 @@ impl From<OS> for OsStr {
 
 impl Display for OS {
 
-	fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+	fn fmt(&self, fmt: &mut Formatter<'_>) -> Result {
 		write!(
-			f,
+			fmt,
 			"{}",
-			match self {
+			match *self {
 				Self::Linux => "linux",
 				Self::OSX => "osx",
 				Self::Windows => "windows",

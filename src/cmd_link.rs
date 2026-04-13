@@ -4,7 +4,7 @@ use std::fs::{ReadDir, remove_dir_all, remove_file};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command};
 
-use anyhow::{Context, Result};
+use anyhow::{Context as _, Result};
 
 use indicatif::ProgressBar;
 

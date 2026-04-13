@@ -21,7 +21,7 @@ pub enum MajorVersion {
 impl MajorVersion {
 
 	fn to_possible_value(&self) -> Option<PossibleValue> {
-		match self {
+		match *self {
 			Self::Number(_) => PossibleValue::new("[0..4_294_967_295]")
 				.help("Some arbitrary numeric version"),
 			Self::Latest => PossibleValue::new("latest")
@@ -34,11 +34,11 @@ impl MajorVersion {
 
 impl Display for MajorVersion {
 
-	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+	fn fmt(&self, fmt: &mut Formatter<'_>) -> std::fmt::Result {
 		write!(
-			f,
+			fmt,
 			"{}",
-			match self {
+			match *self {
 				Self::Number(value) => value.to_string(),
 				Self::Latest => "latest".into(),
 				Self::LTS => "lts".into(),
@@ -111,7 +111,7 @@ impl TypedValueParser for MajorVersionParser {
 					ContextKind::ValidValue,
 					ContextValue::Strings(
 						Self::possible_values()
-							.map(|v: PossibleValue| v.get_name().to_owned())
+							.map(|val: PossibleValue| val.get_name().to_owned())
 							.collect(),
 					),
 				);

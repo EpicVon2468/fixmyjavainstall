@@ -5,7 +5,7 @@ use std::io::copy;
 use std::path::{Component, Components, Path, PathBuf};
 use std::time::Duration;
 
-use anyhow::{Context, Result};
+use anyhow::{Context as _, Result};
 
 use flate2::read::GzDecoder;
 
@@ -118,13 +118,13 @@ pub fn extract_jvm<S: AsRef<Path>, P: AsRef<Path>>(
 }
 
 pub fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> {
-	let m: MultiProgress = MultiProgress::new();
+	let multi: MultiProgress = MultiProgress::new();
 	let max_len: u64 = input.metadata()?.len();
-	let pb: ProgressBar = m.add(progress_bar(max_len));
+	let pb: ProgressBar = multi.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
 	let mut archive: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
-	#[allow(clippy::literal_string_with_formatting_args)] // Don't even.  Bad clippy!
-	let extract_pb: ProgressBar = m.add(progress_bar_template(
+	#[expect(clippy::literal_string_with_formatting_args)] // Don't even.  Bad clippy!
+	let extract_pb: ProgressBar = multi.add(progress_bar_template(
 		0,
 		"[{elapsed_precise}] {spinner:.cyan} Writing {msg}...",
 	));
@@ -164,14 +164,14 @@ pub fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> 
 
 pub fn extract_jvm_zip(dest: &Path, input: File, is_mac: bool) -> Result<()> {
 	let mut archive: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JVM archive (ZIP)!")?;
-	let m: MultiProgress = MultiProgress::new();
+	let multi: MultiProgress = MultiProgress::new();
 	// A JVM `.zip` bigger than u64::MAX would be a zip bomb.  Bad clippy!
 	// For reference: u64::MAX is 16384 pebibytes.
-	#[allow(clippy::cast_possible_truncation)]
+	#[expect(clippy::cast_possible_truncation, clippy::as_conversions)]
 	let max_len: u64 = archive.decompressed_size().unwrap() as u64;
-	let pb: ProgressBar = m.add(progress_bar(max_len));
+	let pb: ProgressBar = multi.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
-	let extract_pb: ProgressBar = m.add(progress_bar_template(
+	let extract_pb: ProgressBar = multi.add(progress_bar_template(
 		0,
 		&format!("Writing {{msg}}… {TEMPLATE}"),
 	));
@@ -219,7 +219,7 @@ pub fn extract_jvm_zip(dest: &Path, input: File, is_mac: bool) -> Result<()> {
 #[cfg(unix)]
 pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> {
 	use std::fs::set_permissions;
-	use std::os::unix::fs::PermissionsExt;
+	use std::os::unix::fs::PermissionsExt as _;
 
 	// check if executable (need to figure out how to rewrite this so directory isn't a separate branch)
 	let new_mode: u32 = if let Some(old_mode) = mode && (old_mode & 0o111) != 0 {
@@ -242,7 +242,7 @@ where F: FnMut(&Path) -> Result<()> {
 	// https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
 	// --strip-components 1
 	components.next();
-	assert!(!components.clone().any(|c: Component| c == Component::ParentDir), "Component::ParentDir found!");
+	assert!(!components.clone().any(|comp: Component| comp == Component::ParentDir), "Component::ParentDir found!");
 	// macOS .tar.gz is laid out differently.  it's a '.app'...
 	if is_mac {
 		// skip "Contents"
@@ -288,6 +288,7 @@ pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 pub const TEMPLATE: &str = "[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})";
 
 #[must_use]
+#[expect(clippy::unwrap_used, clippy::non_ascii_literal)]
 pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
 	let pb: ProgressBar = ProgressBar::new(len);
 	pb.set_style(

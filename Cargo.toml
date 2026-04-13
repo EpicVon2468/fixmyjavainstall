@@ -8,6 +8,7 @@ repository = "https://github.com/EpicVon2468/fixmyjavainstall/"
 homepage = "https://github.com/EpicVon2468/fixmyjavainstall/"
 license = "MIT OR Apache-2.0"
 readme = "README.md"
+keywords = ["utility", "config", "cli"]
 categories = ["command-line-utilities", "config"]
 
 [features]

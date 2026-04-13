@@ -137,11 +137,11 @@ pub enum JVM {
 
 impl Display for JVM {
 
-	fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+	fn fmt(&self, fmt: &mut Formatter<'_>) -> Result {
 		write!(
-			f,
+			fmt,
 			"{}",
-			match self {
+			match *self {
 				Self::Auto => "auto",
 				Self::JBR => "jbr",
 				Self::JavaSE => "java-se",

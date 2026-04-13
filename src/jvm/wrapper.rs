@@ -1,8 +1,9 @@
 use std::fs::{File, OpenOptions, Permissions};
-use std::io::Write;
+use std::io::Write as _;
+use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
-use anyhow::{Context, Result};
+use anyhow::{Context as _, Result};
 
 use crate::commands::io_failure;
 use crate::jvm::Feature;
@@ -33,11 +34,7 @@ fn generate_wrapper_win(java_home: &Path, features: &[Feature], bin_suffix: &str
 	result.push_str("@echo off\r\n\r\n");
 	result.push_str("setlocal enableextensions\r\n\r\n");
 
-	{
-		use std::fmt::Write;
-
-		let _ = write!(result, "set JAVA_HOME=\"{}\"\r\n\r\n", java_home.display());
-	}
+	let _ = write!(result, "set JAVA_HOME=\"{}\"\r\n\r\n", java_home.display());
 
 	result.push_str("if defined CLASSPATH (\r\n");
 	result.push_str("\tset FUJI_CLASSPATH_ARG=\"-cp %CLASSPATH%;.\"\r\n");
@@ -59,11 +56,7 @@ fn generate_wrapper_unix(java_home: &Path, features: &[Feature], bin_suffix: &st
 
 	result.push_str("#!/usr/bin/env sh\n\n");
 
-	{
-		use std::fmt::Write;
-
-		let _ = writeln!(result, "JAVA_HOME=\"{}\"", java_home.display());
-	}
+	let _ = writeln!(result, "JAVA_HOME=\"{}\"", java_home.display());
 	result.push_str("export JAVA_HOME\n\n");
 
 	result.push_str("if [ -n \"$CLASSPATH\" ]; then\n");
@@ -190,7 +183,8 @@ pub fn install_wrapper(
 		.with_context(|| io_failure(&script_file, "write"))?;
 	// rwxr-xr-x
 	#[cfg(unix)] {
-		use std::os::unix::fs::PermissionsExt;
+		use std::os::unix::fs::PermissionsExt as _;
+
 		result
 			.set_permissions(Permissions::from_mode(0o755))
 			.with_context(|| io_failure(&script_file, "set permissions for"))?;

@@ -50,11 +50,11 @@ impl From<Arch> for OsStr {
 
 impl Display for Arch {
 
-	fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+	fn fmt(&self, fmt: &mut Formatter<'_>) -> Result {
 		write!(
-			f,
+			fmt,
 			"{}",
-			match self {
+			match *self {
 				Self::X64 => "x64",
 				Self::Aarch64 => "aarch64",
 				Self::Riscv64 => "riscv64",

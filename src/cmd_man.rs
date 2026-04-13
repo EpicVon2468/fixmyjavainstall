@@ -1,11 +1,11 @@
 use std::fs::{create_dir_all, remove_dir_all, File};
-use std::io::Write;
+use std::io::Write as _;
 use std::iter::Filter;
 use std::path::Path;
 
-use anyhow::{Context, Result};
+use anyhow::{Context as _, Result};
 
-use clap::{Arg, Command, CommandFactory};
+use clap::{Arg, Command, CommandFactory as _};
 use clap_mangen::roff::{roman, Roff};
 use clap_mangen::Man;
 
@@ -36,7 +36,7 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 	fn generate(parent: &Command, out_dir: &Path) -> Result<()> {
 		let children: Filter<_, _> = parent
 			.get_subcommands()
-			.filter(|c: &&Command| !c.is_hide_set());
+			.filter(|cmd: &&Command| !cmd.is_hide_set());
 		for child in children {
 			generate(child, out_dir)?;
 		};
@@ -66,7 +66,7 @@ fn render0(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) -> Result
 	man.render_name_section(&mut output).context("name")?;
 	man.render_synopsis_section(&mut output).context("synopsis")?;
 	man.render_description_section(&mut output).context("description")?;
-	if cmd.get_arguments().any(|a: &Arg| !a.is_hide_set()) {
+	if cmd.get_arguments().any(|arg: &Arg| !arg.is_hide_set()) {
 		man.render_options_section(&mut output).context("options")?;
 	};
 	Ok(())
@@ -76,15 +76,15 @@ fn render0(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) -> Result
 ///
 /// TODO: PR `clap_mangen` with minimal fix?
 fn render_subcommands(cmd: &Command, mut output: &mut GzEncoder<File>) -> Result<()> {
-	if cmd.get_subcommands().any(|c: &Command| !c.is_hide_set()) {
+	if cmd.get_subcommands().any(|cm: &Command| !cm.is_hide_set()) {
 		let mut roff: Roff = Roff::default();
 		roff.control(
 			"SH",
 			[cmd.get_subcommand_help_heading().unwrap_or("SUBCOMMANDS")],
 		);
 		let mut sorted_subcommands: Vec<&Command> =
-			cmd.get_subcommands().filter(|s| !s.is_hide_set()).collect();
-		sorted_subcommands.sort_by_key(|c| (c.get_display_order(), c.get_name()));
+			cmd.get_subcommands().filter(|cm: &&Command| !cm.is_hide_set()).collect();
+		sorted_subcommands.sort_by_key(|cm: &&Command| (cm.get_display_order(), cm.get_name()));
 		for sub in sorted_subcommands {
 			roff.control("TP", []);
 			// the built-in implementation of this part is broken

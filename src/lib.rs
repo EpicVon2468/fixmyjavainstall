@@ -1,4 +1,12 @@
-#![warn(clippy::pedantic, clippy::nursery)]
+#![warn(
+	clippy::pedantic,
+	clippy::nursery,
+	clippy::as_conversions,
+	clippy::min_ident_chars,
+	clippy::pattern_type_mismatch,
+	clippy::use_self,
+	clippy::unused_trait_names,
+)]
 #![allow(
 	// Why???  Bad clippy!
 	clippy::tabs_in_doc_comments,
@@ -31,7 +39,7 @@ use std::ffi::OsString;
 
 use anyhow::Result;
 
-use clap::Parser;
+use clap::Parser as _;
 
 use crate::cli::{Arguments, Cmd};
 #[cfg(any(not(windows), feature = "multi-os"))]

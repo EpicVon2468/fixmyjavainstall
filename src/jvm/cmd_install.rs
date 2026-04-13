@@ -1,7 +1,7 @@
 use std::fs::{create_dir_all, remove_dir_all, remove_file, rename};
 use std::path::{Path, PathBuf};
 
-use anyhow::{Context, Result};
+use anyhow::{Context as _, Result};
 
 use crate::cmd_link::{link_impl, symlink_link};
 use crate::commands::io_failure;

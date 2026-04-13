@@ -1,7 +1,7 @@
 //! Liberica by BellSoft – <https://bell-sw.com/libericajdk/>
-use std::fmt::Write;
+use std::fmt::Write as _;
 
-use anyhow::{Context, Result};
+use anyhow::{Context as _, Result};
 
 use serde::{Deserialize as Deserialise, Serialize as Serialise};
 
@@ -62,7 +62,7 @@ pub fn get_liberica_endpoint(
 	if features.contains(&Feature::MUSL) {
 		url.push_str("-musl");
 	};
-	match version {
+	match *version {
 		MajorVersion::Number(num) => {
 			let _ = write!(url, "&version-feature={num}");
 		},
