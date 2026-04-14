@@ -47,14 +47,8 @@ impl Display for MajorVersion {
 	}
 }
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct MajorVersionParser;
-
-impl Default for MajorVersionParser {
-	fn default() -> Self {
-		Self::new()
-	}
-}
 
 impl MajorVersionParser {
 	#[must_use]

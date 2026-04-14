@@ -45,9 +45,9 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 		software: Software::JVM {
 			op: Op::Install {
 				jvm: JVM::JBR,
-				arch: Arch::SYSTEM,
+				arch: Arch::default(),
 				#[cfg(feature = "multi-os")]
-				operating_system: OS::SYSTEM,
+				operating_system: OS::default(),
 				features,
 				include_kotlin: true,
 				dry_run: false,
@@ -64,9 +64,9 @@ fn preset_fast(minimal: bool) -> Result<()> {
 		software: Software::JVM {
 			op: Op::Install {
 				jvm: JVM::JBR,
-				arch: Arch::SYSTEM,
+				arch: Arch::default(),
 				#[cfg(feature = "multi-os")]
-				operating_system: OS::SYSTEM,
+				operating_system: OS::default(),
 				features,
 				include_kotlin: false,
 				dry_run: false,
@@ -124,9 +124,9 @@ fn preset_latest(minimal: bool) -> Result<()> {
 			op: Op::Install {
 				// FIXME: need to implement JVM::Auto so I don't have to default to JavaSE
 				jvm: JVM::JavaSE,
-				arch: Arch::SYSTEM,
+				arch: Default::default(),
 				#[cfg(feature = "multi-os")]
-				operating_system: OS::SYSTEM,
+				operating_system: Default::default(),
 				features: features(minimal),
 				include_kotlin: false,
 				dry_run: false,

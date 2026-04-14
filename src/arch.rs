@@ -40,6 +40,12 @@ impl Arch {
 	pub const SYSTEM: Self = panic!("Unsupported host architecture!");
 }
 
+impl Default for Arch {
+	fn default() -> Self {
+		Self::SYSTEM
+	}
+}
+
 impl From<Arch> for OsStr {
 	fn from(value: Arch) -> Self {
 		value.to_string().into()

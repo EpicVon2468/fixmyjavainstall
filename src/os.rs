@@ -43,6 +43,12 @@ impl OS {
 	pub const SYSTEM: Self = panic!("Unsupported host operating system!");
 }
 
+impl Default for OS {
+	fn default() -> Self {
+		Self::SYSTEM
+	}
+}
+
 impl From<OS> for OsStr {
 	fn from(value: OS) -> Self {
 		value.to_string().into()
