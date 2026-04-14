@@ -124,9 +124,9 @@ fn preset_latest(minimal: bool) -> Result<()> {
 			op: Op::Install {
 				// FIXME: need to implement JVM::Auto so I don't have to default to JavaSE
 				jvm: JVM::JavaSE,
-				arch: Default::default(),
+				arch: Arch::default(),
 				#[cfg(feature = "multi-os")]
-				operating_system: Default::default(),
+				operating_system: OS::default(),
 				features: features(minimal),
 				include_kotlin: false,
 				dry_run: false,

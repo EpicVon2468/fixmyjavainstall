@@ -137,16 +137,6 @@ pub enum JVM {
 
 impl Display for JVM {
 	fn fmt(&self, fmt: &mut Formatter<'_>) -> Result {
-		write!(
-			fmt,
-			"{}",
-			match *self {
-				Self::Auto => "auto",
-				Self::JBR => "jbr",
-				Self::JavaSE => "java-se",
-				Self::Temurin => "temurin",
-				Self::Liberica => "liberica",
-			}
-		)
+		write!(fmt, "{}", self.to_possible_value().unwrap().get_name())
 	}
 }

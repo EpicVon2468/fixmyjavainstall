@@ -47,7 +47,7 @@ macro_rules! check_status {
 
 #[macro_export]
 macro_rules! fuji_value_enum {
-	($ty:ident, match *self {$($variant:pat => $string:literal),*,}) => {
+	($ty:ident, match *self {$($variant:pat => $string:expr),*,}) => {
 		#[automatically_derived]
 		impl Default for $ty {
 			fn default() -> Self {

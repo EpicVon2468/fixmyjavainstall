@@ -32,7 +32,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		wrong_cmd!(cmd_install);
 	};
 	#[cfg(not(feature = "multi-os"))]
-	let os: OS = OS::SYSTEM;
+	let os: OS = OS::default();
 	let java_version: JavaVersion = if jvm == JVM::Liberica {
 		let download_uri: String = get_liberica_download(&features, &os, &arch, &version)?;
 		JavaVersion {

@@ -6,13 +6,14 @@ use crate::fuji_value_enum;
 #[non_exhaustive]
 #[derive(ValueEnum, Clone)]
 pub enum InstallMethod {
-	/// Add the directory to the PATH environment variable – (export PATH="$JAVA_HOME:$PATH")
+	/// PATH environment variable modification.
 	Path,
 	#[cfg(any(unix, feature = "multi-os"))]
-	/// Symbolically link the executables from the directory into PATH – (ln -sf $JAVA_HOME/bin/filename /usr/bin/filename)
+	/// Symbolic linking.
+	#[clap(hide = cfg!(all(not(unix), not(feature = "multi-os"))))]
 	Symlink,
-	#[cfg(any(target_os = "linux", feature = "multi-os"))]
-	/// Use update-alternatives – <https://man7.org/linux/man-pages/man1/update-alternatives.1.html>
+	/// <https://man7.org/linux/man-pages/man1/update-alternatives.1.html>.
+	#[clap(hide = cfg!(all(not(target_os = "linux"), not(feature = "multi-os"))))]
 	UpdateAlternatives,
 }
 
@@ -21,12 +22,12 @@ impl InstallMethod {
 	pub const SYSTEM: Self = Self::Symlink;
 	#[cfg(target_os = "macos")]
 	pub const SYSTEM: Self = Self::Path;
-	#[cfg(windows)]
+	#[cfg(target_os = "windows")]
 	pub const SYSTEM: Self = Self::Path;
 	#[cfg(all(
 		not(target_os = "linux"),
 		not(target_os = "macos"),
-		not(windows),
+		not(target_os = "windows"),
 	))]
 	pub const SYSTEM: Self = panic!("Unsupported host!");
 }

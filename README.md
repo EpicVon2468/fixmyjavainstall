@@ -1,6 +1,6 @@
 # Fix Ur Java Install – A JVM & Kotlin management utility.
 
-Rewriting this in Rust was simpler than debugging and 'fixing' the bash script(s).  I am serious.
+(Re)writing this in Rust was simpler than debugging and 'fixing' the bash script(s).  I am serious.
 
 NOTICE: You must run with `sudo -E` to preserve environment variables, else some preset detections may fail.
 

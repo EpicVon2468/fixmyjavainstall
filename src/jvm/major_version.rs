@@ -51,6 +51,7 @@ impl Display for MajorVersion {
 pub struct MajorVersionParser;
 
 impl MajorVersionParser {
+	#[inline]
 	#[must_use]
 	pub const fn new() -> Self {
 		Self {}
