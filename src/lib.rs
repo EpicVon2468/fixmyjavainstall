@@ -24,7 +24,10 @@
 	clippy::infinite_loop,
 	clippy::linkedlist,
 	clippy::pub_use,
-	clippy::wildcard_imports
+	clippy::wildcard_imports,
+	clippy::uninlined_format_args,
+	clippy::equatable_if_let,
+	clippy::enum_glob_use
 )]
 #![allow(clippy::tabs_in_doc_comments, reason = "Why???  Bad clippy!")]
 #![allow(
@@ -120,7 +123,7 @@ pub const FUJI_DIR: &str = if cfg!(windows) {
 /// use fuji::alias_entrypoint;
 ///
 /// // Becomes 'fuji foo bar baz <user args here>'
-/// alias_entrypoint(&["foo".into(), "bar".into(), "baz".into()]).unwrap();
+/// assert_eq!(alias_entrypoint(&["foo".into(), "bar".into(), "baz".into()]), Ok(()));
 /// ```
 ///
 /// Creating a shorthand / alias for `fuji manage jvm preset`:
@@ -128,7 +131,7 @@ pub const FUJI_DIR: &str = if cfg!(windows) {
 /// use fuji::alias_entrypoint;
 ///
 /// // Becomes 'fuji manage jvm preset <user args here>'
-/// alias_entrypoint(&["manage".into(), "jvm".into(), "preset".into()]).unwrap();
+/// assert_eq!(alias_entrypoint(&["manage".into(), "jvm".into(), "preset".into()]), Ok(()));
 /// ```
 pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 	let mut args: Vec<OsString> = vec!["fuji".into()];
@@ -180,7 +183,7 @@ pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 /// use fuji::cli::Arguments;
 /// use fuji::entrypoint;
 ///
-/// entrypoint(Arguments::parse()).unwrap();
+/// assert_eq!(entrypoint(Arguments::parse()), Ok(()));
 /// ```
 pub fn entrypoint(args: Arguments) -> Result<()> {
 	// dbg!(env!("CARGO_PKG_NAME"));

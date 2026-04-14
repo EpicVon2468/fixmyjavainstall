@@ -22,6 +22,7 @@ use zip::ZipArchive;
 use zip::read::ZipFile;
 
 /// Checks if the program `name` exists.  This is equivalent to `which(name).is_ok()`.
+#[inline]
 #[must_use]
 pub fn has_program(name: &str) -> bool {
 	which(name).is_ok()
@@ -81,21 +82,21 @@ pub fn has_program(name: &str) -> bool {
 /// ```
 /// use fuji::commands::extract_jvm;
 ///
-/// extract_jvm("java-25-linux.tar.gz", "./java-25-linux", false, false).unwrap();
+/// assert_eq!(extract_jvm("java-25-linux.tar.gz", "./java-25-linux", false, false), Ok(()));
 /// ```
 ///
 /// Extracting a macOS JVM:
 /// ```
 /// use fuji::commands::extract_jvm;
 ///
-/// extract_jvm("java-25-osx.tar.gz", "./java-25-osx", false, true).unwrap();
+/// assert_eq!(extract_jvm("java-25-osx.tar.gz", "./java-25-osx", false, true), Ok(()));
 /// ```
 ///
 /// Extracting a Windows JVM:
 /// ```
 /// use fuji::commands::extract_jvm;
 ///
-/// extract_jvm("java-25-win.zip", "./java-25-win", true, false).unwrap();
+/// assert_eq!(extract_jvm("java-25-win.zip", "./java-25-win", true, false), Ok(()));
 /// ```
 pub fn extract_jvm<S: AsRef<Path>, P: AsRef<Path>>(
 	archive: S,
@@ -232,12 +233,11 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 	use std::fs::set_permissions;
 	use std::os::unix::fs::PermissionsExt as _;
 
-	// check if executable (need to figure out how to rewrite this so directory isn't a separate branch)
-	#[rustfmt::skip]
-	let new_mode: u32 = if let Some(old_mode) = mode && (old_mode & 0o111) != 0 {
-		// rwxr-xr-x
-		0o755
-	} else if is_dir {
+	let Some(old_mode): Option<u32> = mode else {
+		return Ok(());
+	};
+
+	let new_mode: u32 = if is_exe(old_mode) || is_dir {
 		// rwxr-xr-x
 		0o755
 	} else {
@@ -246,6 +246,12 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 	};
 	set_permissions(path, Permissions::from_mode(new_mode))
 		.with_context(|| io_failure(path, "set permissions for"))
+}
+
+#[inline]
+#[must_use]
+pub const fn is_exe(mode: u32) -> bool {
+	(mode & 0o111) != 0
 }
 
 #[inline]
