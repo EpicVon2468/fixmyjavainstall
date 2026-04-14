@@ -42,7 +42,7 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 	features.push(Feature::AllowUnsafe);
 	features.push(Feature::FontAntiAliasing);
 	cmd_manage(Cmd::Manage {
-		software: Some(Software::JVM {
+		software: Software::JVM {
 			op: Op::Install {
 				jvm: JVM::JBR,
 				arch: Arch::SYSTEM,
@@ -53,7 +53,7 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 				dry_run: false,
 				version: MajorVersion::LTS,
 			},
-		}),
+		},
 	})
 }
 
@@ -61,7 +61,7 @@ fn preset_fast(minimal: bool) -> Result<()> {
 	let mut features: Vec<Feature> = features(minimal);
 	configure_fast(&mut features)?;
 	cmd_manage(Cmd::Manage {
-		software: Some(Software::JVM {
+		software: Software::JVM {
 			op: Op::Install {
 				jvm: JVM::JBR,
 				arch: Arch::SYSTEM,
@@ -72,7 +72,7 @@ fn preset_fast(minimal: bool) -> Result<()> {
 				dry_run: false,
 				version: MajorVersion::LTS,
 			},
-		}),
+		},
 	})
 }
 
@@ -120,7 +120,7 @@ fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 
 fn preset_latest(minimal: bool) -> Result<()> {
 	cmd_manage(Cmd::Manage {
-		software: Some(Software::JVM {
+		software: Software::JVM {
 			op: Op::Install {
 				// FIXME: need to implement JVM::Auto so I don't have to default to JavaSE
 				jvm: JVM::JavaSE,
@@ -132,6 +132,6 @@ fn preset_latest(minimal: bool) -> Result<()> {
 				dry_run: false,
 				version: MajorVersion::Latest,
 			},
-		}),
+		},
 	})
 }

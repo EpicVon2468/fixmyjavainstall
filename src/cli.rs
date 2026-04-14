@@ -29,6 +29,7 @@ pub enum Cmd {
 		#[arg(short, long, value_name = "DIR", default_value = "/usr/bin")]
 		link_dir: PathBuf,
 
+		// TODO: 'InstallMethod' enumeration
 		/// Whether to use update-alternatives for install.
 		#[cfg(any(target_os = "linux", feature = "multi-os"))]
 		#[arg(short, long, default_value = "false")]
@@ -38,7 +39,7 @@ pub enum Cmd {
 	#[clap(author = "Mavity The Madity")]
 	Manage {
 		#[command(subcommand)]
-		software: Option<Software>,
+		software: Software,
 	},
 	/// UNIX `man` page generation
 	#[clap(author = "Mavity The Madity", hide = true)]
