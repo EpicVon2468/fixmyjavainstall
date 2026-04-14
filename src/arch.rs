@@ -21,7 +21,6 @@ pub enum Arch {
 }
 
 impl Arch {
-
 	/// The [`Arch`] of the host – `x64`.
 	#[cfg(target_arch = "x86_64")]
 	pub const SYSTEM: Self = Self::X64;
@@ -42,14 +41,12 @@ impl Arch {
 }
 
 impl From<Arch> for OsStr {
-
 	fn from(value: Arch) -> Self {
 		value.to_string().into()
 	}
 }
 
 impl Display for Arch {
-
 	fn fmt(&self, fmt: &mut Formatter<'_>) -> Result {
 		write!(
 			fmt,

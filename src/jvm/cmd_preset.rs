@@ -11,9 +11,7 @@ use crate::os::OS;
 use crate::wrong_cmd;
 
 pub fn cmd_preset(op: Op) -> Result<()> {
-	let Op::Preset {
-		preset,
-	}: Op = op else {
+	let Op::Preset { preset }: Op = op else {
 		wrong_cmd!(cmd_preset);
 	};
 	match preset {
@@ -23,7 +21,7 @@ pub fn cmd_preset(op: Op) -> Result<()> {
 		Preset::FastJDK => preset_fast(false),
 		Preset::LatestJRE => preset_latest(true),
 		Preset::LatestJDK => preset_latest(false),
-	}.context("Couldn't install preset!")
+	}
 }
 
 fn features(minimal: bool) -> Vec<Feature> {
@@ -44,7 +42,7 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 	features.push(Feature::AllowUnsafe);
 	features.push(Feature::FontAntiAliasing);
 	cmd_manage(Cmd::Manage {
-		software: Software::JVM {
+		software: Some(Software::JVM {
 			op: Op::Install {
 				jvm: JVM::JBR,
 				arch: Arch::SYSTEM,
@@ -55,7 +53,7 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 				dry_run: false,
 				version: MajorVersion::LTS,
 			},
-		}.into(),
+		}),
 	})
 }
 
@@ -63,7 +61,7 @@ fn preset_fast(minimal: bool) -> Result<()> {
 	let mut features: Vec<Feature> = features(minimal);
 	configure_fast(&mut features)?;
 	cmd_manage(Cmd::Manage {
-		software: Software::JVM {
+		software: Some(Software::JVM {
 			op: Op::Install {
 				jvm: JVM::JBR,
 				arch: Arch::SYSTEM,
@@ -74,13 +72,14 @@ fn preset_fast(minimal: bool) -> Result<()> {
 				dry_run: false,
 				version: MajorVersion::LTS,
 			},
-		}.into(),
+		}),
 	})
 }
 
 fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 	features.push(Feature::JEP519);
-	#[cfg(target_os = "linux")] {
+	#[cfg(target_os = "linux")]
+	{
 		use std::env::var;
 		use std::fs::{DirEntry, ReadDir};
 		use std::path::Path;
@@ -121,7 +120,7 @@ fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 
 fn preset_latest(minimal: bool) -> Result<()> {
 	cmd_manage(Cmd::Manage {
-		software: Software::JVM {
+		software: Some(Software::JVM {
 			op: Op::Install {
 				// FIXME: need to implement JVM::Auto so I don't have to default to JavaSE
 				jvm: JVM::JavaSE,
@@ -133,6 +132,6 @@ fn preset_latest(minimal: bool) -> Result<()> {
 				dry_run: false,
 				version: MajorVersion::Latest,
 			},
-		}.into(),
+		}),
 	})
 }

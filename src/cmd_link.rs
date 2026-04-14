@@ -14,6 +14,7 @@ use crate::{wait_and_check_status, wrong_cmd};
 
 #[cfg(any(not(windows), feature = "multi-os"))]
 pub fn cmd_link(command: Cmd) -> Result<()> {
+	#[rustfmt::skip]
 	let Cmd::Link {
 		paths,
 		#[cfg(any(not(windows), feature = "multi-os"))]
@@ -51,6 +52,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	let can_use_update_alternatives: bool =
 		use_update_alternatives && has_program("update-alternatives");
 	if !can_use_update_alternatives && use_update_alternatives {
+		#[rustfmt::skip]
 		return Err(std::io::Error::new(
 			std::io::ErrorKind::NotFound,
 			"Couldn't find update-alternatives on system when explicitly requested!",
@@ -78,7 +80,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 		};
 		progress = min(progress + file.metadata()?.len(), max_len);
 		pb.set_position(progress);
-	};
+	}
 	pb.finish();
 	Ok(())
 }
@@ -94,6 +96,7 @@ pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Resul
 	let source: &Path = source.as_ref();
 	let dest: &Path = dest.as_ref();
 	if dest.exists() {
+		#[rustfmt::skip]
 		if dest.is_file() {
 			remove_file(dest)
 		} else {
@@ -115,13 +118,18 @@ pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Resul
 ///
 /// * UNIX-likes: Delegates to [`std::os::unix::fs::symlink`].
 /// * Windows: Checks if `original` is a directory.  If `true`, delegates to [`std::os::windows::fs::symlink_dir`], else [`std::os::windows::fs::symlink_file`].
-#[allow(rustdoc::broken_intra_doc_links, reason = "Conditionally compiled code.")]
+#[allow(
+	rustdoc::broken_intra_doc_links,
+	reason = "Conditionally compiled code."
+)]
 pub fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Result<()> {
-	#[cfg(unix)] {
+	#[cfg(unix)]
+	{
 		use std::os::unix::fs::symlink;
 		symlink(original, link).context("UNIX symbolic linking failed!")
 	}
-	#[cfg(windows)] {
+	#[cfg(windows)]
+	{
 		use std::os::windows::fs::{symlink_dir, symlink_file};
 		return if original.as_ref().is_dir() {
 			// https://doc.rust-lang.org/std/os/windows/fs/fn.symlink_dir.html

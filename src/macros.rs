@@ -1,6 +1,7 @@
 #[macro_export]
 macro_rules! wrong_cmd {
 	($name:ident) => {
+		#[rustfmt::skip]
 		return anyhow::Result::Err(
 			std::io::Error::new(
 				std::io::ErrorKind::InvalidInput,
@@ -19,7 +20,9 @@ macro_rules! wait_and_check_status {
 		$crate::wait_and_check_status!($child, $name, 1);
 	};
 	($child:ident, $name:literal, $substitute_code:literal) => {{
-		let status: std::process::ExitStatus = $child.wait().context(concat!($name, " never started?"))?;
+		use std::process::ExitStatus;
+
+		let status: ExitStatus = $child.wait().context(concat!($name, " never started?"))?;
 		$crate::check_status!(status, $name, $substitute_code);
 	}};
 }

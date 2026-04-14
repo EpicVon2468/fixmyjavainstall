@@ -20,7 +20,6 @@ pub struct DownloadJVMArgs<'a> {
 }
 
 impl DownloadJVMArgs<'_> {
-
 	#[must_use]
 	pub fn is_win(&self) -> bool {
 		self.os == OS::Windows
@@ -48,6 +47,7 @@ pub fn jvm_download_impl<S: AsRef<str>>(url: S, args: DownloadJVMArgs) -> Result
 	};
 	// Might exist from a failed previous install
 	if archive.exists() {
+		#[rustfmt::skip]
 		if archive.is_dir() {
 			remove_dir_all(archive)
 		} else {

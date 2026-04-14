@@ -18,6 +18,7 @@ use crate::os::OS;
 use crate::{FUJI_DIR, wrong_cmd};
 
 pub fn cmd_install(op: Op) -> Result<()> {
+	#[rustfmt::skip]
 	let Op::Install {
 		jvm,
 		arch,
@@ -39,7 +40,9 @@ pub fn cmd_install(op: Op) -> Result<()> {
 			specific: String::new(),
 			revision: String::new(),
 		}
-	} else if (jvm == JVM::Temurin || jvm == JVM::JavaSE) && let MajorVersion::Number(num) = version {
+	} else if (jvm == JVM::Temurin || jvm == JVM::JavaSE)
+		&& let MajorVersion::Number(num) = version
+	{
 		// Temurin & Java SE both only need major version, except for LTS/Latest where we return the major version from our endpoint
 		JavaVersion {
 			major: num.to_string(),
@@ -69,6 +72,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		JVM::Temurin => download_temurin,
 		JVM::Liberica => download_liberica,
 	};
+	#[rustfmt::skip]
 	download_jvm(DownloadJVMArgs {
 		arch,
 		version: java_version,
@@ -94,11 +98,10 @@ pub fn cmd_install(op: Op) -> Result<()> {
 	println!("Installing {}/bin...", java_home.display());
 	link_impl(java_home, "/usr/bin", false).context("Couldn't install JAVA_HOME!")?;
 	println!("Done.\n");
-	#[cfg(target_os = "linux")] {
-		use crate::jvm::desktop::install_desktop_entries;
 
-		install_desktop_entries().context("Couldn't install .desktop entries!")?;
-	};
+	#[cfg(target_os = "linux")]
+	crate::jvm::desktop::install_desktop_entries().context("Couldn't install .desktop entries!")?;
+
 	Ok(())
 }
 
@@ -124,7 +127,9 @@ fn wrap_executables(
 			continue;
 		};
 		// move JAVA_HOME/bin/java(w)(.exe) to a 'backup' file so that programs which try to run JAVA_HOME/bin/java(w)(.exe) literally can't skip the run script
-		rename(java_executable, java_executable.with_added_extension("bak")).context("Couldn't backup java executable!")?;
+		rename(java_executable, java_executable.with_added_extension("bak"))
+			.context("Couldn't backup java executable!")?;
+		#[rustfmt::skip]
 		let script_file: PathBuf = install_wrapper(
 			generate_wrapper(java_home, features, is_win, suffix).as_str(),
 			java_home,
@@ -136,12 +141,13 @@ fn wrap_executables(
 			"Couldn't symbolically link JAVA_HOME/bin/java to point to JAVA_HOME/bin/fuji_jvm_wrapper!",
 		)?;
 		println!("Done.\n");
-	};
+	}
 	Ok(())
 }
 
 fn clean_java_home(java_home: &Path) -> Result<()> {
 	if java_home.exists() {
+		#[rustfmt::skip]
 		let result: Result<()> = if java_home.is_dir() {
 			remove_dir_all(java_home)
 		} else {

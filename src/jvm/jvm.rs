@@ -136,7 +136,6 @@ pub enum JVM {
 }
 
 impl Display for JVM {
-
 	fn fmt(&self, fmt: &mut Formatter<'_>) -> Result {
 		write!(
 			fmt,

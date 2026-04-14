@@ -19,18 +19,22 @@ pub enum MajorVersion {
 }
 
 impl MajorVersion {
-
+	#[allow(
+		clippy::unnecessary_wraps,
+		reason = "False positive; This function is called in a filter_map call, and must be Option<_>.  Bad clippy!"
+	)]
 	fn to_possible_value(&self) -> Option<PossibleValue> {
-		match *self {
-			Self::Number(_) => PossibleValue::new("[0..4_294_967_295]").help("Some arbitrary numeric version"),
+		Some(match *self {
+			Self::Number(_) => {
+				PossibleValue::new("[0..4_294_967_295]").help("Some arbitrary numeric version")
+			},
 			Self::Latest => PossibleValue::new("latest").help("The latest version"),
 			Self::LTS => PossibleValue::new("lts").help("The latest Long Term Support version"),
-		}.into()
+		})
 	}
 }
 
 impl Display for MajorVersion {
-
 	fn fmt(&self, fmt: &mut Formatter<'_>) -> std::fmt::Result {
 		write!(
 			fmt,
@@ -48,30 +52,35 @@ impl Display for MajorVersion {
 pub struct MajorVersionParser;
 
 impl Default for MajorVersionParser {
-
 	fn default() -> Self {
 		Self::new()
 	}
 }
 
 impl MajorVersionParser {
-
 	#[must_use]
 	pub const fn new() -> Self {
 		Self {}
 	}
 
-	fn possible_values() -> impl Iterator<Item = PossibleValue> {
-		[
+	pub fn possible_values() -> impl Iterator<Item = PossibleValue> {
+		Self::variants()
+			.iter()
+			.filter_map(MajorVersion::to_possible_value)
+	}
+
+	#[inline]
+	#[must_use]
+	pub const fn variants() -> &'static [MajorVersion] {
+		&[
 			MajorVersion::Number(0),
 			MajorVersion::Latest,
 			MajorVersion::LTS,
-		].iter().filter_map(MajorVersion::to_possible_value)
+		]
 	}
 }
 
 impl TypedValueParser for MajorVersionParser {
-
 	type Value = MajorVersion;
 
 	fn parse_ref(
@@ -124,7 +133,6 @@ impl TypedValueParser for MajorVersionParser {
 
 // https://stackoverflow.com/questions/73658377/how-to-have-number-or-string-as-a-cli-argument-in-clap
 impl FromStr for MajorVersion {
-
 	type Err = String;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {

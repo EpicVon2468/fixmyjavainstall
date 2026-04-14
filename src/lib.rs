@@ -24,7 +24,7 @@
 	clippy::infinite_loop,
 	clippy::linkedlist,
 	clippy::pub_use,
-	clippy::wildcard_imports,
+	clippy::wildcard_imports
 )]
 #![allow(clippy::tabs_in_doc_comments, reason = "Why???  Bad clippy!")]
 #![allow(
@@ -189,15 +189,15 @@ pub fn entrypoint(args: Arguments) -> Result<()> {
 		// Ever heard of "Never judge a book by is cover" ?
 		// It's about how you should judge based on the content of something, not what is on the outside
 		// Windows saw that, and said "Okay, but what if we made file extensions matter for execution instead?"
+		#[rustfmt::skip]
 		assert!(cfg!(not(windows)), "https://learn.microsoft.com/en-gb/windows/wsl/install/");
 	};
-	#[cfg(feature = "dev")] {
+	#[cfg(feature = "dev")]
+	unsafe {
 		use std::env::{set_var, var};
 
 		if var("RUST_BACKTRACE").is_err() {
-			unsafe {
-				set_var("RUST_BACKTRACE", "1");
-			};
+			set_var("RUST_BACKTRACE", "1");
 		};
 	};
 	args.command.map_or_else(

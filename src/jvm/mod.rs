@@ -96,15 +96,13 @@ pub enum Op {
 }
 
 pub fn manage_jvm(software: Software) -> Result<()> {
-	let Software::JVM {
-		op,
-	}: Software = software else {
+	let Software::JVM { op }: Software = software else {
 		wrong_cmd!(manage_jvm);
 	};
 	match op {
-		Op::Install { .. } => cmd_install::cmd_install(op).context("cmd_install"),
+		Op::Install { .. } => cmd_install::cmd_install(op).context("Couldn't install JVM!"),
 		Op::Remove => todo!(),
-		Op::Preset { .. } => cmd_preset::cmd_preset(op).context("cmd_preset"),
+		Op::Preset { .. } => cmd_preset::cmd_preset(op).context("Couldn't install JVM preset!"),
 	}
 }
 

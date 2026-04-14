@@ -123,7 +123,10 @@ pub fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> 
 	let pb: ProgressBar = multi.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
 	let mut archive: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
-	#[expect(clippy::literal_string_with_formatting_args, reason = "False positive.")]
+	#[expect(
+		clippy::literal_string_with_formatting_args,
+		reason = "False positive."
+	)]
 	let extract_pb: ProgressBar = multi.add(progress_bar_template(
 		0,
 		"[{elapsed_precise}] {spinner:.cyan} Writing {msg}...",
@@ -133,6 +136,7 @@ pub fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> 
 		.entries()
 		.context("Couldn't iterate through JVM archive!")?;
 	for entry in entries {
+		#[rustfmt::skip]
 		let mut entry: Entry<GzDecoder<File>> = entry.context("Couldn't get entry in JVM archive!")?;
 		extract_jvm_entry(
 			dest,
@@ -143,9 +147,11 @@ pub fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> 
 				.as_path(),
 			is_mac,
 			|resolved: &Path| {
+				#[rustfmt::skip]
 				extract_pb.clone().with_message(resolved.display().to_string());
 				entry.unpack(resolved)?;
-				#[cfg(unix)] {
+				#[cfg(unix)]
+				{
 					use tar::Header;
 
 					let header: &Header = entry.header();
@@ -156,14 +162,15 @@ pub fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> 
 		)?;
 		progress = min(progress + entry.size(), max_len);
 		pb.set_position(progress);
-	};
+	}
 	extract_pb.finish_and_clear();
 	pb.finish();
 	Ok(())
 }
 
 pub fn extract_jvm_zip(dest: &Path, input: File, is_mac: bool) -> Result<()> {
-	let mut archive: ZipArchive<File> = ZipArchive::new(input).context("Couldn't open JVM archive (ZIP)!")?;
+	let mut archive: ZipArchive<File> =
+		ZipArchive::new(input).context("Couldn't open JVM archive (ZIP)!")?;
 	let multi: MultiProgress = MultiProgress::new();
 	#[expect(
 		clippy::cast_possible_truncation,
@@ -200,19 +207,21 @@ pub fn extract_jvm_zip(dest: &Path, input: File, is_mac: bool) -> Result<()> {
 					extract_pb.set_length(size);
 					extract_pb.reset();
 					// cloned progress bars still use the same internal state, so this call is only to appease the compiler, it serves no other purpose
+					#[rustfmt::skip]
 					extract_pb.clone().with_message(resolved.display().to_string());
 					let out: File = File::create(resolved).context("File::create (zip)")?;
 					copy(&mut entry, &mut extract_pb.wrap_write(out)).context("copy (zip)")?;
 				};
-				#[cfg(unix)] {
-					update_perms(resolved, entry.unix_mode(), entry.is_dir())?;
-				};
+
+				#[cfg(unix)]
+				update_perms(resolved, entry.unix_mode(), entry.is_dir())?;
+
 				Ok(())
 			},
 		)?;
 		progress = min(progress + size, max_len);
 		pb.set_position(progress);
-	};
+	}
 	extract_pb.finish_and_clear();
 	pb.finish();
 	Ok(())
@@ -224,6 +233,7 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 	use std::os::unix::fs::PermissionsExt as _;
 
 	// check if executable (need to figure out how to rewrite this so directory isn't a separate branch)
+	#[rustfmt::skip]
 	let new_mode: u32 = if let Some(old_mode) = mode && (old_mode & 0o111) != 0 {
 		// rwxr-xr-x
 		0o755
@@ -238,13 +248,18 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 		.with_context(|| io_failure(path, "set permissions for"))
 }
 
+#[inline]
+#[rustfmt::skip]
 pub fn extract_jvm_entry<F>(dest: &Path, path: &Path, is_mac: bool, mut unpack: F) -> Result<()>
 where F: FnMut(&Path) -> Result<()> {
 	let mut components: Components = path.components();
 	// https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
 	// --strip-components 1
 	components.next();
-	assert!(!components.clone().any(|comp: Component| comp == Component::ParentDir), "Component::ParentDir found!");
+	assert!(
+		!components.clone().any(|comp: Component| comp == Component::ParentDir),
+		"Component::ParentDir found!"
+	);
 	// macOS .tar.gz is laid out differently.  it's a '.app'...
 	if is_mac {
 		// skip "Contents"
@@ -276,7 +291,9 @@ pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 		.context("Couldn't parse integer from Content-Length header!")?;
 
 	let pb: ProgressBar = progress_bar(len);
-	let mut dest: File = File::create(dest).context("Couldn't open destination file for download!")?;
+	let mut dest: File =
+		File::create(dest).context("Couldn't open destination file for download!")?;
+	#[rustfmt::skip]
 	copy(
 		&mut pb.wrap_read(&mut response.into_body().into_reader()),
 		&mut dest,
@@ -287,6 +304,7 @@ pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 	Ok(())
 }
 
+#[rustfmt::skip]
 pub const TEMPLATE: &str = "[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})";
 
 #[must_use]
@@ -299,7 +317,7 @@ pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
 				write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap();
 			})
 			.progress_chars("=>-")
-			.tick_chars("⠙⠚⠓⠋ ")
+			.tick_chars("⠙⠚⠓⠋ "),
 	);
 	// pb.set_tab_width(4);
 	pb

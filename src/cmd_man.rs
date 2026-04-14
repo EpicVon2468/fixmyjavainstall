@@ -16,9 +16,7 @@ use crate::cli::{Arguments, Cmd};
 use crate::wrong_cmd;
 
 pub fn cmd_man(cmd: Cmd) -> Result<()> {
-	let Cmd::Manual {
-		man_dir,
-	}: Cmd = cmd else {
+	let Cmd::Manual { man_dir }: Cmd = cmd else {
 		wrong_cmd!(cmd_man);
 	};
 	let dir: &Path = &man_dir.join("man8");
@@ -39,7 +37,7 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 			.filter(|child: &&Command| !child.is_hide_set());
 		for child in children {
 			generate(child, out_dir)?;
-		};
+		}
 
 		let man: Man = Man::new(parent.clone()).section("8").date("2026-04-07");
 
@@ -61,6 +59,7 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 	generate(&root, out_dir.as_ref())
 }
 
+#[rustfmt::skip]
 fn render0(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) -> Result<()> {
 	man.render_title(&mut output).context("title")?;
 	man.render_name_section(&mut output).context("name")?;
@@ -76,8 +75,12 @@ fn render0(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) -> Result
 ///
 /// TODO: PR `clap_mangen` with minimal fix?
 fn render_subcommands(parent: &Command, mut output: &mut GzEncoder<File>) -> Result<()> {
-	if parent.get_subcommands().any(|child: &Command| !child.is_hide_set()) {
+	if parent
+		.get_subcommands()
+		.any(|child: &Command| !child.is_hide_set())
+	{
 		let mut roff: Roff = Roff::default();
+		#[rustfmt::skip]
 		roff.control(
 			"SH",
 			[parent.get_subcommand_help_heading().unwrap_or("SUBCOMMANDS")],
@@ -86,7 +89,8 @@ fn render_subcommands(parent: &Command, mut output: &mut GzEncoder<File>) -> Res
 			.get_subcommands()
 			.filter(|child: &&Command| !child.is_hide_set())
 			.collect();
-		sorted_subcommands.sort_by_key(|child: &&Command| (child.get_display_order(), child.get_name()));
+		sorted_subcommands
+			.sort_by_key(|child: &&Command| (child.get_display_order(), child.get_name()));
 		for child in sorted_subcommands {
 			roff.control("TP", []);
 			// the built-in implementation of this part is broken
@@ -95,7 +99,9 @@ fn render_subcommands(parent: &Command, mut output: &mut GzEncoder<File>) -> Res
 				|| {
 					format!(
 						"{}-{}",
-						parent.get_display_name().unwrap_or_else(|| parent.get_name()),
+						parent
+							.get_display_name()
+							.unwrap_or_else(|| parent.get_name()),
 						child.get_name(),
 					)
 				},
@@ -105,9 +111,9 @@ fn render_subcommands(parent: &Command, mut output: &mut GzEncoder<File>) -> Res
 			if let Some(about) = child.get_about().or_else(|| child.get_long_about()) {
 				for line in about.to_string().lines() {
 					roff.text([roman(line)]);
-				};
+				}
 			};
-		};
+		}
 		roff.to_writer(&mut output).context("subcommands")?;
 	};
 	Ok(())

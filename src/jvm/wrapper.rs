@@ -190,7 +190,8 @@ pub fn install_wrapper(
 		.write_all(script.as_bytes())
 		.with_context(|| io_failure(&script_file, "write"))?;
 	// rwxr-xr-x
-	#[cfg(unix)] {
+	#[cfg(unix)]
+	{
 		use std::os::unix::fs::PermissionsExt as _;
 
 		result

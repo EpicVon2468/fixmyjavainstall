@@ -25,7 +25,6 @@ pub enum OS {
 }
 
 impl OS {
-
 	/// The [`OS`] of the host – Linux.
 	#[cfg(target_os = "linux")]
 	pub const SYSTEM: Self = Self::Linux;
@@ -45,14 +44,12 @@ impl OS {
 }
 
 impl From<OS> for OsStr {
-
 	fn from(value: OS) -> Self {
 		value.to_string().into()
 	}
 }
 
 impl Display for OS {
-
 	fn fmt(&self, fmt: &mut Formatter<'_>) -> Result {
 		write!(
 			fmt,
