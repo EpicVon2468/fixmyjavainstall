@@ -45,7 +45,7 @@ impl OS {
 
 fuji_value_enum!(
 	OS,
-	match {
+	match *self {
 		Self::Linux => "linux",
 		Self::OSX => "osx",
 		Self::Windows => "windows",

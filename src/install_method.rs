@@ -33,7 +33,7 @@ impl InstallMethod {
 
 fuji_value_enum!(
 	InstallMethod,
-	match {
+	match *self {
 		Self::Path => "path",
 		Self::Symlink => "symlink",
 		Self::UpdateAlternatives => "update-alternatives",

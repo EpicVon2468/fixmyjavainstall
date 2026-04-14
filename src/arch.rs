@@ -42,7 +42,7 @@ impl Arch {
 
 fuji_value_enum!(
 	Arch,
-	match {
+	match *self {
 		Self::X64 => "x64",
 		Self::Aarch64 => "aarch64",
 		Self::Riscv64 => "riscv64",
