@@ -25,9 +25,8 @@ impl MajorVersion {
 	)]
 	fn to_possible_value(&self) -> Option<PossibleValue> {
 		Some(match *self {
-			Self::Number(_) => {
-				PossibleValue::new("[0..4_294_967_295]").help("Some arbitrary numeric version")
-			},
+			Self::Number(_) =>
+				PossibleValue::new("[0..4_294_967_295]").help("Some arbitrary numeric version"),
 			Self::Latest => PossibleValue::new("latest").help("The latest version"),
 			Self::LTS => PossibleValue::new("lts").help("The latest Long Term Support version"),
 		})

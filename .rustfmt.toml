@@ -1,10 +1,9 @@
 hard_tabs = true
 newline_style = "Unix"
 # Do you have any idea how few of these features work?
-#unstable_features = true
-#match_arm_blocks = false
+unstable_features = true
+match_arm_blocks = false
 match_block_trailing_comma = true
 single_line_let_else_max_width = 0
-#struct_lit_single_line = false
-#trailing_semicolon = true
-#brace_style = "PreferSameLine"
+trailing_semicolon = true
+brace_style = "PreferSameLine"
