@@ -250,6 +250,7 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 
 #[inline]
 #[must_use]
+#[cfg(unix)]
 pub const fn is_exe(mode: u32) -> bool {
 	(mode & 0o111) != 0
 }
@@ -330,6 +331,7 @@ pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
 }
 
 // https://github.com/console-rs/indicatif/blob/main/examples/download.rs
+#[inline]
 #[must_use]
 pub fn progress_bar(len: u64) -> ProgressBar {
 	progress_bar_template(len, TEMPLATE)

@@ -3,12 +3,12 @@
 //! The static constant [`OS::SYSTEM`] may provide the host OS on some targets.
 //!
 //!	The user-facing `multi-os` feature allows this enumeration to be used to configure installations.
-use std::fmt::{Display, Formatter, Result};
-
 use clap::ValueEnum;
-use clap::builder::OsStr;
+
+use crate::fuji_value_enum;
 
 /// An enumeration of operating systems
+#[non_exhaustive]
 #[derive(ValueEnum, Clone, PartialEq, Eq)]
 pub enum OS {
 	/// Anything running the Linux kernel – <https://kernel.org/>
@@ -40,31 +40,14 @@ impl OS {
 		not(target_os = "macos"),
 		not(target_os = "windows"),
 	))]
-	pub const SYSTEM: Self = panic!("Unsupported host operating system!");
+	pub const SYSTEM: Self = panic!("Unsupported host!");
 }
 
-impl Default for OS {
-	fn default() -> Self {
-		Self::SYSTEM
+fuji_value_enum!(
+	OS,
+	match {
+		Self::Linux => "linux",
+		Self::OSX => "osx",
+		Self::Windows => "windows",
 	}
-}
-
-impl From<OS> for OsStr {
-	fn from(value: OS) -> Self {
-		value.to_string().into()
-	}
-}
-
-impl Display for OS {
-	fn fmt(&self, fmt: &mut Formatter<'_>) -> Result {
-		write!(
-			fmt,
-			"{}",
-			match *self {
-				Self::Linux => "linux",
-				Self::OSX => "osx",
-				Self::Windows => "windows",
-			}
-		)
-	}
-}
+);

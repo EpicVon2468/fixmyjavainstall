@@ -44,3 +44,37 @@ macro_rules! check_status {
 		};
 	}};
 }
+
+#[macro_export]
+macro_rules! fuji_value_enum {
+	($ty:ident, match {$($variant:pat => $string:literal),*,}) => {
+		#[automatically_derived]
+		impl Default for $ty {
+			fn default() -> Self {
+				Self::SYSTEM
+			}
+		}
+
+		#[automatically_derived]
+		impl From<$ty> for clap::builder::OsStr {
+			fn from(value: $ty) -> Self {
+				value.to_string().into()
+			}
+		}
+
+		#[automatically_derived]
+		impl std::fmt::Display for $ty {
+			#[allow(unreachable_code, unreachable_patterns)]
+			fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+				write!(
+					fmt,
+					"{}",
+					match *self {
+						$($variant => $string,)*
+						_ => panic!("Not implemented!"),
+					}
+				)
+			}
+		}
+	};
+}

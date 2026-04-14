@@ -52,6 +52,7 @@ pub mod cmd_link;
 pub mod cmd_man;
 pub mod cmd_manage;
 pub mod commands;
+pub mod install_method;
 pub mod jvm;
 pub mod kotlin;
 pub mod macros;

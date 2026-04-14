@@ -1,6 +1,6 @@
 use std::cmp::min;
 use std::ffi::OsStr;
-use std::fs::{ReadDir, remove_dir_all, remove_file};
+use std::fs::{Metadata, ReadDir, remove_dir_all, remove_file};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command};
 
@@ -69,6 +69,18 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 		if file.is_dir() {
 			continue;
 		};
+		let metadata: Metadata = file.metadata()?;
+		#[cfg(unix)]
+		{
+			use std::os::unix::fs::MetadataExt as _;
+
+			use crate::commands::is_exe;
+
+			// we don't need to link any non-executable files
+			if !is_exe(metadata.mode()) {
+				continue;
+			};
+		};
 		let filename: &OsStr = file
 			.file_name()
 			.context("Couldn't get filename for directory entry!")?;
@@ -78,7 +90,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 		} else {
 			symlink_link(file, dest).context("Couldn't link with symlink!")?;
 		};
-		progress = min(progress + file.metadata()?.len(), max_len);
+		progress = min(progress + metadata.len(), max_len);
 		pb.set_position(progress);
 	}
 	pb.finish();
@@ -101,7 +113,7 @@ pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Resul
 			remove_file(dest)
 		} else {
 			remove_dir_all(dest)
-		}.with_context(|| format!("Couldn't remove existing path '{}'!", dest.display()))?;
+		}.with_context(|| io_failure(dest, "remove existing"))?;
 	};
 	symlink_impl(source, dest).with_context(|| {
 		format!(
