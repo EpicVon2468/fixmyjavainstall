@@ -1,4 +1,4 @@
-use std::fs::{create_dir_all, remove_dir_all, File};
+use std::fs::{File, create_dir_all, remove_dir_all};
 use std::io::Write as _;
 use std::iter::Filter;
 use std::path::Path;
@@ -6,11 +6,11 @@ use std::path::Path;
 use anyhow::{Context as _, Result};
 
 use clap::{Arg, Command, CommandFactory as _};
-use clap_mangen::roff::{roman, Roff};
 use clap_mangen::Man;
+use clap_mangen::roff::{Roff, roman};
 
-use flate2::read::GzEncoder;
 use flate2::Compression;
+use flate2::read::GzEncoder;
 
 use crate::cli::{Arguments, Cmd};
 use crate::wrong_cmd;
@@ -36,7 +36,7 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 	fn generate(parent: &Command, out_dir: &Path) -> Result<()> {
 		let children: Filter<_, _> = parent
 			.get_subcommands()
-			.filter(|cmd: &&Command| !cmd.is_hide_set());
+			.filter(|child: &&Command| !child.is_hide_set());
 		for child in children {
 			generate(child, out_dir)?;
 		};
@@ -56,9 +56,9 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 		Ok(())
 	}
 
-	let mut cmd: Command = cmd.disable_help_subcommand(true);
-	cmd.build();
-	generate(&cmd, out_dir.as_ref())
+	let mut root: Command = cmd.disable_help_subcommand(true);
+	root.build();
+	generate(&root, out_dir.as_ref())
 }
 
 fn render0(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) -> Result<()> {
@@ -75,32 +75,34 @@ fn render0(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) -> Result
 /// Slight modification of [`Man::render_subcommands_section`] to fix display names
 ///
 /// TODO: PR `clap_mangen` with minimal fix?
-fn render_subcommands(cmd: &Command, mut output: &mut GzEncoder<File>) -> Result<()> {
-	if cmd.get_subcommands().any(|cm: &Command| !cm.is_hide_set()) {
+fn render_subcommands(parent: &Command, mut output: &mut GzEncoder<File>) -> Result<()> {
+	if parent.get_subcommands().any(|child: &Command| !child.is_hide_set()) {
 		let mut roff: Roff = Roff::default();
 		roff.control(
 			"SH",
-			[cmd.get_subcommand_help_heading().unwrap_or("SUBCOMMANDS")],
+			[parent.get_subcommand_help_heading().unwrap_or("SUBCOMMANDS")],
 		);
-		let mut sorted_subcommands: Vec<&Command> =
-			cmd.get_subcommands().filter(|cm: &&Command| !cm.is_hide_set()).collect();
-		sorted_subcommands.sort_by_key(|cm: &&Command| (cm.get_display_order(), cm.get_name()));
-		for sub in sorted_subcommands {
+		let mut sorted_subcommands: Vec<&Command> = parent
+			.get_subcommands()
+			.filter(|child: &&Command| !child.is_hide_set())
+			.collect();
+		sorted_subcommands.sort_by_key(|child: &&Command| (child.get_display_order(), child.get_name()));
+		for child in sorted_subcommands {
 			roff.control("TP", []);
 			// the built-in implementation of this part is broken
 			// fuji-manage will try to resolve fuji-jvm as though it were still called fuji-manage-jvm
-			let name: String = sub.get_display_name().map_or_else(
+			let name: String = child.get_display_name().map_or_else(
 				|| {
 					format!(
 						"{}-{}",
-						cmd.get_display_name().unwrap_or_else(|| cmd.get_name()),
-						sub.get_name(),
+						parent.get_display_name().unwrap_or_else(|| parent.get_name()),
+						child.get_name(),
 					)
 				},
 				str::to_string,
 			) + "(8)";
 			roff.text([roman(name)]);
-			if let Some(about) = sub.get_about().or_else(|| sub.get_long_about()) {
+			if let Some(about) = child.get_about().or_else(|| child.get_long_about()) {
 				for line in about.to_string().lines() {
 					roff.text([roman(line)]);
 				};

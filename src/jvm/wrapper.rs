@@ -1,6 +1,6 @@
+use std::fmt::Write as _;
 use std::fs::{File, OpenOptions, Permissions};
 use std::io::Write as _;
-use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
 use anyhow::{Context as _, Result};

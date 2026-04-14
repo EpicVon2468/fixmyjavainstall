@@ -22,12 +22,9 @@ impl MajorVersion {
 
 	fn to_possible_value(&self) -> Option<PossibleValue> {
 		match *self {
-			Self::Number(_) => PossibleValue::new("[0..4_294_967_295]")
-				.help("Some arbitrary numeric version"),
-			Self::Latest => PossibleValue::new("latest")
-				.help("The latest version"),
-			Self::LTS => PossibleValue::new("lts")
-				.help("The latest Long Term Support version"),
+			Self::Number(_) => PossibleValue::new("[0..4_294_967_295]").help("Some arbitrary numeric version"),
+			Self::Latest => PossibleValue::new("latest").help("The latest version"),
+			Self::LTS => PossibleValue::new("lts").help("The latest Long Term Support version"),
 		}.into()
 	}
 }
@@ -93,9 +90,8 @@ impl TypedValueParser for MajorVersionParser {
 		value: OsString,
 	) -> Result<Self::Value, Error> {
 		let result: Result<MajorVersion, String> = value.to_str().unwrap().to_lowercase().parse();
-		match result {
-			Ok(version) => Ok(version),
-			Err(invalid_value) => {
+		result.map_or_else(
+			|invalid_value: String| {
 				let mut error: Error = Error::new(ErrorKind::InvalidValue).with_cmd(cmd);
 				if let Some(argument) = arg {
 					error.insert(
@@ -116,8 +112,9 @@ impl TypedValueParser for MajorVersionParser {
 					),
 				);
 				Err(error)
-			}
-		}
+			},
+			|version: MajorVersion| Ok(version),
+		)
 	}
 
 	fn possible_values(&self) -> Option<Box<dyn Iterator<Item = PossibleValue> + '_>> {

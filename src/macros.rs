@@ -18,10 +18,10 @@ macro_rules! wait_and_check_status {
 	($child:ident, $name:literal) => {
 		$crate::wait_and_check_status!($child, $name, 1);
 	};
-	($child:ident, $name:literal, $substitute_code:literal) => {
-		let exit_status: std::process::ExitStatus = $child.wait().context(concat!($name, " never started?"))?;
-		$crate::check_status!(exit_status, $name, $substitute_code);
-	};
+	($child:ident, $name:literal, $substitute_code:literal) => {{
+		let status: std::process::ExitStatus = $child.wait().context(concat!($name, " never started?"))?;
+		$crate::check_status!(status, $name, $substitute_code);
+	}};
 }
 
 #[macro_export]
@@ -32,12 +32,12 @@ macro_rules! check_status {
 	($status:ident, $name:literal) => {
 		$crate::check_status!($status, $name, 1);
 	};
-	($status:ident, $name:literal, $substitute_code:literal) => {
+	($status:ident, $name:literal, $substitute_code:literal) => {{
 		if (!$status.success()) {
 			return anyhow::Result::Err(anyhow::anyhow!(format!(
 				concat!($name, " failed with exit code: {}"),
 				$status.code().unwrap_or($substitute_code)
 			)));
 		};
-	};
+	}};
 }
