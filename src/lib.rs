@@ -75,6 +75,16 @@ use crate::cmd_manage::cmd_manage;
 ///
 /// * UNIX-likes: `/opt/fuji`
 /// * Windows: `\Program Files\fuji`
+///
+/// # Examples
+///
+/// ```
+/// use std::path::Path;
+///
+/// use fuji::FUJI_DIR;
+///
+/// let resolved = Path::new(FUJI_DIR).join("foo").join("bar");
+/// ```
 pub const FUJI_DIR: &str = if cfg!(windows) {
 	"\\Program Files\\fuji"
 } else {

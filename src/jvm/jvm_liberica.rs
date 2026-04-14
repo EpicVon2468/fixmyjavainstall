@@ -25,7 +25,7 @@ pub fn get_liberica_download(
 	let values: Vec<LibericaReleaseInfo> = ureq::get(uri)
 		.call()
 		.context("No Liberica JVM was available for the provided request!")?
-		.body_mut()
+		.into_body()
 		.read_json()
 		.context("Couldn't read Liberica JVM version information!")?;
 	let the_one: &LibericaReleaseInfo = values

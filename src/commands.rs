@@ -142,7 +142,7 @@ pub fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> 
 				.to_path_buf()
 				.as_path(),
 			is_mac,
-			&mut |resolved: &Path| {
+			|resolved: &Path| {
 				extract_pb.clone().with_message(resolved.display().to_string());
 				entry.unpack(resolved)?;
 				#[cfg(unix)] {
@@ -193,7 +193,7 @@ pub fn extract_jvm_zip(dest: &Path, input: File, is_mac: bool) -> Result<()> {
 				.context("Couldn't get path for entry in JVM archive (ZIP)!")?
 				.as_path(),
 			is_mac,
-			&mut |resolved: &Path| {
+			|resolved: &Path| {
 				if entry.is_dir() {
 					create_dir_all(resolved).context("create_dir_all (zip)")?;
 				} else {
@@ -238,7 +238,7 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 		.with_context(|| io_failure(path, "set permissions for"))
 }
 
-pub fn extract_jvm_entry<F>(dest: &Path, path: &Path, is_mac: bool, unpack: &mut F) -> Result<()>
+pub fn extract_jvm_entry<F>(dest: &Path, path: &Path, is_mac: bool, mut unpack: F) -> Result<()>
 where F: FnMut(&Path) -> Result<()> {
 	let mut components: Components = path.components();
 	// https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory

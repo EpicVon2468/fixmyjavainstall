@@ -53,7 +53,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		ureq::get(uri)
 			.call()
 			.context("No JVM was available for the provided request!")?
-			.body_mut()
+			.into_body()
 			.read_json()
 			.context("Couldn't read JVM version information!")?
 	};
