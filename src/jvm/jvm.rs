@@ -1,4 +1,4 @@
-//! An enumeration of JVM builds/vendors
+//! An enumeration of JVM builds/vendors.
 use std::fmt::{Display, Formatter, Result};
 
 use clap::ValueEnum;
@@ -15,12 +15,13 @@ macro_rules! clap_doc {
 	};
 }
 
-/// An enumeration of JVM builds/vendors
-#[derive(ValueEnum, Clone, PartialEq, Eq)]
+/// An enumeration of JVM builds/vendors.
+#[non_exhaustive]
+#[derive(ValueEnum, Clone, PartialEq, Eq, Default)]
 pub enum JVM {
-	/// Automagically pick the best JVM based on the requested version and features
+	/// Automagically pick the best JVM based on the requested version and features.
 	Auto,
-	/// JetBrains Runtime by JetBrains – <https://github.com/JetBrains/JetBrainsRuntime/>
+	/// JetBrains Runtime by JetBrains – <https://github.com/JetBrains/JetBrainsRuntime/>.
 	///
 	/// <details><summary>Supported architectures:</summary>
 	///
@@ -43,9 +44,10 @@ pub enum JVM {
 	/// * `21`
 	/// * `17`
 	/// </details>
+	#[default]
 	#[clap(help = clap_doc!(JBR), alias = "jetbrains-runtime")]
 	JBR,
-	/// Java Platform, Standard Edition by Oracle – <https://www.oracle.com/java/>
+	/// Java Platform, Standard Edition by Oracle – <https://www.oracle.com/java/>.
 	///
 	/// <details><summary>Supported architectures:</summary>
 	///
@@ -65,7 +67,7 @@ pub enum JVM {
 	/// </details>
 	#[clap(help = clap_doc!(JavaSE))]
 	JavaSE,
-	/// Temurin (previously AdoptOpenJDK) by Eclipse/Adoptium – <https://adoptium.net/>
+	/// Temurin (previously AdoptOpenJDK) by Eclipse/Adoptium – <https://adoptium.net/>.
 	///
 	/// <details><summary>Supported architectures:</summary>
 	///
@@ -97,7 +99,7 @@ pub enum JVM {
 	/// </details>
 	#[clap(help = clap_doc!(Temurin), alias = "adoptium")]
 	Temurin,
-	/// Liberica by BellSoft – <https://bell-sw.com/libericajdk/>
+	/// Liberica by BellSoft – <https://bell-sw.com/libericajdk/>.
 	///
 	/// <details><summary>Supported architectures:</summary>
 	///

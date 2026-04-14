@@ -8,13 +8,14 @@ use clap::error::{ContextKind, ContextValue, ErrorKind};
 use clap::{Arg, Command, Error};
 
 /// The major version of a JVM
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq, Default)]
 pub enum MajorVersion {
 	/// Some arbitrary numeric version
 	Number(u32),
 	/// The latest version
 	Latest,
 	/// The latest Long Term Support version
+	#[default]
 	LTS,
 }
 

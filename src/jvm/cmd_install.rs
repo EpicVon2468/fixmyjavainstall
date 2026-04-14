@@ -65,12 +65,14 @@ pub fn cmd_install(op: Op) -> Result<()> {
 	if !dry_run {
 		clean_java_home(java_home).context("Couldn't clean JAVA_HOME!")?;
 	};
+	#[allow(unreachable_patterns)]
 	let download_jvm: DownloadJVMFn = match jvm {
 		JVM::Auto => todo!(),
 		JVM::JBR => download_jbr,
 		JVM::JavaSE => download_java_se,
 		JVM::Temurin => download_temurin,
 		JVM::Liberica => download_liberica,
+		_ => todo!("Not implemented!")
 	};
 	#[rustfmt::skip]
 	download_jvm(DownloadJVMArgs {

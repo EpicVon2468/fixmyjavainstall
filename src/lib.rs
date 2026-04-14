@@ -29,6 +29,8 @@
 	clippy::equatable_if_let,
 	clippy::enum_glob_use
 )]
+// FIXME: this isn't working
+#![deny(clippy::undocumented_unsafe_blocks, reason = "Unsafe bad.  Kill it with fire!")]
 #![allow(clippy::tabs_in_doc_comments, reason = "Why???  Bad clippy!")]
 #![allow(
 	clippy::unnecessary_semicolon,
@@ -197,6 +199,11 @@ pub fn entrypoint(args: FujiArgs) -> Result<()> {
 		assert!(cfg!(not(windows)), "https://learn.microsoft.com/en-gb/windows/wsl/install/");
 	};
 	#[cfg(feature = "dev")]
+	// SAFETY:
+	// Mutation of environ is technically thread unsafe, HOWEVER:
+	// - I'm not doing multi-threading.
+	// - I want a stack trace available in development immediately.
+	// - This code can't exactly fail.
 	unsafe {
 		use std::env::{set_var, var};
 
