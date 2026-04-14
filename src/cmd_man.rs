@@ -12,11 +12,11 @@ use clap_mangen::roff::{Roff, roman};
 use flate2::Compression;
 use flate2::read::GzEncoder;
 
-use crate::cli::{Arguments, Cmd};
+use crate::cli::{FujiArgs, FujiCmd};
 use crate::wrong_cmd;
 
-pub fn cmd_man(cmd: Cmd) -> Result<()> {
-	let Cmd::Manual { man_dir }: Cmd = cmd else {
+pub fn cmd_man(cmd: FujiCmd) -> Result<()> {
+	let FujiCmd::Manual { man_dir }: FujiCmd = cmd else {
 		wrong_cmd!(cmd_man);
 	};
 	let dir: &Path = &man_dir.join("man8");
@@ -26,7 +26,7 @@ pub fn cmd_man(cmd: Cmd) -> Result<()> {
 	if !dir.exists() {
 		create_dir_all(dir).context("create_dir_all")?;
 	};
-	dump_manual(Arguments::command(), dir)
+	dump_manual(FujiArgs::command(), dir)
 }
 
 /// Based off [`clap_mangen::generate_to`]

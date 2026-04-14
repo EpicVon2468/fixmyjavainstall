@@ -66,7 +66,7 @@ use anyhow::Result;
 
 use clap::Parser as _;
 
-use crate::cli::{Arguments, Cmd};
+use crate::cli::{FujiArgs, FujiCmd};
 #[cfg(any(not(windows), feature = "multi-os"))]
 use crate::cmd_link::cmd_link;
 use crate::cmd_man::cmd_man;
@@ -137,14 +137,14 @@ pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 	let mut args: Vec<OsString> = vec!["fuji".into()];
 	args.extend_from_slice(extras);
 	args.extend_from_slice(&args_os().skip(1).collect::<Vec<OsString>>());
-	entrypoint(Arguments::parse_from(args))
+	entrypoint(FujiArgs::parse_from(args))
 }
 
-/// A `main`-like function, which takes in [`Arguments`] and executes the operation(s) specified in them.
+/// A `main`-like function, which takes in [`FujiArgs`] and executes the operation(s) specified in them.
 ///
 /// # Arguments
 ///
-/// * `args`: The [`Arguments`] to execute using.
+/// * `args`: The [`FujiArgs`] to execute using.
 ///
 /// # Errors
 ///
@@ -152,7 +152,7 @@ pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 ///
 /// Error value(s):
 ///
-/// * If [`Arguments::command`][`field@Arguments::command`] is [`Some`]:
+/// * If [`FujiArgs::command`][`field@FujiArgs::command`] is [`Some`]:
 /// 	* Propagated up from the following functions (if they are called):
 /// 		* [`cmd_link`][`cmd_link()`]
 ///			* [`cmd_manage`][`cmd_manage()`]
@@ -168,8 +168,8 @@ pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 ///
 /// Return value(s):
 ///
-/// * If [`Arguments::command`][`field@Arguments::command`] is [`None`]: [`Ok`]
-/// * If [`Arguments::command`][`field@Arguments::command`] is [`Some`]:
+/// * If [`FujiArgs::command`][`field@FujiArgs::command`] is [`None`]: [`Ok`]
+/// * If [`FujiArgs::command`][`field@FujiArgs::command`] is [`Some`]:
 /// 	* Propagated up from the following functions (if they are called):
 /// 		* [`cmd_link`][`cmd_link()`]
 ///			* [`cmd_manage`][`cmd_manage()`]
@@ -180,12 +180,12 @@ pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 /// ```
 /// use clap::Parser;
 ///
-/// use fuji::cli::Arguments;
+/// use fuji::cli::FujiArgs;
 /// use fuji::entrypoint;
 ///
-/// assert_eq!(entrypoint(Arguments::parse()), Ok(()));
+/// assert_eq!(entrypoint(FujiArgs::parse()), Ok(()));
 /// ```
-pub fn entrypoint(args: Arguments) -> Result<()> {
+pub fn entrypoint(args: FujiArgs) -> Result<()> {
 	// dbg!(env!("CARGO_PKG_NAME"));
 	// dbg!(env!("CARGO_PKG_VERSION"));
 	const {
@@ -205,11 +205,11 @@ pub fn entrypoint(args: Arguments) -> Result<()> {
 	};
 	args.command.map_or_else(
 		|| Ok(()),
-		|command: Cmd| match command {
+		|command: FujiCmd| match command {
 			#[cfg(any(not(windows), feature = "multi-os"))]
-			Cmd::Link { .. } => cmd_link(command),
-			Cmd::Manage { .. } => cmd_manage(command),
-			Cmd::Manual { .. } => cmd_man(command),
+			FujiCmd::Link { .. } => cmd_link(command),
+			FujiCmd::Manage { .. } => cmd_manage(command),
+			FujiCmd::Manual { .. } => cmd_man(command),
 		},
 	)
 }

@@ -8,20 +8,20 @@ use anyhow::{Context as _, Result};
 
 use indicatif::ProgressBar;
 
-use crate::cli::Cmd;
+use crate::cli::FujiCmd;
 use crate::commands::{has_program, io_failure, progress_bar};
 use crate::{wait_and_check_status, wrong_cmd};
 
 #[cfg(any(not(windows), feature = "multi-os"))]
-pub fn cmd_link(command: Cmd) -> Result<()> {
+pub fn cmd_link(command: FujiCmd) -> Result<()> {
 	#[rustfmt::skip]
-	let Cmd::Link {
+	let FujiCmd::Link {
 		paths,
 		#[cfg(any(not(windows), feature = "multi-os"))]
 		link_dir,
 		#[cfg(any(target_os = "linux", feature = "multi-os"))]
 		use_update_alternatives,
-	}: Cmd = command else {
+	}: FujiCmd = command else {
 		wrong_cmd!(cmd_link);
 	};
 	#[cfg(all(windows, not(feature = "multi-os")))]

@@ -1,7 +1,7 @@
 use anyhow::{Context as _, Result};
 
 use crate::arch::Arch;
-use crate::cli::{Cmd, Preset, Software};
+use crate::cli::{FujiCmd, Preset, Software};
 use crate::cmd_manage::cmd_manage;
 use crate::jvm::jvm::JVM;
 use crate::jvm::major_version::MajorVersion;
@@ -41,7 +41,7 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 	features.push(Feature::AllowNative);
 	features.push(Feature::AllowUnsafe);
 	features.push(Feature::FontAntiAliasing);
-	cmd_manage(Cmd::Manage {
+	cmd_manage(FujiCmd::Manage {
 		software: Software::JVM {
 			op: Op::Install {
 				jvm: JVM::JBR,
@@ -60,7 +60,7 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 fn preset_fast(minimal: bool) -> Result<()> {
 	let mut features: Vec<Feature> = features(minimal);
 	configure_fast(&mut features)?;
-	cmd_manage(Cmd::Manage {
+	cmd_manage(FujiCmd::Manage {
 		software: Software::JVM {
 			op: Op::Install {
 				jvm: JVM::JBR,
@@ -119,7 +119,7 @@ fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 }
 
 fn preset_latest(minimal: bool) -> Result<()> {
-	cmd_manage(Cmd::Manage {
+	cmd_manage(FujiCmd::Manage {
 		software: Software::JVM {
 			op: Op::Install {
 				// FIXME: need to implement JVM::Auto so I don't have to default to JavaSE

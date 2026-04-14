@@ -10,14 +10,14 @@ use clap::{Parser, Subcommand};
 	long_about = "Fix Ur Java Install – A JVM & Kotlin management utility",
 	author = "Mavity The Madity"
 )]
-pub struct Arguments {
+pub struct FujiArgs {
 	#[command(subcommand)]
-	pub command: Option<Cmd>,
+	pub command: Option<FujiCmd>,
 }
 
 #[derive(Subcommand)]
 #[clap(author = "Mavity The Madity")]
-pub enum Cmd {
+pub enum FujiCmd {
 	#[cfg(any(not(windows), feature = "multi-os"))]
 	#[clap(author = "Mavity The Madity")]
 	Link {
