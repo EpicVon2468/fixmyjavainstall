@@ -15,6 +15,10 @@ categories = ["command-line-utilities", "config"]
 multi-os = []
 dev = []
 
+[lib]
+name = "fuji"
+path = "src/fuji.rs"
+
 [[bin]]
 name = "fuji"
 path = "src/bin/main.rs"

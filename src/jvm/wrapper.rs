@@ -9,16 +9,11 @@ use crate::commands::io_failure;
 use crate::jvm::Feature;
 
 #[must_use]
-pub fn generate_wrapper(
-	java_home: &Path,
-	features: &[Feature],
-	is_win: bool,
-	bin_suffix: &str,
-) -> String {
+pub fn gen_wrapper(java_home: &Path, features: &[Feature], is_win: bool, suffix: &str) -> String {
 	if is_win {
-		generate_wrapper_win(java_home, features, bin_suffix)
+		gen_wrapper_win(java_home, features, suffix)
 	} else {
-		generate_wrapper_unix(java_home, features, bin_suffix)
+		gen_wrapper_unix(java_home, features, suffix)
 	}
 }
 
@@ -36,7 +31,7 @@ pub fn generate_wrapper(
 // )
 //
 // start /b /wait "" "%JAVA_HOME%\bin\java.exe" %*
-fn generate_wrapper_win(java_home: &Path, features: &[Feature], bin_suffix: &str) -> String {
+fn gen_wrapper_win(java_home: &Path, features: &[Feature], bin_suffix: &str) -> String {
 	let mut result: String = String::with_capacity(500);
 
 	result.push_str("@echo off\r\n\r\n");
@@ -52,14 +47,14 @@ fn generate_wrapper_win(java_home: &Path, features: &[Feature], bin_suffix: &str
 	result.push_str(bin_suffix);
 	result.push_str(".bak\" ");
 
-	gen_features(&mut result, features, &|_, args: &str| format!("{args} "));
+	gen_features(&mut result, features, |_, args: &str| format!("{args} "));
 
 	result.push_str("\"$FUJI_CLASSPATH_ARG\" %*");
 
 	result
 }
 
-fn generate_wrapper_unix(java_home: &Path, features: &[Feature], bin_suffix: &str) -> String {
+fn gen_wrapper_unix(java_home: &Path, features: &[Feature], bin_suffix: &str) -> String {
 	let mut result: String = String::with_capacity(500);
 
 	result.push_str("#!/usr/bin/env sh\n\n");
@@ -71,7 +66,7 @@ fn generate_wrapper_unix(java_home: &Path, features: &[Feature], bin_suffix: &st
 	result.push_str("\tset -- -cp \"$CLASSPATH:.\" \"$@\"\n");
 	result.push_str("fi\n\n");
 
-	gen_features(&mut result, features, &|comment: &str, args: &str| {
+	gen_features(&mut result, features, |comment: &str, args: &str| {
 		format!("# {comment}\nset -- {args} \"$@\"\n\n")
 	});
 
@@ -89,10 +84,10 @@ fn generate_wrapper_unix(java_home: &Path, features: &[Feature], bin_suffix: &st
 	result
 }
 
-fn gen_features(
+fn gen_features<F: Fn(&str, &str) -> String>(
 	result: &mut String,
 	features: &[Feature],
-	transform: &dyn Fn(&str, &str) -> String,
+	transform: F,
 ) {
 	let mut fuji_jvm_arg = |comment: &str, args: &str| {
 		result.push_str(&transform(comment, args));

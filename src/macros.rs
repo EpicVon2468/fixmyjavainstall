@@ -19,7 +19,7 @@ macro_rules! wait_and_check_status {
 	($child:ident, $name:literal) => {
 		$crate::wait_and_check_status!($child, $name, 1);
 	};
-	($child:ident, $name:literal, $substitute_code:literal) => {{
+	($child:ident, $name:literal, $substitute_code:expr) => {{
 		use std::process::ExitStatus;
 
 		let status: ExitStatus = $child.wait().context(concat!($name, " never started?"))?;
@@ -35,7 +35,7 @@ macro_rules! check_status {
 	($status:ident, $name:literal) => {
 		$crate::check_status!($status, $name, 1);
 	};
-	($status:ident, $name:literal, $substitute_code:literal) => {{
+	($status:ident, $name:literal, $substitute_code:expr) => {{
 		if (!$status.success()) {
 			return anyhow::Result::Err(anyhow::anyhow!(format!(
 				concat!($name, " failed with exit code: {}"),
@@ -47,6 +47,12 @@ macro_rules! check_status {
 
 #[macro_export]
 macro_rules! fuji_value_enum {
+	($ty:ident) => {
+		$crate::fuji_value_enum!(
+			$ty,
+			match *self {,}
+		);
+	};
 	($ty:ident, match *self {$($variant:pat => $string:expr),*,}) => {
 		#[automatically_derived]
 		impl Default for $ty {

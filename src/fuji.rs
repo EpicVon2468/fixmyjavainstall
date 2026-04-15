@@ -45,9 +45,7 @@
 	clippy::doc_markdown,
 	reason = "'JetBrains' and 'AdoptOpenJDK' are not identifiers I'm referencing.  Bad clippy!"
 )]
-//! # Fix Ur Java Install – A JVM & Kotlin management utility.
-//!
-//! Developer note: Expect regular breaking changes; Do not depend on `libfuji` as a stable API!
+#![doc = include_str!("../README.md")]
 pub mod arch;
 pub mod cli;
 pub mod cmd_link;

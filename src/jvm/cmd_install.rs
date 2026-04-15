@@ -12,7 +12,7 @@ use crate::jvm::jvm_jbr::download_jbr;
 use crate::jvm::jvm_liberica::{download_liberica, get_liberica_download};
 use crate::jvm::jvm_temurin::download_temurin;
 use crate::jvm::major_version::MajorVersion;
-use crate::jvm::wrapper::{generate_wrapper, install_wrapper};
+use crate::jvm::wrapper::{gen_wrapper, install_wrapper};
 use crate::jvm::{Feature, JavaVersion, Op};
 use crate::os::OS;
 use crate::{FUJI_DIR, wrong_cmd};
@@ -72,7 +72,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		JVM::JavaSE => download_java_se,
 		JVM::Temurin => download_temurin,
 		JVM::Liberica => download_liberica,
-		_ => todo!("Not implemented!")
+		_ => todo!("Not implemented!"),
 	};
 	#[rustfmt::skip]
 	download_jvm(DownloadJVMArgs {
@@ -133,7 +133,7 @@ fn wrap_executables(
 			.context("Couldn't backup java executable!")?;
 		#[rustfmt::skip]
 		let script_file: PathBuf = install_wrapper(
-			generate_wrapper(java_home, features, is_win, suffix).as_str(),
+			gen_wrapper(java_home, features, is_win, suffix).as_str(),
 			java_home,
 			suffix,
 			is_win,
