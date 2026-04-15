@@ -29,7 +29,7 @@ pub fn cmd_man(cmd: FujiCmd) -> Result<()> {
 	dump_manual(FujiArgs::command(), dir)
 }
 
-/// Based off [`clap_mangen::generate_to`]
+// Based off clap_mangen::generate_to
 fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 	fn generate(parent: &Command, out_dir: &Path) -> Result<()> {
 		let children: Filter<_, _> = parent
@@ -71,9 +71,8 @@ fn render0(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) -> Result
 	Ok(())
 }
 
-/// Slight modification of [`Man::render_subcommands_section`] to fix display names
-///
-/// TODO: PR `clap_mangen` with minimal fix?
+// Slight modification of Man::render_subcommands_section to fix display names
+// TODO: PR `clap_mangen` with minimal fix?
 fn render_subcommands(parent: &Command, mut output: &mut GzEncoder<File>) -> Result<()> {
 	if parent
 		.get_subcommands()
