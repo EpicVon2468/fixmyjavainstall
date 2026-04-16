@@ -38,9 +38,9 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 		features.push(Feature::Minimal);
 	};
 	configure_fast(&mut features)?;
-	features.push(Feature::AllowNative);
-	features.push(Feature::AllowUnsafe);
-	features.push(Feature::FontAntiAliasing);
+	features.push(Feature::Native);
+	features.push(Feature::Unsafe);
+	features.push(Feature::FontFix);
 	cmd_manage(FujiCmd::Manage {
 		software: Software::JVM {
 			op: Op::Install {
@@ -99,12 +99,12 @@ fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 				.unwrap()
 				.contains("NVIDIA")
 		}) {
-			features.push(Feature::NVIDIAFixes);
+			features.push(Feature::NVIDIA);
 		};
 
 		// WLToolkit also enables Vulkan
 		features.push(if var("WAYLAND_DISPLAY").is_ok() {
-			Feature::WLToolkit
+			Feature::Wayland
 		} else {
 			Feature::OpenGL
 		});

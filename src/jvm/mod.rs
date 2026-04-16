@@ -40,11 +40,11 @@ use crate::os::OS;
 use crate::wrong_cmd;
 
 #[derive(Subcommand)]
-#[clap(author)]
+#[command(author)]
 pub enum Op {
 	// TODO: L&F?
 	/// Installs a new JVM.
-	#[clap(author)]
+	#[command(author)]
 	Install {
 		/// The build/vendor for the requested JVM.
 		#[arg(short, long, alias = "java-virtual-machine", default_value = "jbr")]
@@ -77,6 +77,7 @@ pub enum Op {
 		#[arg(short, long)]
 		features: Vec<Feature>,
 
+		// TODO: Move into Feature?
 		/// Whether to bundle Kotlin with the requested JVM.
 		#[arg(short = 'k', long)]
 		include_kotlin: bool,
@@ -86,14 +87,14 @@ pub enum Op {
 		dry_run: bool,
 
 		/// The version for the requested JVM
-		#[clap(value_parser = MajorVersionParser::default())]
+		#[arg(value_parser = MajorVersionParser::default())]
 		version: MajorVersion,
 	},
 	/// Removes the currently installed JVM (only affects JVMs installed via fuji).
-	#[clap(author, alias = "uninstall")]
+	#[command(author, alias = "uninstall")]
 	Remove,
 	/// Installs a new JVM from a selection of presets.
-	#[clap(author, alias = "presets")]
+	#[command(author, alias = "presets")]
 	Preset {
 		#[command(subcommand)]
 		preset: Preset,
@@ -115,7 +116,9 @@ pub fn manage_jvm(software: Software) -> Result<()> {
 #[non_exhaustive]
 #[derive(ValueEnum, Clone, PartialEq, Eq)]
 pub enum Feature {
-	/// Minimal JVM (JRE or no-Javadoc JDK).  If you don't know what this means & aren't a developer, you probably want this.
+	/// Minimal JVM (JRE or no-Javadoc JDK).
+	///
+	/// If you don't know what this means & aren't a developer, you probably want this.
 	Minimal,
 	/// Dynamic Code Evolution Virtual Machine (enhanced runtime class redefinition) – <https://ssw.jku.at/dcevm/>.
 	///
@@ -130,15 +133,18 @@ pub enum Feature {
 	JEP519,
 	/// Wayland support (requires Vulkan) – <https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype>.
 	///
-	/// See also: <https://github.com/openjdk/wakefield>.
+	/// See also:
+	///
+	/// - <https://github.com/openjdk/wakefield/>.
+	/// - <https://openjdk.org/projects/wakefield/>.
 	#[cfg(any(target_os = "linux", feature = "multi-os"))]
-	#[value(name = "wltoolkit", aliases = vec!["wakefield", "wayland", "wl"])]
-	WLToolkit,
+	#[value(aliases = vec!["wakefield", "wltoolkit", "wl"])]
+	Wayland,
 	/// OpenGL for AWT/Swing.
 	///
 	/// This has been bundled in OpenJDK for a long time, but isn't on by default.
 	///
-	/// macOS users, use [`Metal`][`Feature::Metal`] instead (Apple has deprecated OpenGL on macOS).
+	/// macOS users, use Metal instead (Apple has deprecated OpenGL on macOS).
 	#[value(name = "opengl", alias = "gl")]
 	OpenGL,
 	/// Metal support for AWT/Swing (macOS) – <https://developer.apple.com/metal/>.
@@ -148,8 +154,8 @@ pub enum Feature {
 	Metal,
 	/// Vulkan for AWT/Swing.
 	///
-	/// DEV NOTE: I'm not sure if this does anything when not used in conjunction with [`WLToolkit`][`Feature::WLToolkit`].
-	#[clap(alias = "vk")]
+	/// DEV NOTE: I'm not sure if this does anything when not used in conjunction with Wayland.
+	#[value(alias = "vk")]
 	Vulkan,
 	/// Java Chromium Embedded Framework – <https://github.com/chromiumembedded/java-cef/>.
 	///
@@ -157,17 +163,22 @@ pub enum Feature {
 	JCEF,
 	/// Allows all Java modules to use the (soon to be) restricted native library access – <https://openjdk.org/jeps/472>.
 	///
-	/// For more details, see <https://inside.java/2024/12/09/quality-heads-up/>.
-	AllowNative,
+	/// See also:
+	///
+	/// - <https://inside.java/2024/12/09/quality-heads-up/>.
+	/// - <https://docs.oracle.com/en/java/javase/25/core/restricted-methods.html>.
+	#[value(alias = "allow-native")]
+	Native,
 	/// Allows use of the (soon to be) restricted sun.misc.Unsafe API access – <https://openjdk.org/jeps/471>.
-	AllowUnsafe,
+	#[value(alias = "allow-unsafe")]
+	Unsafe,
 	/// Enables AWT font antialiasing.  This can improve readability and quality of text.
-	FontAntiAliasing,
+	FontFix,
 	/// General fixes for NVIDIA GPUs on Linux.
 	///
 	/// Rendering may not work correctly or even at all without these.
 	#[cfg(any(target_os = "linux", feature = "multi-os"))]
-	NVIDIAFixes,
+	NVIDIA,
 	/// MUSL libc support – <https://musl.libc.org/>.
 	///
 	/// It is unlikely that a glibc JVM will work on MUSL.  Additionally, MUSL support is few and far between amongst JVM vendors.

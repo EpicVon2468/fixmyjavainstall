@@ -71,7 +71,7 @@ fn gen_wrapper_unix(java_home: &Path, features: &[Feature], bin_suffix: &str) ->
 	});
 
 	#[cfg(any(target_os = "linux", feature = "multi-os"))]
-	if features.contains(&Feature::NVIDIAFixes) {
+	if features.contains(&Feature::NVIDIA) {
 		result.push_str("# General fixes for NVIDIA GPUs on Linux\n");
 		result.push_str("export __GL_THREADED_OPTIMIZATIONS=0\n\n");
 	};
@@ -108,7 +108,7 @@ fn gen_features<F: Fn(&str, &str) -> String>(
 	#[allow(unused_mut)]
 	let mut requires_vulkan: bool = false;
 	#[cfg(any(target_os = "linux", feature = "multi-os"))]
-	if features.contains(&Feature::WLToolkit) {
+	if features.contains(&Feature::Wayland) {
 		fuji_jvm_arg(
 			"Wayland support (requires Vulkan) – https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype",
 			"-Dawt.tookit.name=WLToolkit",
@@ -143,19 +143,19 @@ fn gen_features<F: Fn(&str, &str) -> String>(
 			"-Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false",
 		);
 	};
-	if features.contains(&Feature::AllowNative) {
+	if features.contains(&Feature::Native) {
 		fuji_jvm_arg(
 			"Allows all Java modules to use the (soon to be) restricted native library access",
 			"--enable-native-access=ALL-UNNAMED",
 		);
 	};
-	if features.contains(&Feature::AllowUnsafe) {
+	if features.contains(&Feature::Unsafe) {
 		fuji_jvm_arg(
 			"Allows use of the (soon to be) restricted sun.misc.Unsafe API access",
 			"--sun-misc-unsafe-memory-access=allow",
 		);
 	};
-	if features.contains(&Feature::FontAntiAliasing) {
+	if features.contains(&Feature::FontFix) {
 		fuji_jvm_arg(
 			"Enables AWT font antialiasing.  This can improve readability and quality of text",
 			"-Dawt.useSystemAAFontSettings=on",

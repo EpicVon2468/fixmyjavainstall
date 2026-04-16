@@ -14,10 +14,10 @@ pub enum OS {
 	/// Anything running the Linux kernel – <https://kernel.org/>.
 	Linux,
 	/// macOS by Apple – <https://www.apple.com/uk/os/macos/>.
-	#[clap(aliases = vec!["mac", "macos"])]
+	#[value(aliases = vec!["mac", "macos"])]
 	OSX,
 	/// Windows by Microslop – [https://www.microslop.com/en-gb/windows/](https://www.microsoft.com/en-gb/windows/).
-	#[clap(
+	#[value(
 		help = "Windows by Microslop – https://www.microsoft.com/en-gb/windows/",
 		aliases = vec!["win", "nt", "slop"]
 	)]

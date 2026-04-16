@@ -10,10 +10,10 @@ pub enum InstallMethod {
 	Path,
 	#[cfg(any(unix, feature = "multi-os"))]
 	/// Symbolic linking.
-	#[clap(hide = cfg!(all(not(unix), not(feature = "multi-os"))))]
+	#[value(hide = cfg!(all(not(unix), not(feature = "multi-os"))))]
 	Symlink,
 	/// <https://man7.org/linux/man-pages/man1/update-alternatives.1.html>.
-	#[clap(hide = cfg!(all(not(target_os = "linux"), not(feature = "multi-os"))))]
+	#[value(hide = cfg!(all(not(target_os = "linux"), not(feature = "multi-os"))))]
 	UpdateAlternatives,
 }
 

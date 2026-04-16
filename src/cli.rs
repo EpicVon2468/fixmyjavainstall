@@ -17,10 +17,10 @@ pub struct FujiArgs {
 }
 
 #[derive(Subcommand)]
-#[clap(author)]
+#[command(author)]
 pub enum FujiCmd {
 	#[cfg(any(not(windows), feature = "multi-os"))]
-	#[clap(author)]
+	#[command(author)]
 	Link {
 		/// Input directories.  Note that on UNIX, the `/bin` suffix will be appended for each of these by the program.
 		paths: Vec<PathBuf>,
@@ -37,15 +37,15 @@ pub enum FujiCmd {
 		use_update_alternatives: bool,
 	},
 	/// Manages software.
-	#[clap(author)]
+	#[command(author)]
 	Manage {
 		#[command(subcommand)]
 		software: Software,
 	},
 	/// UNIX `man` page generation.
-	#[clap(author, hide = true)]
+	#[command(author, hide = true)]
 	Manual {
-		#[clap(
+		#[arg(
 			value_name = "DIR",
 			default_value = if cfg!(feature = "dev") {
 				"./man"
@@ -58,7 +58,7 @@ pub enum FujiCmd {
 }
 
 #[derive(Subcommand)]
-#[clap(subcommand_value_name = "PRESET")]
+#[command(subcommand_value_name = "PRESET")]
 pub enum Preset {
 	/// All the recommended defaults + optimisations for your system – Java Runtime Environment edition.
 	RecommendedJRE,
@@ -75,19 +75,19 @@ pub enum Preset {
 }
 
 #[derive(Subcommand)]
-#[clap(author, subcommand_value_name = "SOFTWARE")]
+#[command(author, subcommand_value_name = "SOFTWARE")]
 pub enum Software {
 	/// Manages the Java Virtual Machine – <https://www.java.com/>.
-	#[clap(display_name = "fuji-jvm", alias = "java", author)]
+	#[command(display_name = "fuji-jvm", alias = "java", author)]
 	JVM {
 		#[command(subcommand)]
 		op: crate::jvm::Op,
 	},
 	/// Manages the Kotlin Programming Language – <https://kotlinlang.org/>.
-	#[clap(display_name = "fuji-kt", alias = "kt", author)]
+	#[command(display_name = "fuji-kt", alias = "kt", author)]
 	Kotlin {},
 	// TODO: merge into Kotlin
 	/// Manages the Kotlin/Native compiler – <https://kotlinlang.org/docs/native-overview.html>.
-	#[clap(author, hide = true)]
+	#[command(author, hide = true)]
 	KotlinNative {},
 }
