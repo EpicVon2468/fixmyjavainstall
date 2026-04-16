@@ -1,4 +1,4 @@
-Java Platform, Standard Edition by Oracle – <https://www.oracle.com/java/>
+Java Platform, Standard Edition by Oracle – https://www.oracle.com/java/
 
 Supported architectures:
  - x64

@@ -1,4 +1,4 @@
-Temurin (previously AdoptOpenJDK) by Eclipse/Adoptium – <https://adoptium.net/>
+Temurin (previously AdoptOpenJDK) by Eclipse/Adoptium – https://adoptium.net/
 
 Supported architectures:
  - x64

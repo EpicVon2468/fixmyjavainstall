@@ -18,7 +18,7 @@ pub enum OS {
 	OSX,
 	/// Windows by Microslop – [https://www.microslop.com/en-gb/windows/](https://www.microsoft.com/en-gb/windows/).
 	#[clap(
-		help = "Windows by Microslop – <https://www.microsoft.com/en-gb/windows/>",
+		help = "Windows by Microslop – https://www.microsoft.com/en-gb/windows/",
 		aliases = vec!["win", "nt", "slop"]
 	)]
 	Windows,

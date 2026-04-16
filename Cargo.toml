@@ -32,7 +32,7 @@ name = "fuji-kt"
 path = "src/bin/kt.rs"
 
 [dependencies]
-clap = { version = "4.6.0", features = ["derive", "string"] }
+clap = { version = "4.6.0", features = ["derive", "string", "unstable-markdown"] }
 clap_mangen = "0.3.0"
 serde = { version = "1.0.228", features = ["derive"] }
 which = "8.0.2"

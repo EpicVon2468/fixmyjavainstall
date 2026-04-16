@@ -50,7 +50,9 @@ pub enum Op {
 		#[arg(short, long, alias = "java-virtual-machine", default_value = "jbr")]
 		jvm: JVM,
 
-		/// The architecture for the requested JVM.  Note that not every JVM may support every architecture, and some JVMs may not offer certain features for all architectures.  Generally speaking, x64 (amd64) has the highest level of support overall.
+		/// The architecture for the requested JVM.
+		///
+		/// Note that not every JVM may support every architecture, and some JVMs may not offer certain features for all architectures.  Generally speaking, x64 (amd64) has the highest level of support overall.
 		#[arg(
 			short,
 			long,
@@ -68,7 +70,10 @@ pub enum Op {
 		)]
 		operating_system: OS,
 
-		/// The features for the requested JVM.  Note that not every JVM may support every feature, and some JVMs may only offer features for certain versions or with incompatibilities with other features.
+		// TODO: concat
+		/// The features for the requested JVM.
+		///
+		/// Note that not every JVM may support every feature, and some JVMs may only offer features for certain versions or with incompatibilities with other features.
 		#[arg(short, long)]
 		features: Vec<Feature>,
 
@@ -106,40 +111,66 @@ pub fn manage_jvm(software: Software) -> Result<()> {
 	}
 }
 
+// FIXME: https://github.com/rust-lang/cargo/issues/4648 + https://github.com/clap-rs/clap/issues/6096
+#[non_exhaustive]
 #[derive(ValueEnum, Clone, PartialEq, Eq)]
 pub enum Feature {
 	/// Minimal JVM (JRE or no-Javadoc JDK).  If you don't know what this means & aren't a developer, you probably want this.
 	Minimal,
 	/// Dynamic Code Evolution Virtual Machine (enhanced runtime class redefinition) – <https://ssw.jku.at/dcevm/>.
+	///
+	/// Highly recommended for development, as it can allow for non-insignificant code changes without needing to restart the JVM.
 	DCEVM,
 	/// JDK Enhancement Proposal 519 (Compact Object Headers) – <https://openjdk.org/jeps/519>.
+	///
+	/// This feature can generally be considered stable, and is recommended for its strong performance benefits.
+	///
+	/// Additionally, some JVM vendors have backported this feature to previous versions, and [it may be enabled by default in future](https://openjdk.org/jeps/534).
 	#[clap(name = "jep-519", alias = "compact-object-headers")]
 	JEP519,
 	/// Wayland support (requires Vulkan) – <https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype>.
+	///
+	/// See also: <https://github.com/openjdk/wakefield>.
 	#[cfg(any(target_os = "linux", feature = "multi-os"))]
 	#[clap(name = "wltoolkit", aliases = vec!["wakefield", "wayland", "wl"])]
 	WLToolkit,
-	/// OpenGL for AWT/Swing.  This has been bundled in OpenJDK for a long time, but isn't on by default.
+	/// OpenGL for AWT/Swing.
+	///
+	/// This has been bundled in OpenJDK for a long time, but isn't on by default.
+	///
+	/// macOS users, use [`Metal`][`Feature::Metal`] instead (Apple has deprecated OpenGL on macOS).
 	#[clap(name = "opengl", alias = "gl")]
 	OpenGL,
-	/// Metal support for AWT/Swing (macOS).  If you're on macOS, use this instead of OpenGL (Apple has deprecated OpenGL on macOS).
+	/// Metal support for AWT/Swing (macOS) – <https://developer.apple.com/metal/>.
+	///
+	/// If you're on macOS, use this instead of OpenGL (Apple has deprecated OpenGL on macOS).
 	#[cfg(any(target_os = "macos", feature = "multi-os"))]
 	Metal,
 	/// Vulkan for AWT/Swing.
+	///
+	/// DEV NOTE: I'm not sure if this does anything when not used in conjunction with [`WLToolkit`][`Feature::WLToolkit`].
 	#[clap(alias = "vk")]
 	Vulkan,
 	/// Java Chromium Embedded Framework – <https://github.com/chromiumembedded/java-cef/>.
+	///
+	/// Webdev???  In my JVM???
 	JCEF,
-	/// Allows all Java modules to use the (soon to be) restricted native library access.
+	/// Allows all Java modules to use the (soon to be) restricted native library access – <https://openjdk.org/jeps/472>.
+	///
+	/// For more details, see <https://inside.java/2024/12/09/quality-heads-up/>.
 	AllowNative,
-	/// Allows use of the (soon to be) restricted sun.misc.Unsafe API access.
+	/// Allows use of the (soon to be) restricted sun.misc.Unsafe API access – <https://openjdk.org/jeps/471>.
 	AllowUnsafe,
 	/// Enables AWT font antialiasing.  This can improve readability and quality of text.
 	FontAntiAliasing,
 	/// General fixes for NVIDIA GPUs on Linux.
+	///
+	/// Rendering may not work correctly or even at all without these.
 	#[cfg(any(target_os = "linux", feature = "multi-os"))]
 	NVIDIAFixes,
 	/// MUSL libc support – <https://musl.libc.org/>.
+	///
+	/// It is unlikely that a glibc JVM will work on MUSL.  Additionally, MUSL support is few and far between amongst JVM vendors.
 	#[cfg(any(target_env = "musl", feature = "multi-os"))]
 	MUSL,
 }

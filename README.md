@@ -18,3 +18,7 @@ DEVELOPER NOTICE: Expect regular breaking changes; Do not depend on `libfuji` as
     - Feature has been disabled, so this should _not_ crash.  Support will be re-evaluated in future.
   - Despite being quoted, `"\Program Files\fuji\jvm\25"` isn't treated as one path, as batch fails to handle the space in `Program Files`.
     - No longer relevant because no batch scripts are used.  See above.
+
+## Installation:
+
+See [INSTALLATION.md](https://github.com/EpicVon2468/fixmyjavainstall/blob/master/INSTALLATION.md#installation)
