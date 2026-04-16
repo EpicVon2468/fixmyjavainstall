@@ -45,7 +45,7 @@ pub enum JVM {
 	/// * `17`
 	/// </details>
 	#[default]
-	#[clap(help = clap_doc!(JBR), alias = "jetbrains-runtime")]
+	#[value(help = clap_doc!(JBR), alias = "jetbrains-runtime")]
 	JBR,
 	/// Java Platform, Standard Edition by Oracle – <https://www.oracle.com/java/>.
 	///
@@ -65,7 +65,7 @@ pub enum JVM {
 	/// * `25`
 	/// * `21`
 	/// </details>
-	#[clap(help = clap_doc!(JavaSE))]
+	#[value(help = clap_doc!(JavaSE))]
 	JavaSE,
 	/// Temurin (previously AdoptOpenJDK) by Eclipse/Adoptium – <https://adoptium.net/>.
 	///
@@ -97,7 +97,7 @@ pub enum JVM {
 	/// * `11`
 	/// * `8`
 	/// </details>
-	#[clap(help = clap_doc!(Temurin), alias = "adoptium")]
+	#[value(help = clap_doc!(Temurin), alias = "adoptium")]
 	Temurin,
 	/// Liberica by BellSoft – <https://bell-sw.com/libericajdk/>.
 	///
@@ -133,7 +133,7 @@ pub enum JVM {
 	/// * `10`
 	/// * `8`
 	/// </details>
-	#[clap(help = clap_doc!(Liberica, ""))]
+	#[value(help = clap_doc!(Liberica, ""))]
 	Liberica,
 }
 

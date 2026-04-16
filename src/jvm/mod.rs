@@ -40,11 +40,11 @@ use crate::os::OS;
 use crate::wrong_cmd;
 
 #[derive(Subcommand)]
-#[clap(author = "Mavity The Madity")]
+#[clap(author)]
 pub enum Op {
 	// TODO: L&F?
 	/// Installs a new JVM.
-	#[clap(author = "Mavity The Madity")]
+	#[clap(author)]
 	Install {
 		/// The build/vendor for the requested JVM.
 		#[arg(short, long, alias = "java-virtual-machine", default_value = "jbr")]
@@ -90,10 +90,10 @@ pub enum Op {
 		version: MajorVersion,
 	},
 	/// Removes the currently installed JVM (only affects JVMs installed via fuji).
-	#[clap(author = "Mavity The Madity", alias = "uninstall")]
+	#[clap(author, alias = "uninstall")]
 	Remove,
 	/// Installs a new JVM from a selection of presets.
-	#[clap(author = "Mavity The Madity", alias = "presets")]
+	#[clap(author, alias = "presets")]
 	Preset {
 		#[command(subcommand)]
 		preset: Preset,
@@ -126,20 +126,20 @@ pub enum Feature {
 	/// This feature can generally be considered stable, and is recommended for its strong performance benefits.
 	///
 	/// Additionally, some JVM vendors have backported this feature to previous versions, and [it may be enabled by default in future](https://openjdk.org/jeps/534).
-	#[clap(name = "jep-519", alias = "compact-object-headers")]
+	#[value(name = "jep-519", alias = "compact-object-headers")]
 	JEP519,
 	/// Wayland support (requires Vulkan) – <https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype>.
 	///
 	/// See also: <https://github.com/openjdk/wakefield>.
 	#[cfg(any(target_os = "linux", feature = "multi-os"))]
-	#[clap(name = "wltoolkit", aliases = vec!["wakefield", "wayland", "wl"])]
+	#[value(name = "wltoolkit", aliases = vec!["wakefield", "wayland", "wl"])]
 	WLToolkit,
 	/// OpenGL for AWT/Swing.
 	///
 	/// This has been bundled in OpenJDK for a long time, but isn't on by default.
 	///
 	/// macOS users, use [`Metal`][`Feature::Metal`] instead (Apple has deprecated OpenGL on macOS).
-	#[clap(name = "opengl", alias = "gl")]
+	#[value(name = "opengl", alias = "gl")]
 	OpenGL,
 	/// Metal support for AWT/Swing (macOS) – <https://developer.apple.com/metal/>.
 	///

@@ -6,7 +6,7 @@ use clap::{Parser, Subcommand};
 #[command(
 	version,
 	long_version = "0.2.1 – \"Move at a reasonable pace and pretty please can GitHub Actions work this time...?\"",
-	author = "Mavity The Madity"
+	author
 )]
 /// Fix Ur Java Install – A JVM & Kotlin management utility.
 ///
@@ -17,10 +17,10 @@ pub struct FujiArgs {
 }
 
 #[derive(Subcommand)]
-#[clap(author = "Mavity The Madity")]
+#[clap(author)]
 pub enum FujiCmd {
 	#[cfg(any(not(windows), feature = "multi-os"))]
-	#[clap(author = "Mavity The Madity")]
+	#[clap(author)]
 	Link {
 		/// Input directories.  Note that on UNIX, the `/bin` suffix will be appended for each of these by the program.
 		paths: Vec<PathBuf>,
@@ -37,13 +37,13 @@ pub enum FujiCmd {
 		use_update_alternatives: bool,
 	},
 	/// Manages software.
-	#[clap(author = "Mavity The Madity")]
+	#[clap(author)]
 	Manage {
 		#[command(subcommand)]
 		software: Software,
 	},
 	/// UNIX `man` page generation.
-	#[clap(author = "Mavity The Madity", hide = true)]
+	#[clap(author, hide = true)]
 	Manual {
 		#[clap(
 			value_name = "DIR",
@@ -75,23 +75,19 @@ pub enum Preset {
 }
 
 #[derive(Subcommand)]
-#[clap(author = "Mavity The Madity", subcommand_value_name = "SOFTWARE")]
+#[clap(author, subcommand_value_name = "SOFTWARE")]
 pub enum Software {
 	/// Manages the Java Virtual Machine – <https://www.java.com/>.
-	#[clap(
-		display_name = "fuji-jvm",
-		alias = "java",
-		author = "Mavity The Madity"
-	)]
+	#[clap(display_name = "fuji-jvm", alias = "java", author)]
 	JVM {
 		#[command(subcommand)]
 		op: crate::jvm::Op,
 	},
 	/// Manages the Kotlin Programming Language – <https://kotlinlang.org/>.
-	#[clap(display_name = "fuji-kt", alias = "kt", author = "Mavity The Madity")]
+	#[clap(display_name = "fuji-kt", alias = "kt", author)]
 	Kotlin {},
 	// TODO: merge into Kotlin
 	/// Manages the Kotlin/Native compiler – <https://kotlinlang.org/docs/native-overview.html>.
-	#[clap(author = "Mavity The Madity", hide = true)]
+	#[clap(author, hide = true)]
 	KotlinNative {},
 }
