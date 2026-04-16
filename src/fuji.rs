@@ -30,7 +30,10 @@
 	clippy::enum_glob_use
 )]
 // FIXME: this isn't working
-#![deny(clippy::undocumented_unsafe_blocks, reason = "Unsafe bad.  Kill it with fire!")]
+#![deny(
+	clippy::undocumented_unsafe_blocks,
+	reason = "Unsafe bad.  Kill it with fire!"
+)]
 #![allow(clippy::tabs_in_doc_comments, reason = "Why???  Bad clippy!")]
 #![allow(
 	clippy::unnecessary_semicolon,
