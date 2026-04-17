@@ -233,11 +233,7 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 	use std::fs::set_permissions;
 	use std::os::unix::fs::PermissionsExt as _;
 
-	let Some(old_mode): Option<u32> = mode else {
-		return Ok(());
-	};
-
-	let new_mode: u32 = if is_exe(old_mode) || is_dir {
+	let new_mode: u32 = if mode.is_some_and(is_executable) || is_dir {
 		// rwxr-xr-x
 		0o755
 	} else {
@@ -251,7 +247,7 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 #[inline]
 #[must_use]
 #[cfg(unix)]
-pub const fn is_exe(mode: u32) -> bool {
+pub const fn is_executable(mode: u32) -> bool {
 	(mode & 0o111) != 0
 }
 

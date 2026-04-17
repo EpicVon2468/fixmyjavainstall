@@ -74,10 +74,9 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 		{
 			use std::os::unix::fs::MetadataExt as _;
 
-			use crate::commands::is_exe;
+			use crate::commands::is_executable;
 
-			// we don't need to link any non-executable files
-			if !is_exe(metadata.mode()) {
+			if !is_executable(metadata.mode()) {
 				continue;
 			};
 		};
@@ -138,11 +137,13 @@ pub fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Res
 	#[cfg(unix)]
 	{
 		use std::os::unix::fs::symlink;
+
 		symlink(original, link).context("UNIX symbolic linking failed!")
 	}
 	#[cfg(windows)]
 	{
 		use std::os::windows::fs::{symlink_dir, symlink_file};
+
 		return if original.as_ref().is_dir() {
 			// https://doc.rust-lang.org/std/os/windows/fs/fn.symlink_dir.html
 			symlink_dir(original, link).context("Windows directory symbolic linking failed!")
