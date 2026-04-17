@@ -1,11 +1,11 @@
 use anyhow::{Context as _, Result};
 
 use crate::arch::Arch;
-use crate::cli::{FujiCmd, Preset, Software};
+use crate::cli::{FujiCmd, Software};
 use crate::cmd_manage::cmd_manage;
 use crate::jvm::jvm::JVM;
 use crate::jvm::major_version::MajorVersion;
-use crate::jvm::{Feature, Op};
+use crate::jvm::{Feature, Op, Preset};
 #[cfg(feature = "multi-os")]
 use crate::os::OS;
 use crate::wrong_cmd;

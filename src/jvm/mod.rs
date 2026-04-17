@@ -32,7 +32,7 @@ use clap::{Subcommand, ValueEnum};
 use serde::{Deserialize as Deserialise, Serialize as Serialise};
 
 use crate::arch::Arch;
-use crate::cli::{Preset, Software};
+use crate::cli::Software;
 use crate::jvm::jvm::JVM;
 use crate::jvm::major_version::{MajorVersion, MajorVersionParser};
 #[cfg(feature = "multi-os")]
@@ -99,6 +99,23 @@ pub enum Op {
 		#[command(subcommand)]
 		preset: Preset,
 	},
+}
+
+#[derive(Subcommand)]
+#[command(subcommand_value_name = "PRESET")]
+pub enum Preset {
+	/// All the recommended defaults + optimisations for your system – Java Runtime Environment edition.
+	RecommendedJRE,
+	/// All the recommended defaults + optimisations for your system – Java Development Kit edition.
+	RecommendedJDK,
+	/// (Almost) all the optimisations – Java Runtime Environment edition; For the performance-wary user.
+	FastJRE,
+	/// (Almost) all the optimisations – Java Development Kit edition; For the performance-wary developer.
+	FastJDK,
+	/// Bleeding-edge & unstable, you say?
+	LatestJRE,
+	/// Bleeding-edge & unstable, you say?
+	LatestJDK,
 }
 
 pub fn manage_jvm(software: Software) -> Result<()> {

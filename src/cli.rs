@@ -58,23 +58,6 @@ pub enum FujiCmd {
 }
 
 #[derive(Subcommand)]
-#[command(subcommand_value_name = "PRESET")]
-pub enum Preset {
-	/// All the recommended defaults + optimisations for your system – Java Runtime Environment edition.
-	RecommendedJRE,
-	/// All the recommended defaults + optimisations for your system – Java Development Kit edition.
-	RecommendedJDK,
-	/// (Almost) all the optimisations – Java Runtime Environment edition; For the performance-wary user.
-	FastJRE,
-	/// (Almost) all the optimisations – Java Development Kit edition; For the performance-wary developer.
-	FastJDK,
-	/// Bleeding-edge & unstable, you say?
-	LatestJRE,
-	/// Bleeding-edge & unstable, you say?
-	LatestJDK,
-}
-
-#[derive(Subcommand)]
 #[command(author, subcommand_value_name = "SOFTWARE")]
 pub enum Software {
 	/// Manages the Java Virtual Machine – <https://www.java.com/>.
