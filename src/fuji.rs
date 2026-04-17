@@ -92,10 +92,10 @@ use crate::cmd_manage::cmd_manage;
 ///
 /// let resolved = Path::new(FUJI_DIR).join("foo").join("bar");
 /// ```
-pub const FUJI_DIR: &str = if cfg!(windows) {
-	"\\Program Files\\fuji"
-} else {
-	"/opt/fuji"
+pub const FUJI_DIR: &str = cfg_select! {
+	unix => "/opt/fuji",
+	windows => "\\Program Files\\fuji",
+	_ => panic!("Unsupported host!"),
 };
 
 /// Wrapper for [`entrypoint`], which takes in additional arguments for a shorthand / alias.

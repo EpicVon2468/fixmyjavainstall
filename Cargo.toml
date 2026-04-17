@@ -1,15 +1,20 @@
 [package]
 name = "fuji"
-description = "Fix Ur Java Install – A JVM & Kotlin management utility"
-authors = ["Mavity The Madity"]
 version = "0.2.1"
+authors = ["Mavity The Madity"]
 edition = "2024"
-repository = "https://github.com/EpicVon2468/fixmyjavainstall/"
-homepage = "https://github.com/EpicVon2468/fixmyjavainstall/"
-license = "MIT OR Apache-2.0"
+rust-version = "1.95.0"
+description = "A JVM & Kotlin management utility"
 readme = "README.md"
+homepage = "https://github.com/EpicVon2468/fixmyjavainstall/"
+repository = "https://github.com/EpicVon2468/fixmyjavainstall/"
+license = "MIT OR Apache-2.0"
 keywords = ["utility", "config", "cli"]
 categories = ["command-line-utilities", "config"]
+publish = false
+default-run = "fuji"
+autolib = false
+autobins = false
 
 [features]
 multi-os = []
