@@ -39,7 +39,7 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 			generate(child, out_dir)?;
 		}
 
-		let man: Man = Man::new(parent.clone()).section("8").date("2026-04-07");
+		let man: Man = Man::new(parent.clone()).section("8").date("2026-04-18");
 
 		let mut output: GzEncoder<File> = GzEncoder::new(
 			File::create_new(out_dir.join(man.get_filename()).with_added_extension("gz"))

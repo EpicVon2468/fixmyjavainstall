@@ -45,6 +45,7 @@ macro_rules! check_status {
 	}};
 }
 
+/// [`Locks`][`std::fs::File::lock`] a file.
 #[macro_export]
 macro_rules! lock {
 	($file:ident) => {
@@ -52,6 +53,7 @@ macro_rules! lock {
 	};
 }
 
+/// [`Unlocks`][`std::fs::File::unlock`] a file.
 #[macro_export]
 macro_rules! unlock {
 	($file:ident) => {

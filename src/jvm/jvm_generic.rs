@@ -54,7 +54,6 @@ pub fn jvm_download_impl<S: AsRef<str>>(url: S, args: DownloadJVMArgs) -> Result
 			remove_file(archive)
 		}.context("Couldn't remove unexpected pre-existing JVM archive!")?;
 	};
-	// TODO: reuse File of archive between both download and extract_jvm ?
 	download(url, archive).context("Couldn't download JVM archive!")?;
 
 	println!("Extracting JVM...");

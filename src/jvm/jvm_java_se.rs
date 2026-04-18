@@ -1,4 +1,4 @@
-//! Java Platform, Standard Edition by Oracle – <https://www.oracle.com/java/>
+//! Java Platform, Standard Edition by Oracle – <https://www.oracle.com/java/>.
 use std::fmt::Write as _;
 
 use anyhow::Result;

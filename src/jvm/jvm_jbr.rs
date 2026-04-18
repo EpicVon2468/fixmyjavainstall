@@ -1,4 +1,4 @@
-//! JetBrains Runtime by JetBrains – <https://github.com/JetBrains/JetBrainsRuntime/>
+//! JetBrains Runtime by JetBrains – <https://github.com/JetBrains/JetBrainsRuntime/>.
 use anyhow::Result;
 
 use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};

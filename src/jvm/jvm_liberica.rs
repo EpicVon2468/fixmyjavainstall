@@ -1,4 +1,4 @@
-//! Liberica by BellSoft – <https://bell-sw.com/libericajdk/>
+//! Liberica by BellSoft – <https://bell-sw.com/libericajdk/>.
 use std::fmt::Write as _;
 
 use anyhow::{Context as _, Result};
