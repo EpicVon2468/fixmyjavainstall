@@ -37,12 +37,11 @@ pub fn cmd_link(command: FujiCmd) -> Result<()> {
 	Ok(())
 }
 
-pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
-	path: P,
-	link_dir: S,
+pub fn link_impl(
+	path: &Path,
+	link_dir: &Path,
 	use_update_alternatives: bool,
 ) -> Result<()> {
-	let path: &Path = path.as_ref();
 	let bin: PathBuf = path.join("bin");
 
 	#[cfg(windows)]
@@ -63,7 +62,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	let mut progress: u64 = 0;
 	let entries: ReadDir = bin
 		.read_dir()
-		.with_context(|| io_failure(bin, "list directory"))?;
+		.with_context(|| io_failure(&bin, "list directory"))?;
 	for entry in entries {
 		let file: &Path = &entry?.path();
 		if file.is_dir() {
@@ -83,11 +82,11 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 		let filename: &OsStr = file
 			.file_name()
 			.context("Couldn't get filename for directory entry!")?;
-		let dest: PathBuf = link_dir.as_ref().join(filename);
+		let dest: PathBuf = link_dir.join(filename);
 		if can_use_update_alternatives {
-			debian_link(file, filename, dest).context("Couldn't link with update-alternatives!")?;
+			debian_link(file, filename, dest.as_os_str()).context("Couldn't link with update-alternatives!")?;
 		} else {
-			symlink_link(file, dest).context("Couldn't link with symlink!")?;
+			symlink_link(file, &dest).context("Couldn't link with symlink!")?;
 		};
 		progress = min(progress + metadata.len(), max_len);
 		pb.set_position(progress);
@@ -103,9 +102,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 /// * if `dest` already exists, it will be eagerly removed before [`symlink_impl`] is called.
 /// 	* If `dest` exists and is a directory, [`remove_dir_all`] is used.
 /// 	* If `dest` exists and is a file, [`remove_file`] is used.
-pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Result<()> {
-	let source: &Path = source.as_ref();
-	let dest: &Path = dest.as_ref();
+pub fn symlink_link(source: &Path, dest: &Path) -> Result<()> {
 	if dest.exists() {
 		#[rustfmt::skip]
 		if dest.is_file() {
@@ -133,7 +130,7 @@ pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Resul
 	rustdoc::broken_intra_doc_links,
 	reason = "Conditionally compiled code."
 )]
-pub fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Result<()> {
+pub fn symlink_impl(original: &Path, link: &Path) -> Result<()> {
 	#[cfg(unix)]
 	{
 		use std::os::unix::fs::symlink;
@@ -144,7 +141,7 @@ pub fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Res
 	{
 		use std::os::windows::fs::{symlink_dir, symlink_file};
 
-		return if original.as_ref().is_dir() {
+		return if original.is_dir() {
 			// https://doc.rust-lang.org/std/os/windows/fs/fn.symlink_dir.html
 			symlink_dir(original, link).context("Windows directory symbolic linking failed!")
 		} else {
@@ -155,13 +152,11 @@ pub fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Res
 }
 
 /// <https://man7.org/linux/man-pages/man1/update-alternatives.1.html>
-pub fn debian_link<P: AsRef<Path>, S: AsRef<OsStr>, S2: AsRef<OsStr>>(
-	file: P,
-	filename: S,
-	dest: S2,
+pub fn debian_link(
+	file: &Path,
+	filename: &OsStr,
+	dest: &OsStr,
 ) -> Result<()> {
-	let file: &Path = file.as_ref();
-	let filename: &OsStr = filename.as_ref();
 	let mut install_child: Child = Command::new("update-alternatives")
 		.arg("--install")
 		.arg(dest)

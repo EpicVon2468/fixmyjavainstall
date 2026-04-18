@@ -30,7 +30,7 @@ pub fn cmd_man(cmd: FujiCmd) -> Result<()> {
 }
 
 // Based off clap_mangen::generate_to
-fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
+fn dump_manual(cmd: Command, out_dir: &Path) -> Result<()> {
 	fn generate(parent: &Command, out_dir: &Path) -> Result<()> {
 		let children: Filter<_, _> = parent
 			.get_subcommands()
@@ -56,7 +56,7 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 
 	let mut root: Command = cmd.disable_help_subcommand(true);
 	root.build();
-	generate(&root, out_dir.as_ref())
+	generate(&root, out_dir)
 }
 
 #[rustfmt::skip]

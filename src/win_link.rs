@@ -16,8 +16,7 @@ macro_rules! open_env {
 /// Appends `bin_dir` to the `PATH` environment variable.
 ///
 /// Initially, this will attempt to modify the `PATH` of `HKEY_LOCAL_MACHINE`, however if that fails it will use `HKEY_CURRENT_USER` as a fallback.
-pub fn win_link<P: AsRef<str>>(bin_dir: P) -> Result<()> {
-	let bin_dir: &str = bin_dir.as_ref();
+pub fn win_link(bin_dir: &Path) -> Result<()> {
 	println!("Updating PATH environment variable with bin_dir {bin_dir}");
 	// "To programmatically add or modify system environment variables, add them to the HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment registry key"
 	// https://learn.microsoft.com/en-gb/windows/win32/procthread/environment-variables

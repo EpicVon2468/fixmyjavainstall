@@ -12,7 +12,7 @@ use crate::jvm::major_version::MajorVersion;
 use crate::os::OS;
 
 pub fn download_liberica(args: DownloadJVMArgs) -> Result<()> {
-	jvm_download_impl(args.version.major.clone(), args)
+	jvm_download_impl(&args.version.major.clone(), args)
 }
 
 pub fn get_liberica_download(

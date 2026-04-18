@@ -95,10 +95,10 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		return Ok(());
 	};
 	// make FUJI_DIR/jvm/latest point to FUJI_DIR/jvm/{version}
-	symlink_link(java_home, Path::new(FUJI_DIR).join("jvm").join("latest"))
+	symlink_link(java_home, &Path::new(FUJI_DIR).join("jvm").join("latest"))
 		.context("Couldn't symbolically link FUJI_DIR/jvm/latest to current install directory!")?;
 	println!("Installing {}/bin...", java_home.display());
-	link_impl(java_home, "/usr/bin", false).context("Couldn't install JAVA_HOME!")?;
+	link_impl(java_home, Path::new("/usr/bin"), false).context("Couldn't install JAVA_HOME!")?;
 	println!("Done.\n");
 
 	#[cfg(target_os = "linux")]
@@ -139,7 +139,7 @@ fn wrap_executables(
 			is_win,
 		).context("Couldn't install JVM wrapper script!")?;
 		// link JAVA_HOME/bin/java(w)(.exe) to JAVA_HOME/bin/fuji_jvm_wrapper
-		symlink_link(script_file, java_executable).context(
+		symlink_link(&script_file, java_executable).context(
 			"Couldn't symbolically link JAVA_HOME/bin/java to point to JAVA_HOME/bin/fuji_jvm_wrapper!",
 		)?;
 		println!("Done.\n");

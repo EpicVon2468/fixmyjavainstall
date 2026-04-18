@@ -1,4 +1,5 @@
 use std::cmp::min;
+use std::ffi::OsStr;
 use std::fmt::Write;
 use std::fs::{File, Permissions, create_dir_all};
 use std::io::copy;
@@ -100,17 +101,16 @@ pub fn has_program(name: &str) -> bool {
 ///
 /// assert_eq!(extract_jvm("java-25-win.zip", "./java-25-win", true, false), Ok(()));
 /// ```
-pub fn extract_jvm<S: AsRef<Path>, P: AsRef<Path>>(
-	archive: S,
-	dest: P,
+pub fn extract_jvm(
+	archive: &Path,
+	dest: &Path,
 	is_zip: bool,
 	is_mac: bool,
 ) -> Result<()> {
 	let dest: &Path = &dest
-		.as_ref()
 		.canonicalize()
 		.context("Couldn't canonicalise destination path!")?;
-	let input: File = File::open(archive.as_ref()).context("Couldn't open JVM archive!")?;
+	let input: File = File::open(archive).context("Couldn't open JVM archive!")?;
 	lock!(input);
 	let result: Result<()> = if is_zip {
 		extract_jvm_zip(dest, &input, is_mac)
@@ -283,7 +283,7 @@ where F: FnMut(&Path) -> Result<()> {
 		// skip "Contents"
 		components.next();
 		// only allow paths under "Home"
-		if components.next() != Some(Component::Normal("Home".as_ref())) {
+		if components.next() != Some(Component::Normal(OsStr::new("Home"))) {
 			return Ok(());
 		};
 	};
@@ -292,10 +292,8 @@ where F: FnMut(&Path) -> Result<()> {
 }
 
 /// Downloads a resource from `url` to `dest`.
-pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
-	let dest: &Path = dest.as_ref();
-
-	let response: Response<Body> = get(url.as_ref())
+pub fn download(url: &str, dest: &Path) -> Result<()> {
+	let response: Response<Body> = get(url)
 		.call()
 		.context("Couldn't download resource!")?;
 
@@ -352,10 +350,10 @@ pub fn progress_bar(len: u64) -> ProgressBar {
 	progress_bar_template(len, TEMPLATE)
 }
 
-pub fn io_failure<P: AsRef<Path>, S: AsRef<str>>(dest: P, msg: S) -> String {
+pub fn io_failure(dest: &Path, msg: &str) -> String {
 	format!(
 		"Couldn't {} path '{}'!",
-		msg.as_ref(),
-		dest.as_ref().display()
+		msg,
+		dest.display()
 	)
 }

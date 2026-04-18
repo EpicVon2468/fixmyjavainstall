@@ -25,5 +25,5 @@ pub fn download_temurin(args: DownloadJVMArgs) -> Result<()> {
 	});
 	// returns a .zip instead of a .tar.gz for windows
 	url.push_str("/hotspot/normal/eclipse");
-	jvm_download_impl(url, args)
+	jvm_download_impl(&url, args)
 }
