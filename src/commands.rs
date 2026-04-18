@@ -21,6 +21,8 @@ use which::which;
 use zip::ZipArchive;
 use zip::read::ZipFile;
 
+use crate::{lock, unlock};
+
 /// Checks if the program `name` exists.  This is equivalent to `which(name).is_ok()`.
 #[inline]
 #[must_use]
@@ -109,21 +111,23 @@ pub fn extract_jvm<S: AsRef<Path>, P: AsRef<Path>>(
 		.canonicalize()
 		.context("Couldn't canonicalise destination path!")?;
 	let input: File = File::open(archive.as_ref()).context("Couldn't open JVM archive!")?;
+	lock!(input);
 	let result: Result<()> = if is_zip {
-		extract_jvm_zip(dest, input, is_mac)
+		extract_jvm_zip(dest, &input, is_mac)
 	} else {
-		extract_jvm_tar_gz(dest, input, is_mac)
+		extract_jvm_tar_gz(dest, &input, is_mac)
 	};
 	println!("Done.\n");
+	unlock!(input);
 	result
 }
 
-pub fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> {
+pub fn extract_jvm_tar_gz(dest: &Path, input: &File, is_mac: bool) -> Result<()> {
 	let multi: MultiProgress = MultiProgress::new();
 	let max_len: u64 = input.metadata()?.len();
 	let pb: ProgressBar = multi.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
-	let mut archive: Archive<GzDecoder<File>> = Archive::new(GzDecoder::new(input));
+	let mut archive: Archive<GzDecoder<&File>> = Archive::new(GzDecoder::new(input));
 	#[expect(
 		clippy::literal_string_with_formatting_args,
 		reason = "False positive."
@@ -133,12 +137,12 @@ pub fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> 
 		"[{elapsed_precise}] {spinner:.cyan} Writing {msg}...",
 	));
 	extract_pb.enable_steady_tick(Duration::from_millis(125));
-	let entries: Entries<GzDecoder<File>> = archive
+	let entries: Entries<GzDecoder<&File>> = archive
 		.entries()
 		.context("Couldn't iterate through JVM archive!")?;
 	for entry in entries {
 		#[rustfmt::skip]
-		let mut entry: Entry<GzDecoder<File>> = entry.context("Couldn't get entry in JVM archive!")?;
+		let mut entry: Entry<GzDecoder<&File>> = entry.context("Couldn't get entry in JVM archive!")?;
 		extract_jvm_entry(
 			dest,
 			entry
@@ -169,9 +173,9 @@ pub fn extract_jvm_tar_gz(dest: &Path, input: File, is_mac: bool) -> Result<()> 
 	Ok(())
 }
 
-pub fn extract_jvm_zip(dest: &Path, input: File, is_mac: bool) -> Result<()> {
-	let mut archive: ZipArchive<File> =
-		ZipArchive::new(input).context("Couldn't open JVM archive (ZIP)!")?;
+pub fn extract_jvm_zip(dest: &Path, input: &File, is_mac: bool) -> Result<()> {
+	let mut archive: ZipArchive<&File> =
+		ZipArchive::new(input).context("Couldn't open JVM archive!")?;
 	let multi: MultiProgress = MultiProgress::new();
 	#[expect(
 		clippy::cast_possible_truncation,
@@ -186,7 +190,7 @@ pub fn extract_jvm_zip(dest: &Path, input: File, is_mac: bool) -> Result<()> {
 		&format!("Writing {{msg}}… {TEMPLATE}"),
 	));
 	for index in 0..archive.len() {
-		let mut entry: ZipFile<File> = archive
+		let mut entry: ZipFile<&File> = archive
 			.by_index(index)
 			.context("Couldn't get entry in JVM archive (ZIP)!")?;
 		if entry.is_symlink() {
@@ -202,20 +206,31 @@ pub fn extract_jvm_zip(dest: &Path, input: File, is_mac: bool) -> Result<()> {
 				.as_path(),
 			is_mac,
 			|resolved: &Path| {
+				#[cfg(unix)]
+				let mode: Option<u32> = entry.unix_mode();
+
 				if entry.is_dir() {
 					create_dir_all(resolved).context("create_dir_all (zip)")?;
+
+					#[cfg(unix)]
+					update_perms(resolved, mode, true)?;
 				} else {
 					extract_pb.set_length(size);
 					extract_pb.reset();
 					// cloned progress bars still use the same internal state, so this call is only to appease the compiler, it serves no other purpose
 					#[rustfmt::skip]
 					extract_pb.clone().with_message(resolved.display().to_string());
-					let out: File = File::create(resolved).context("File::create (zip)")?;
-					copy(&mut entry, &mut extract_pb.wrap_write(out)).context("copy (zip)")?;
-				};
 
-				#[cfg(unix)]
-				update_perms(resolved, entry.unix_mode(), entry.is_dir())?;
+					let out: File = File::create_new(resolved).context("File::create (zip)")?;
+					lock!(out);
+					{
+						copy(&mut entry, &mut extract_pb.wrap_write(&out)).context("copy (zip)")?;
+
+						#[cfg(unix)]
+						update_perms(resolved, mode, false)?;
+					};
+					unlock!(out);
+				};
 
 				Ok(())
 			},
@@ -294,15 +309,19 @@ pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 		.context("Couldn't parse integer from Content-Length header!")?;
 
 	let pb: ProgressBar = progress_bar(len);
-	let mut dest: File =
+	let mut out: File =
 		File::create(dest).context("Couldn't open destination file for download!")?;
-	#[rustfmt::skip]
-	copy(
-		&mut pb.wrap_read(&mut response.into_body().into_reader()),
-		&mut dest,
-	).context("Couldn't download resource from URL!")?;
-	pb.finish();
-	println!("Done.\n");
+	lock!(out);
+	{
+		#[rustfmt::skip]
+		copy(
+			&mut pb.wrap_read(&mut response.into_body().into_reader()),
+			&mut out,
+		).context("Couldn't download resource from URL!")?;
+		pb.finish();
+		println!("Done.\n");
+	};
+	unlock!(out);
 
 	Ok(())
 }

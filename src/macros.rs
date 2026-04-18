@@ -46,6 +46,20 @@ macro_rules! check_status {
 }
 
 #[macro_export]
+macro_rules! lock {
+	($file:ident) => {
+		$file.lock().context("Couldn't acquire file lock!")?;
+	};
+}
+
+#[macro_export]
+macro_rules! unlock {
+	($file:ident) => {
+		$file.unlock().context("Couldn't release file lock!")?;
+	};
+}
+
+#[macro_export]
 macro_rules! fuji_value_enum {
 	($ty:ident) => {
 		$crate::fuji_value_enum!(
