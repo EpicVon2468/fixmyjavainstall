@@ -73,6 +73,9 @@ zip = { version = "8.5.1", features = ["deflate-flate2"], default-features = fal
 [target.'cfg(windows)'.dependencies]
 windows-registry = "0.6.1"
 
+[package.metadata.dist]
+dist = true
+
 # The profile that 'dist' will build with
 [profile.dist]
 inherits = "release"
