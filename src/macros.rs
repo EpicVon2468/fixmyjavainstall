@@ -69,11 +69,11 @@ macro_rules! value_enum_extensions {
 			match *self {,}
 		);
 	};
-	($name:ty, match *self {$($variant:pat => $string:expr),*,}) => {
+	($name:ty, $default:expr, match *self {$($variant:pat => $string:expr),*,}) => {
 		#[automatically_derived]
 		impl Default for $name {
 			fn default() -> Self {
-				Self::SYSTEM
+				$default
 			}
 		}
 

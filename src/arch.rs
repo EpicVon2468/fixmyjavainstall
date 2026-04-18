@@ -1,6 +1,6 @@
 //! An enumeration of CPU architectures.
 //!
-//! The static constant [`Arch::SYSTEM`] may provide the host architecture on some targets.
+//! The trait [`Default`] may provide the host architecture on some targets.
 use clap::ValueEnum;
 
 use crate::value_enum_extensions;
@@ -20,18 +20,14 @@ pub enum Arch {
 	Riscv64,
 }
 
-impl Arch {
-	/// The [`Arch`] of the host.
-	pub const SYSTEM: Self = cfg_select! {
+value_enum_extensions!(
+	Arch,
+	cfg_select! {
 		target_arch = "x86_64" => Self::X64,
 		any(target_arch = "aarch64", target_arch = "arm") => Self::Aarch64,
 		target_arch = "riscv64" => Self::Riscv64,
 		_ => panic!("Unsupported help!"),
-	};
-}
-
-value_enum_extensions!(
-	Arch,
+	},
 	match *self {
 		Self::X64 => "x64",
 		Self::Aarch64 => "aarch64",

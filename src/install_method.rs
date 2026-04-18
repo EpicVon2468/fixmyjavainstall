@@ -17,18 +17,14 @@ pub enum InstallMethod {
 	UpdateAlternatives,
 }
 
-impl InstallMethod {
-	/// The [`InstallMethod`] of the host.
-	pub const SYSTEM: Self = cfg_select! {
+value_enum_extensions!(
+	InstallMethod,
+	cfg_select! {
 		target_os = "linux" => Self::Symlink,
 		target_os = "macos" => Self::Path,
 		target_os = "windows" => Self::Path,
 		_ => panic!("Unsupported host!"),
-	};
-}
-
-value_enum_extensions!(
-	InstallMethod,
+	},
 	match *self {
 		Self::Path => "path",
 		Self::Symlink => "symlink",

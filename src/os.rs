@@ -1,6 +1,6 @@
 //! An enumeration of operating systems.
 //!
-//! The static constant [`OS::SYSTEM`] may provide the host OS on some targets.
+//! The trait [`Default`] may provide the host OS on some targets.
 //!
 //!	The user-facing `multi-os` feature allows this enumeration to be used to configure installations.
 use clap::ValueEnum;
@@ -24,18 +24,14 @@ pub enum OS {
 	Windows,
 }
 
-impl OS {
-	/// The [`OS`] of the host.
-	pub const SYSTEM: Self = cfg_select! {
+value_enum_extensions!(
+	OS,
+	cfg_select! {
 		target_os = "linux" => Self::Linux,
 		target_os = "macos" => Self::OSX,
 		target_os = "windows" => Self::Windows,
 		_ => panic!("Unsupported host!"),
-	};
-}
-
-value_enum_extensions!(
-	OS,
+	},
 	match *self {
 		Self::Linux => "linux",
 		Self::OSX => "osx",
