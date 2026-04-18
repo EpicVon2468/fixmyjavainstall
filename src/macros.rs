@@ -62,30 +62,30 @@ macro_rules! unlock {
 }
 
 #[macro_export]
-macro_rules! fuji_value_enum {
-	($ty:ident) => {
-		$crate::fuji_value_enum!(
-			$ty,
+macro_rules! value_enum_extensions {
+	($name:ty) => {
+		$crate:value_enum_extensions!(
+			$name,
 			match *self {,}
 		);
 	};
-	($ty:ident, match *self {$($variant:pat => $string:expr),*,}) => {
+	($name:ty, match *self {$($variant:pat => $string:expr),*,}) => {
 		#[automatically_derived]
-		impl Default for $ty {
+		impl Default for $name {
 			fn default() -> Self {
 				Self::SYSTEM
 			}
 		}
 
 		#[automatically_derived]
-		impl From<$ty> for clap::builder::OsStr {
-			fn from(value: $ty) -> Self {
+		impl From<$name> for clap::builder::OsStr {
+			fn from(value: $name) -> Self {
 				value.to_string().into()
 			}
 		}
 
 		#[automatically_derived]
-		impl std::fmt::Display for $ty {
+		impl std::fmt::Display for $name {
 			#[allow(unreachable_code, unreachable_patterns)]
 			fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
 				write!(

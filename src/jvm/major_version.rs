@@ -1,5 +1,5 @@
 //! An enumeration data structure for representing major JVM versions.
-use std::ffi::{OsStr, OsString};
+use std::ffi::OsStr;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
@@ -8,6 +8,7 @@ use clap::error::{ContextKind, ContextValue, ErrorKind};
 use clap::{Arg, Command, Error};
 
 /// The major version of a JVM.
+#[non_exhaustive]
 #[derive(Clone, PartialEq, Eq, Default)]
 pub enum MajorVersion {
 	/// Some arbitrary numeric version.
@@ -41,7 +42,7 @@ impl FujiValueEnum for MajorVersion {
 	}
 }
 
-pub trait FujiValueEnum: FromStr + Sized + Clone + 'static {
+pub trait FujiValueEnum: FromStr<Err = String> + 'static {
 	fn possible_values() -> impl Iterator<Item = PossibleValue> {
 		Self::variants().iter().filter_map(Self::to_possible_value)
 	}
@@ -67,36 +68,18 @@ impl Display for MajorVersion {
 	}
 }
 
-#[derive(Clone, Default)]
-pub struct MajorVersionParser;
+#[derive(Default, Clone)]
+pub struct FujiValueEnumParser<T: FujiValueEnum>(std::marker::PhantomData<T>);
 
-impl MajorVersionParser {
-	#[inline]
-	#[must_use]
-	pub const fn new() -> Self {
-		Self {}
-	}
-}
-
-impl TypedValueParser for MajorVersionParser {
-	type Value = MajorVersion;
-
-	fn parse_ref(
-		&self,
+impl<T: FujiValueEnum> FujiValueEnumParser<T> {
+	pub fn parse_impl<P: TypedValueParser>(
 		cmd: &Command,
 		arg: Option<&Arg>,
 		value: &OsStr,
-	) -> Result<Self::Value, Error> {
-		self.parse(cmd, arg, value.to_owned())
-	}
-
-	fn parse(
-		&self,
-		cmd: &Command,
-		arg: Option<&Arg>,
-		value: OsString,
-	) -> Result<Self::Value, Error> {
-		let result: Result<MajorVersion, String> = value.to_str().unwrap().to_lowercase().parse();
+	) -> Result<P::Value, Error>
+	where
+		P::Value: FujiValueEnum, {
+		let result: Result<P::Value, String> = value.to_str().unwrap().to_lowercase().parse();
 		result.map_or_else(
 			|invalid_value: String| {
 				let mut error: Error = Error::new(ErrorKind::InvalidValue).with_cmd(cmd);
@@ -120,14 +103,34 @@ impl TypedValueParser for MajorVersionParser {
 				);
 				Err(error)
 			},
-			|version: MajorVersion| Ok(version),
+			Ok,
 		)
 	}
-
-	fn possible_values(&self) -> Option<Box<dyn Iterator<Item = PossibleValue> + '_>> {
-		Some(Box::new(MajorVersion::possible_values()))
-	}
 }
+
+#[macro_export]
+macro_rules! fuji_value_enum_parser {
+	($name:ty) => {
+		impl TypedValueParser for FujiValueEnumParser<$name> {
+			type Value = $name;
+
+			fn parse_ref(
+				&self,
+				cmd: &Command,
+				arg: Option<&Arg>,
+				value: &OsStr,
+			) -> Result<Self::Value, Error> {
+				Self::parse_impl::<Self>(cmd, arg, value)
+			}
+
+			fn possible_values(&self) -> Option<Box<dyn Iterator<Item = PossibleValue> + '_>> {
+				Some(Box::new(<$name>::possible_values()))
+			}
+		}
+	};
+}
+
+fuji_value_enum_parser!(MajorVersion);
 
 // https://stackoverflow.com/questions/73658377/how-to-have-number-or-string-as-a-cli-argument-in-clap
 impl FromStr for MajorVersion {

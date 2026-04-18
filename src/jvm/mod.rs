@@ -34,7 +34,7 @@ use serde::{Deserialize as Deserialise, Serialize as Serialise};
 use crate::arch::Arch;
 use crate::cli::Software;
 use crate::jvm::jvm::JVM;
-use crate::jvm::major_version::{MajorVersion, MajorVersionParser};
+use crate::jvm::major_version::{FujiValueEnumParser, MajorVersion};
 #[cfg(feature = "multi-os")]
 use crate::os::OS;
 use crate::wrong_cmd;
@@ -87,7 +87,7 @@ pub enum Op {
 		dry_run: bool,
 
 		/// The version for the requested JVM
-		#[arg(value_parser = MajorVersionParser::default())]
+		#[arg(value_parser = FujiValueEnumParser::default())]
 		version: MajorVersion,
 	},
 	/// Removes the currently installed JVM (only affects JVMs installed via fuji).

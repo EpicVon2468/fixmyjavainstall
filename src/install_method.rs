@@ -1,6 +1,6 @@
 use clap::ValueEnum;
 
-use crate::fuji_value_enum;
+use crate::value_enum_extensions;
 
 // TODO: use environment variables to set args for commands (i.e FUJI_UPDATE_ALTERNATIVES_ARGS)
 #[non_exhaustive]
@@ -32,7 +32,7 @@ impl InstallMethod {
 	pub const SYSTEM: Self = panic!("Unsupported host!");
 }
 
-fuji_value_enum!(
+value_enum_extensions!(
 	InstallMethod,
 	match *self {
 		Self::Path => "path",

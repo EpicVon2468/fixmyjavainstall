@@ -5,7 +5,7 @@
 //!	The user-facing `multi-os` feature allows this enumeration to be used to configure installations.
 use clap::ValueEnum;
 
-use crate::fuji_value_enum;
+use crate::value_enum_extensions;
 
 /// An enumeration of operating systems.
 #[non_exhaustive]
@@ -43,7 +43,7 @@ impl OS {
 	pub const SYSTEM: Self = panic!("Unsupported host!");
 }
 
-fuji_value_enum!(
+value_enum_extensions!(
 	OS,
 	match *self {
 		Self::Linux => "linux",
