@@ -8,6 +8,7 @@ use anyhow::{Context as _, Result};
 use crate::commands::io_failure;
 use crate::jvm::Feature;
 
+#[inline]
 #[must_use]
 pub fn gen_wrapper(java_home: &Path, features: &[Feature], is_win: bool, suffix: &str) -> String {
 	if is_win {

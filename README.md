@@ -5,6 +5,8 @@
 NOTICE: You must run with `sudo -E` to preserve environment variables, else some preset detections may fail.<br>
 DEVELOPER NOTICE: Expect regular breaking changes; Do not depend on `libfuji` as a stable API!
 
+MSRV: `1.95.0`.
+
 ## Status:
 
 - Linux: `[WORKING]-[TESTED]`
