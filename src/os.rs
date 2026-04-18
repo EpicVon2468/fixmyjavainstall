@@ -25,22 +25,13 @@ pub enum OS {
 }
 
 impl OS {
-	/// The [`OS`] of the host – Linux.
-	#[cfg(target_os = "linux")]
-	pub const SYSTEM: Self = Self::Linux;
-	/// The [`OS`] of the host – macOS.
-	#[cfg(target_os = "macos")]
-	pub const SYSTEM: Self = Self::OSX;
-	/// The [`OS`] of the host – Windows.
-	#[cfg(target_os = "windows")]
-	pub const SYSTEM: Self = Self::Windows;
-	/// The [`OS`] of the host – Unsupported, panic!
-	#[cfg(all(
-		not(target_os = "linux"),
-		not(target_os = "macos"),
-		not(target_os = "windows"),
-	))]
-	pub const SYSTEM: Self = panic!("Unsupported host!");
+	/// The [`OS`] of the host.
+	pub const SYSTEM: Self = cfg_select! {
+		target_os = "linux" => Self::Linux,
+		target_os = "macos" => Self::OSX,
+		target_os = "windows" => Self::Windows,
+		_ => panic!("Unsupported host!"),
+	};
 }
 
 value_enum_extensions!(

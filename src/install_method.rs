@@ -18,18 +18,13 @@ pub enum InstallMethod {
 }
 
 impl InstallMethod {
-	#[cfg(target_os = "linux")]
-	pub const SYSTEM: Self = Self::Symlink;
-	#[cfg(target_os = "macos")]
-	pub const SYSTEM: Self = Self::Path;
-	#[cfg(target_os = "windows")]
-	pub const SYSTEM: Self = Self::Path;
-	#[cfg(all(
-		not(target_os = "linux"),
-		not(target_os = "macos"),
-		not(target_os = "windows"),
-	))]
-	pub const SYSTEM: Self = panic!("Unsupported host!");
+	/// The [`InstallMethod`] of the host.
+	pub const SYSTEM: Self = cfg_select! {
+		target_os = "linux" => Self::Symlink,
+		target_os = "macos" => Self::Path,
+		target_os = "windows" => Self::Path,
+		_ => panic!("Unsupported host!"),
+	};
 }
 
 value_enum_extensions!(

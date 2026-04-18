@@ -21,23 +21,13 @@ pub enum Arch {
 }
 
 impl Arch {
-	/// The [`Arch`] of the host – `x64`.
-	#[cfg(target_arch = "x86_64")]
-	pub const SYSTEM: Self = Self::X64;
-	/// The [`Arch`] of the host – `aarch64`.
-	#[cfg(any(target_arch = "aarch64", target_arch = "arm"))]
-	pub const SYSTEM: Self = Self::Aarch64;
-	/// The [`Arch`] of the host – `riscv64`.
-	#[cfg(target_arch = "riscv64")]
-	pub const SYSTEM: Self = Self::Riscv64;
-	/// The [`Arch`] of the host – Unsupported, panic!
-	#[cfg(all(
-		not(target_arch = "x86_64"),
-		not(target_arch = "aarch64"),
-		not(target_arch = "arm"),
-		not(target_arch = "riscv64"),
-	))]
-	pub const SYSTEM: Self = panic!("Unsupported host!");
+	/// The [`Arch`] of the host.
+	pub const SYSTEM: Self = cfg_select! {
+		target_arch = "x86_64" => Self::X64,
+		any(target_arch = "aarch64", target_arch = "arm") => Self::Aarch64,
+		target_arch = "riscv64" => Self::Riscv64,
+		_ => panic!("Unsupported help!"),
+	};
 }
 
 value_enum_extensions!(
