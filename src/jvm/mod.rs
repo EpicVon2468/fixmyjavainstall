@@ -78,11 +78,6 @@ pub enum Op {
 		#[arg(short, long)]
 		features: Vec<Feature>,
 
-		// TODO: Move into Feature?
-		/// Whether to bundle Kotlin with the requested JVM.
-		#[arg(short = 'k', long)]
-		include_kotlin: bool,
-
 		/// Show execution path without actually installing the JVM.
 		#[arg(long)]
 		dry_run: bool,
@@ -202,6 +197,8 @@ pub enum Feature {
 	/// It is unlikely that a glibc JVM will work on MUSL.  Additionally, MUSL support is few and far between amongst JVM vendors.
 	#[cfg(any(target_env = "musl", feature = "multi-os"))]
 	MUSL,
+	/// stub
+	Kotlin,
 }
 
 #[derive(Serialise, Deserialise)]

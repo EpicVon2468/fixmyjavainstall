@@ -1,4 +1,5 @@
 use std::cmp::min;
+use std::env::var;
 use std::fmt::Write;
 use std::fs::{File, create_dir_all};
 use std::io::copy;
@@ -362,4 +363,11 @@ pub fn io_failure<P: AsRef<Path>, S: AsRef<str>>(dest: P, msg: S) -> String {
 		msg.as_ref(),
 		dest.as_ref().display()
 	)
+}
+
+#[must_use]
+pub fn is_wayland() -> bool {
+	has_program("wayland-info")
+		|| var("WAYLAND_DISPLAY").is_ok()
+		|| var("XDG_SESSION_TYPE").is_ok_and(|var: String| var == "wayland")
 }

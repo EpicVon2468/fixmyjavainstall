@@ -38,53 +38,27 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 		features.push(Feature::Minimal);
 	};
 	configure_fast(&mut features)?;
+	features.push(Feature::Kotlin);
 	features.push(Feature::Native);
 	features.push(Feature::Unsafe);
 	features.push(Feature::FontFix);
-	cmd_manage(FujiCmd::Manage {
-		software: Software::JVM {
-			op: Op::Install {
-				jvm: JVM::JBR,
-				arch: Arch::default(),
-				#[cfg(feature = "multi-os")]
-				operating_system: OS::default(),
-				features,
-				include_kotlin: true,
-				dry_run: false,
-				version: MajorVersion::LTS,
-			},
-		},
-	})
+	do_preset(JVM::JBR, features, MajorVersion::LTS)
 }
 
 fn preset_fast(minimal: bool) -> Result<()> {
 	let mut features: Vec<Feature> = features(minimal);
 	configure_fast(&mut features)?;
-	cmd_manage(FujiCmd::Manage {
-		software: Software::JVM {
-			op: Op::Install {
-				jvm: JVM::JBR,
-				arch: Arch::default(),
-				#[cfg(feature = "multi-os")]
-				operating_system: OS::default(),
-				features,
-				include_kotlin: false,
-				dry_run: false,
-				version: MajorVersion::LTS,
-			},
-		},
-	})
+	do_preset(JVM::JBR, features, MajorVersion::LTS)
 }
 
 fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 	features.push(Feature::JEP519);
 	#[cfg(target_os = "linux")]
 	{
-		use std::env::var;
 		use std::fs::{DirEntry, ReadDir};
 		use std::path::Path;
 
-		use crate::commands::io_failure;
+		use crate::commands::{io_failure, is_wayland};
 
 		let path: &str = "/proc/driver";
 		let mut dir: ReadDir = Path::new(path)
@@ -103,7 +77,7 @@ fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 		};
 
 		// WLToolkit also enables Vulkan
-		features.push(if var("WAYLAND_DISPLAY").is_ok() {
+		features.push(if is_wayland() {
 			Feature::Wayland
 		} else {
 			Feature::OpenGL
@@ -119,18 +93,21 @@ fn configure_fast(features: &mut Vec<Feature>) -> Result<()> {
 }
 
 fn preset_latest(minimal: bool) -> Result<()> {
+	// FIXME: need to implement JVM::Auto so I don't have to default to JavaSE
+	do_preset(JVM::JavaSE, features(minimal), MajorVersion::Latest)
+}
+
+fn do_preset(jvm: JVM, features: Vec<Feature>, version: MajorVersion) -> Result<()> {
 	cmd_manage(FujiCmd::Manage {
 		software: Software::JVM {
 			op: Op::Install {
-				// FIXME: need to implement JVM::Auto so I don't have to default to JavaSE
-				jvm: JVM::JavaSE,
+				jvm,
 				arch: Arch::default(),
 				#[cfg(feature = "multi-os")]
 				operating_system: OS::default(),
-				features: features(minimal),
-				include_kotlin: false,
+				features,
 				dry_run: false,
-				version: MajorVersion::Latest,
+				version,
 			},
 		},
 	})

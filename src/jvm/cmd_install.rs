@@ -25,7 +25,6 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		#[cfg(feature = "multi-os")]
 		operating_system: os,
 		features,
-		include_kotlin: _include_kotlin,
 		dry_run,
 		version,
 	}: Op = op else {
