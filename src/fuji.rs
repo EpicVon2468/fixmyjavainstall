@@ -48,6 +48,7 @@
 	clippy::doc_markdown,
 	reason = "'JetBrains' and 'AdoptOpenJDK' are not identifiers I'm referencing.  Bad clippy!"
 )]
+#![allow(clippy::default_trait_access, reason = "Shush")]
 #![doc = include_str!("../README.md")]
 pub mod arch;
 pub mod cli;

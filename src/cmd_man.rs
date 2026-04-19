@@ -9,7 +9,6 @@ use clap::{Arg, Command, CommandFactory as _};
 use clap_mangen::Man;
 use clap_mangen::roff::{Roff, roman};
 
-use flate2::Compression;
 use flate2::read::GzEncoder;
 
 use crate::cli::{FujiArgs, FujiCmd};
@@ -39,12 +38,12 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 			generate(child, out_dir)?;
 		}
 
-		let man: Man = Man::new(parent.clone()).section("8").date("2026-04-18");
+		let man: Man = Man::new(parent.clone()).section("8").date("2026-04-20");
 
 		let mut output: GzEncoder<File> = GzEncoder::new(
 			File::create_new(out_dir.join(man.get_filename()).with_added_extension("gz"))
 				.context("create man_file.gz")?,
-			Compression::default(),
+			Default::default(),
 		);
 		render0(parent, &man, &mut output)?;
 		render_subcommands(parent, &mut output)?;
@@ -78,7 +77,7 @@ fn render_subcommands(parent: &Command, mut output: &mut GzEncoder<File>) -> Res
 		.get_subcommands()
 		.any(|child: &Command| !child.is_hide_set())
 	{
-		let mut roff: Roff = Roff::default();
+		let mut roff: Roff = Default::default();
 		#[rustfmt::skip]
 		roff.control(
 			"SH",

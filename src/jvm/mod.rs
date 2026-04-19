@@ -125,7 +125,6 @@ pub fn manage_jvm(software: Software) -> Result<()> {
 	}
 }
 
-// FIXME: https://github.com/rust-lang/cargo/issues/4648 + https://github.com/clap-rs/clap/issues/6096
 #[non_exhaustive]
 #[derive(ValueEnum, Clone, PartialEq, Eq)]
 pub enum Feature {
@@ -145,6 +144,8 @@ pub enum Feature {
 	#[value(name = "jep-519", alias = "compact-object-headers")]
 	JEP519,
 	/// Wayland support (requires Vulkan) – <https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype>.
+	///
+	/// Also known as [Project Wakefield](https://openjdk.org/projects/wakefield/).
 	///
 	/// See also:
 	///
@@ -176,13 +177,22 @@ pub enum Feature {
 	JCEF,
 	/// Allows all Java modules to use the (soon to be) restricted native library access – <https://openjdk.org/jeps/472>.
 	///
+	/// Additionally, for developers, it is recommended that you switch to [Project Panama](https://openjdk.org/projects/panama/) (Foreign Functions & Memory API).
+	///
 	/// See also:
 	///
 	/// - <https://inside.java/2024/12/09/quality-heads-up/>.
 	/// - <https://docs.oracle.com/en/java/javase/25/core/restricted-methods.html>.
+	/// - <https://openjdk.org/projects/panama/>.
 	#[value(alias = "allow-native")]
 	Native,
 	/// Allows use of the (soon to be) restricted sun.misc.Unsafe API access – <https://openjdk.org/jeps/471>.
+	///
+	/// Additionally, for developers, it is recommended that you switch to [Project Panama](https://openjdk.org/projects/panama/) (Foreign Functions & Memory API).
+	///
+	/// See also:
+	///
+	/// - <https://openjdk.org/projects/panama/>.
 	#[value(alias = "allow-unsafe")]
 	Unsafe,
 	/// Enables AWT font antialiasing.  This can improve readability and quality of text.
