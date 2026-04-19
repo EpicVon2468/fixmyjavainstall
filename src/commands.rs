@@ -339,7 +339,9 @@ pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
 				write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap();
 			})
 			.progress_chars("=>-")
-			.tick_chars("⠹⢸⣰⣆⡇⠏ "),
+			.tick_strings(&[
+				"⠉⠙", "⠈⠹", " ⢹", " ⣸", "⢀⣰", "⣀⣠", "⣄⣀", "⣆⡀", "⣇ ", "⡏ ", "⠏⠁", "⠋⠉", "  ",
+			]),
 	);
 	// pb.set_tab_width(4);
 	pb
