@@ -54,21 +54,12 @@ pub enum Op {
 		/// The architecture for the requested JVM.
 		///
 		/// Note that not every JVM may support every architecture, and some JVMs may not offer certain features for all architectures.  Generally speaking, x64 (amd64) has the highest level of support overall.
-		#[arg(
-			short,
-			long,
-			default_value = Arch::default(),
-		)]
+		#[arg(short, long, default_value_t)]
 		arch: Arch,
 
 		/// The OS for the requested JVM.
 		#[cfg(feature = "multi-os")]
-		#[arg(
-			short,
-			long,
-			visible_alias = "os",
-			default_value = OS::default(),
-		)]
+		#[arg(short, long, alias = "os", default_value_t)]
 		operating_system: OS,
 
 		// TODO: concat

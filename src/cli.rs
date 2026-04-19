@@ -33,7 +33,7 @@ pub enum FujiCmd {
 		// TODO: 'InstallMethod' enumeration
 		/// Whether to use update-alternatives for install.
 		#[cfg(any(target_os = "linux", feature = "multi-os"))]
-		#[arg(short, long, default_value = "false")]
+		#[arg(short, long, default_value_t)]
 		use_update_alternatives: bool,
 	},
 	/// Manages software.
