@@ -66,8 +66,11 @@ pub mod win_link;
 
 use std::env::args_os;
 use std::ffi::OsString;
+use std::fs::{File, exists, remove_file};
+use std::io::Write as _;
+use std::process::id;
 
-use anyhow::Result;
+use anyhow::{Context as _, Result, bail};
 
 use clap::Parser as _;
 
@@ -163,10 +166,6 @@ pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 ///			* [`cmd_manage`][`cmd_manage()`]
 /// 		* [`cmd_man`][`cmd_man()`]
 ///
-/// # Panics
-///
-/// * A `const` panic will occur if this function is called on Windows.  Windows support is not yet ready, so this is a countermeasure to prevent premature usage.
-///
 /// # Returns
 ///
 /// Return type: [`Result<()>`]
@@ -193,13 +192,6 @@ pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 pub fn entrypoint(args: FujiArgs) -> Result<()> {
 	// dbg!(env!("CARGO_PKG_NAME"));
 	// dbg!(env!("CARGO_PKG_VERSION"));
-	const {
-		// Ever heard of "Never judge a book by is cover" ?
-		// It's about how you should judge based on the content of something, not what is on the outside
-		// Windows saw that, and said "Okay, but what if we made file extensions matter for execution instead?"
-		#[rustfmt::skip]
-		assert!(cfg!(not(windows)), "https://learn.microsoft.com/en-gb/windows/wsl/install/");
-	};
 	#[cfg(feature = "dev")]
 	// SAFETY:
 	// Mutation of environ is technically thread unsafe, HOWEVER:
@@ -213,7 +205,8 @@ pub fn entrypoint(args: FujiArgs) -> Result<()> {
 			set_var("RUST_BACKTRACE", "1");
 		};
 	};
-	args.command.map_or_else(
+	assert_singleton_process()?;
+	let result: Result<()> = args.command.map_or_else(
 		|| Ok(()),
 		|command: FujiCmd| match command {
 			#[cfg(any(not(windows), feature = "multi-os"))]
@@ -221,5 +214,21 @@ pub fn entrypoint(args: FujiArgs) -> Result<()> {
 			FujiCmd::Manage { .. } => cmd_manage(command),
 			FujiCmd::Manual { .. } => cmd_man(command),
 		},
-	)
+	);
+	remove_file(LOCKFILE).context(format!("Couldn't remove lockfile {LOCKFILE}!"))?;
+	result
+}
+
+pub const LOCKFILE: &str = "/var/lock/fixurjavainstall.lock";
+
+fn assert_singleton_process() -> Result<()> {
+	if exists(LOCKFILE)? {
+		bail!("Couldn't acquire lockfile {LOCKFILE}!")
+	};
+	let mut file: File =
+		File::create_new(LOCKFILE).context(format!("Couldn't acquire lockfile {LOCKFILE}!"))?;
+	lock!(file);
+	writeln!(file, "{}\n", dbg!(id())).context(format!("Couldn't write to lockfile {LOCKFILE}!"))?;
+	unlock!(file);
+	Ok(())
 }
