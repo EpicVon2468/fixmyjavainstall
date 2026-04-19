@@ -1,6 +1,6 @@
 use std::cmp::min;
 use std::fmt::Write;
-use std::fs::{File, Permissions, create_dir_all};
+use std::fs::{File, create_dir_all};
 use std::io::copy;
 use std::path::{Component, Components, Path, PathBuf};
 use std::time::Duration;
@@ -245,7 +245,7 @@ pub fn extract_jvm_zip(dest: &Path, input: &File, is_mac: bool) -> Result<()> {
 
 #[cfg(unix)]
 pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> {
-	use std::fs::set_permissions;
+	use std::fs::{Permissions, set_permissions};
 	use std::os::unix::fs::PermissionsExt as _;
 
 	let new_mode: u32 = if mode.is_some_and(is_executable) || is_dir {
@@ -339,7 +339,7 @@ pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
 				write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap();
 			})
 			.progress_chars("=>-")
-			.tick_chars("⠙⠚⠓⠋ "),
+			.tick_chars("⠹⢸⣰⣆⡇⠏ "),
 	);
 	// pb.set_tab_width(4);
 	pb
