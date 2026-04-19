@@ -7,7 +7,7 @@ You can [download the latest release](https://github.com/EpicVon2468/fixmyjavain
 You can also install using cargo with:
 
 ```shell
-cargo install --git https://github.com/EpicVon2468/fixmyjavainstall
+cargo install --git https://github.com/EpicVon2468/fixmyjavainstall --tag v0.2.1
 ```
 
 Or by running:
