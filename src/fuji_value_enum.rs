@@ -1,4 +1,5 @@
 use std::ffi::OsStr;
+use std::marker::PhantomData;
 use std::str::FromStr;
 
 use clap::builder::{PossibleValue, TypedValueParser};
@@ -18,17 +19,15 @@ pub trait FujiValueEnum: FromStr<Err = String> + 'static {
 }
 
 #[derive(Default, Clone)]
-pub struct FujiValueEnumParser<T: FujiValueEnum>(std::marker::PhantomData<T>);
+pub struct FujiValueEnumParser<T: FujiValueEnum>(PhantomData<T>);
 
 impl<T: FujiValueEnum> FujiValueEnumParser<T> {
 	pub fn parse_impl<P: TypedValueParser>(
 		cmd: &Command,
 		arg: Option<&Arg>,
 		value: &OsStr,
-	) -> Result<P::Value, Error>
-	where
-		P::Value: FujiValueEnum, {
-		let result: Result<P::Value, String> = value.to_str().unwrap().to_lowercase().parse();
+	) -> Result<T, Error> {
+		let result: Result<T, String> = value.to_str().unwrap().to_lowercase().parse();
 		result.map_or_else(
 			|invalid_value: String| {
 				let mut error: Error = Error::new(ErrorKind::InvalidValue).with_cmd(cmd);
