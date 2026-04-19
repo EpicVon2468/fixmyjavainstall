@@ -36,5 +36,5 @@ value_enum_extensions!(
 		Self::Linux => "linux",
 		Self::OSX => "osx",
 		Self::Windows => "windows",
-	}
+	},
 );

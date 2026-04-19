@@ -32,5 +32,5 @@ value_enum_extensions!(
 		Self::X64 => "x64",
 		Self::Aarch64 => "aarch64",
 		Self::Riscv64 => "riscv64",
-	}
+	},
 );

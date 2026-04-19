@@ -33,8 +33,9 @@ use serde::{Deserialize as Deserialise, Serialize as Serialise};
 
 use crate::arch::Arch;
 use crate::cli::Software;
+use crate::fuji_value_enum::FujiValueEnumParser;
 use crate::jvm::jvm::JVM;
-use crate::jvm::major_version::{FujiValueEnumParser, MajorVersion};
+use crate::jvm::major_version::MajorVersion;
 #[cfg(feature = "multi-os")]
 use crate::os::OS;
 use crate::wrong_cmd;

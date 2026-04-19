@@ -29,5 +29,5 @@ value_enum_extensions!(
 		Self::Path => "path",
 		Self::Symlink => "symlink",
 		Self::UpdateAlternatives => "update-alternatives",
-	}
+	},
 );

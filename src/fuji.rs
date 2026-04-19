@@ -55,6 +55,7 @@ pub mod cmd_link;
 pub mod cmd_man;
 pub mod cmd_manage;
 pub mod commands;
+pub mod fuji_value_enum;
 pub mod install_method;
 pub mod jvm;
 pub mod kotlin;

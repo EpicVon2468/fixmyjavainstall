@@ -66,10 +66,10 @@ macro_rules! value_enum_extensions {
 	($name:ty) => {
 		$crate:value_enum_extensions!(
 			$name,
-			match *self {,}
+			match *self {,},
 		);
 	};
-	($name:ty, $default:expr, match *self {$($variant:pat => $string:expr),*,}) => {
+	($name:ty, $default:expr, match *self {$($variant:pat => $string:expr),*,},) => {
 		#[automatically_derived]
 		impl Default for $name {
 			fn default() -> Self {
@@ -84,6 +84,18 @@ macro_rules! value_enum_extensions {
 			}
 		}
 
+		$crate::display!(
+			$name,
+			match *self {
+				$($variant => $string,)*
+			},
+		);
+	};
+}
+
+#[macro_export]
+macro_rules! display {
+	($name:ty, match *self {$($variant:pat => $string:expr),*,},) => {
 		#[automatically_derived]
 		impl std::fmt::Display for $name {
 			#[allow(unreachable_code, unreachable_patterns)]
