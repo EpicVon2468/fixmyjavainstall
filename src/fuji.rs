@@ -29,7 +29,6 @@
 	clippy::equatable_if_let,
 	clippy::enum_glob_use
 )]
-// FIXME: this isn't working
 #![deny(
 	clippy::undocumented_unsafe_blocks,
 	reason = "Unsafe bad.  Kill it with fire!"
@@ -191,11 +190,10 @@ pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 /// assert_eq!(entrypoint(FujiArgs::parse()), Ok(()));
 /// ```
 pub fn entrypoint(args: FujiArgs) -> Result<()> {
-	// dbg!(env!("CARGO_PKG_NAME"));
-	// dbg!(env!("CARGO_PKG_VERSION"));
 	#[cfg(feature = "dev")]
 	// SAFETY:
-	// Mutation of environ is technically thread unsafe, HOWEVER:
+	// Problem: Mutation of environ can be thread unsafe.
+	// Excuses:
 	// - I'm not doing multi-threading.
 	// - I want a stack trace available in development immediately.
 	// - This code can't exactly fail.
