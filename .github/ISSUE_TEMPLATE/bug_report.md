@@ -33,7 +33,7 @@ Attach screenshots to help explain your problem (if applicable)
 
  - OS: { Windows, macOS, Linux (include your distro) }
  - OS Version: { i.e. `10`, `26 Tahoe`, `25.10` }
- - Lib C: { `glibc`, `MUSL`, `MSVCRT`, `UCRT` }
+ - LibC: { `glibc`, `MUSL`, `MSVCRT`, `UCRT` }
  - [ ] I am using a permission/profile/user manager (i.e. `apparmor`) and did not run directly as root
 
 **Fuji Information**
