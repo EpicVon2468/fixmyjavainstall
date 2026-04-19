@@ -204,6 +204,7 @@ pub fn entrypoint(args: FujiArgs) -> Result<()> {
 			set_var("RUST_BACKTRACE", "1");
 		};
 	};
+	#[cfg(target_os = "linux")]
 	assert_singleton_process()?;
 	let result: Result<()> = args.command.map_or_else(
 		|| Ok(()),
@@ -214,6 +215,7 @@ pub fn entrypoint(args: FujiArgs) -> Result<()> {
 			FujiCmd::Manual { .. } => cmd_man(command),
 		},
 	);
+	#[cfg(target_os = "linux")]
 	remove_file(LOCK).context(format!("Couldn't remove lockfile {LOCK}!"))?;
 	result
 }
