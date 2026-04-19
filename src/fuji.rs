@@ -215,20 +215,20 @@ pub fn entrypoint(args: FujiArgs) -> Result<()> {
 			FujiCmd::Manual { .. } => cmd_man(command),
 		},
 	);
-	remove_file(LOCKFILE).context(format!("Couldn't remove lockfile {LOCKFILE}!"))?;
+	remove_file(LOCK).context(format!("Couldn't remove lockfile {LOCK}!"))?;
 	result
 }
 
-pub const LOCKFILE: &str = "/var/lock/fixurjavainstall.lock";
+pub const LOCK: &str = "/var/lock/fixurjavainstall.lock";
 
 fn assert_singleton_process() -> Result<()> {
-	if exists(LOCKFILE)? {
-		bail!("Couldn't acquire lockfile {LOCKFILE}!")
+	if exists(LOCK).is_ok_and(|exists: bool| exists) {
+		bail!("Couldn't acquire lockfile {LOCK}!")
 	};
 	let mut file: File =
-		File::create_new(LOCKFILE).context(format!("Couldn't acquire lockfile {LOCKFILE}!"))?;
+		File::create_new(LOCK).context(format!("Couldn't acquire lockfile {LOCK}!"))?;
 	lock!(file);
-	writeln!(file, "{}\n", dbg!(id())).context(format!("Couldn't write to lockfile {LOCKFILE}!"))?;
+	writeln!(file, "{}\n", dbg!(id())).context(format!("Couldn't write to lockfile {LOCK}!"))?;
 	unlock!(file);
 	Ok(())
 }

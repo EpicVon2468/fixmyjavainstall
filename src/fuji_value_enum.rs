@@ -2,7 +2,7 @@ use std::ffi::OsStr;
 use std::marker::PhantomData;
 use std::str::FromStr;
 
-use clap::builder::{PossibleValue, TypedValueParser};
+use clap::builder::PossibleValue;
 use clap::error::{ContextKind, ContextValue, ErrorKind};
 use clap::{Arg, Command, Error};
 
@@ -22,11 +22,7 @@ pub trait FujiValueEnum: FromStr<Err = String> + 'static {
 pub struct FujiValueEnumParser<T: FujiValueEnum>(PhantomData<T>);
 
 impl<T: FujiValueEnum> FujiValueEnumParser<T> {
-	pub fn parse_impl<P: TypedValueParser>(
-		cmd: &Command,
-		arg: Option<&Arg>,
-		value: &OsStr,
-	) -> Result<T, Error> {
+	pub fn parse_impl(cmd: &Command, arg: Option<&Arg>, value: &OsStr) -> Result<T, Error> {
 		let result: Result<T, String> = Self::convert_case(arg, value.to_str().unwrap()).parse();
 		result.map_or_else(
 			|invalid_value: String| {
@@ -76,7 +72,7 @@ macro_rules! fuji_value_enum_parser {
 				arg: Option<&Arg>,
 				value: &OsStr,
 			) -> Result<Self::Value, Error> {
-				Self::parse_impl::<Self>(cmd, arg, value)
+				Self::parse_impl(cmd, arg, value)
 			}
 
 			fn possible_values(&self) -> Option<Box<dyn Iterator<Item = PossibleValue> + '_>> {
