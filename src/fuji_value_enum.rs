@@ -27,7 +27,7 @@ impl<T: FujiValueEnum> FujiValueEnumParser<T> {
 		arg: Option<&Arg>,
 		value: &OsStr,
 	) -> Result<T, Error> {
-		let result: Result<T, String> = value.to_str().unwrap().to_lowercase().parse();
+		let result: Result<T, String> = Self::convert_case(arg, value.to_str().unwrap()).parse();
 		result.map_or_else(
 			|invalid_value: String| {
 				let mut error: Error = Error::new(ErrorKind::InvalidValue).with_cmd(cmd);
@@ -53,6 +53,14 @@ impl<T: FujiValueEnum> FujiValueEnumParser<T> {
 			},
 			Ok,
 		)
+	}
+
+	fn convert_case(arg: Option<&Arg>, value: &str) -> String {
+		if arg.is_some_and(Arg::is_ignore_case_set) {
+			value.to_lowercase()
+		} else {
+			value.to_string()
+		}
 	}
 }
 
