@@ -1,11 +1,10 @@
 //! An enumeration data structure for representing major JVM versions.
-use std::ffi::OsStr;
 use std::str::FromStr;
 
-use clap::builder::{PossibleValue, TypedValueParser};
-use clap::{Arg, Command, Error};
+use clap::Arg;
+use clap::builder::PossibleValue;
 
-use crate::fuji_value_enum::{FujiValueEnum, FujiValueEnumParser};
+use crate::fuji_value_enum::FujiValueEnum;
 use crate::{display, fuji_value_enum_parser};
 
 /// The major version of a JVM.

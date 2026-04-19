@@ -63,19 +63,23 @@ impl<T: FujiValueEnum> FujiValueEnumParser<T> {
 #[macro_export]
 macro_rules! fuji_value_enum_parser {
 	($name:ty) => {
-		impl TypedValueParser for FujiValueEnumParser<$name> {
+		#[rustfmt::skip]
+		#[automatically_derived]
+		impl clap::builder::TypedValueParser for $crate::fuji_value_enum::FujiValueEnumParser<$name> {
 			type Value = $name;
 
 			fn parse_ref(
 				&self,
-				cmd: &Command,
+				cmd: &clap::Command,
 				arg: Option<&Arg>,
-				value: &OsStr,
-			) -> Result<Self::Value, Error> {
+				value: &std::ffi::OsStr,
+			) -> Result<Self::Value, clap::Error> {
 				Self::parse_impl(cmd, arg, value)
 			}
 
-			fn possible_values(&self) -> Option<Box<dyn Iterator<Item = PossibleValue> + '_>> {
+			fn possible_values(
+				&self,
+			) -> Option<Box<dyn Iterator<Item = clap::builder::PossibleValue> + '_>> {
 				Some(Box::new(<$name>::possible_values()))
 			}
 		}
