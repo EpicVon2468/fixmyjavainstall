@@ -7,7 +7,7 @@ assignees: EpicVon2468
 
 ---
 
-**Describe the bug**
+**Description**
 
 A clear and concise description of what the bug is
 
@@ -29,20 +29,20 @@ Attach screenshots to help explain your problem (if applicable)
 # Paste stacktrace/backtrace here (if applicable)
 ```
 
-**System/host (please complete the following information)**
+**System/Host (please complete the following information)**
 
  - OS: { Windows, macOS, Linux (include your distro) }
  - OS Version: { i.e. `10`, `26 Tahoe`, `25.10` }
  - Lib C: { `glibc`, `MUSL`, `MSVCRT`, `UCRT` }
  - [ ] I am using a permission/profile/user manager (i.e. `apparmor`) and did not run directly as root
 
-**Fuji information**
+**Fuji Information**
 
  - Fuji Version: { i.e. `0.2.1`, `0.1.0`, `1.2.3` }
  - Enabled Features: { i.e. `multi-os`, `dev` }
  - [ ] I built from source
  - [ ] I made changes to my copy of source before building (list them)
 
-**Additional context**
+**Additional Context**
 
 Add any other context about the problem here
