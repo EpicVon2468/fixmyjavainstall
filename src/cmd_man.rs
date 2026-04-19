@@ -71,7 +71,6 @@ fn render0(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) -> Result
 }
 
 // Slight modification of Man::render_subcommands_section to fix display names
-// TODO: PR `clap_mangen` with minimal fix?
 fn render_subcommands(parent: &Command, mut output: &mut GzEncoder<File>) -> Result<()> {
 	if parent
 		.get_subcommands()

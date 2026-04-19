@@ -66,7 +66,7 @@ pub enum Op {
 		#[arg(
 			short,
 			long,
-			alias = "os",
+			visible_alias = "os",
 			default_value = OS::default(),
 		)]
 		operating_system: OS,
@@ -87,7 +87,7 @@ pub enum Op {
 		version: MajorVersion,
 	},
 	/// Removes the currently installed JVM (only affects JVMs installed via fuji).
-	#[command(author, alias = "uninstall")]
+	#[command(author, visible_alias = "uninstall")]
 	Remove,
 	/// Installs a new JVM from a selection of presets.
 	#[command(author, alias = "presets")]
@@ -120,7 +120,7 @@ pub fn manage_jvm(software: Software) -> Result<()> {
 	};
 	match op {
 		Op::Install { .. } => cmd_install::cmd_install(op).context("Couldn't install JVM!"),
-		Op::Remove => todo!(),
+		Op::Remove => todo!("fuji-jvm remove"),
 		Op::Preset { .. } => cmd_preset::cmd_preset(op).context("Couldn't install JVM preset!"),
 	}
 }

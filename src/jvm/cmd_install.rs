@@ -71,7 +71,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		JVM::JavaSE => download_java_se,
 		JVM::Temurin => download_temurin,
 		JVM::Liberica => download_liberica,
-		_ => todo!("Not implemented!"),
+		_ => panic!("Unsupported JVM (not yet implemented?)!"),
 	};
 	#[rustfmt::skip]
 	download_jvm(DownloadJVMArgs {
