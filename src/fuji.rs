@@ -67,10 +67,10 @@ pub mod win_link;
 use std::env::args_os;
 use std::ffi::OsString;
 use std::fs::{File, exists, remove_file};
-use std::io::Write as _;
-use std::process::id;
+use std::io::{Write as _, stderr, stdout};
+use std::process::{abort, id};
 
-use anyhow::{Context as _, Result, bail};
+use anyhow::{Context as _, Result};
 
 use clap::Parser as _;
 
@@ -223,7 +223,10 @@ pub const LOCK: &str = "/var/lock/fixurjavainstall.lock";
 
 fn assert_singleton_process() -> Result<()> {
 	if exists(LOCK).is_ok_and(|exists: bool| exists) {
-		bail!("Couldn't acquire lockfile {LOCK}!")
+		eprintln!("Couldn't acquire lockfile {LOCK}!");
+		stdout().flush()?;
+		stderr().flush()?;
+		abort();
 	};
 	let mut file: File =
 		File::create_new(LOCK).context(format!("Couldn't acquire lockfile {LOCK}!"))?;
