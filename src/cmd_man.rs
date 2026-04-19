@@ -58,29 +58,31 @@ fn dump_manual<P: AsRef<Path>>(cmd: Command, out_dir: P) -> Result<()> {
 	generate(&root, out_dir.as_ref())
 }
 
-#[rustfmt::skip]
-fn render0(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) -> Result<()> {
-	man.render_title(&mut output).context("title")?;
-	man.render_name_section(&mut output).context("name")?;
-	man.render_synopsis_section(&mut output).context("synopsis")?;
-	man.render_description_section(&mut output).context("description")?;
+fn render0(cmd: &Command, man: &Man, mut out: &mut GzEncoder<File>) -> Result<()> {
+	man.render_title(&mut out).context("title")?;
+	man.render_name_section(&mut out).context("name")?;
+	man.render_synopsis_section(&mut out).context("synopsis")?;
+	man.render_description_section(&mut out).context("desc")?;
 	if cmd.get_arguments().any(|arg: &Arg| !arg.is_hide_set()) {
-		man.render_options_section(&mut output).context("options")?;
+		man.render_options_section(&mut out).context("options")?;
 	};
 	Ok(())
 }
 
 // Slight modification of Man::render_subcommands_section to fix display names
-fn render_subcommands(parent: &Command, mut output: &mut GzEncoder<File>) -> Result<()> {
+fn render_subcommands(parent: &Command, mut out: &mut GzEncoder<File>) -> Result<()> {
 	if parent
 		.get_subcommands()
 		.any(|child: &Command| !child.is_hide_set())
 	{
 		let mut roff: Roff = Default::default();
-		#[rustfmt::skip]
 		roff.control(
 			"SH",
-			[parent.get_subcommand_help_heading().unwrap_or("SUBCOMMANDS")],
+			vec![
+				parent
+					.get_subcommand_help_heading()
+					.unwrap_or("SUBCOMMANDS"),
+			],
 		);
 		let mut sorted_subcommands: Vec<&Command> = parent
 			.get_subcommands()
@@ -111,20 +113,20 @@ fn render_subcommands(parent: &Command, mut output: &mut GzEncoder<File>) -> Res
 				}
 			};
 		}
-		roff.to_writer(&mut output).context("subcommands")?;
+		roff.to_writer(&mut out).context("subcommands")?;
 	};
 	Ok(())
 }
 
-fn render1(cmd: &Command, man: &Man, mut output: &mut GzEncoder<File>) -> Result<()> {
+fn render1(cmd: &Command, man: &Man, mut out: &mut GzEncoder<File>) -> Result<()> {
 	if cmd.get_after_long_help().is_some() || cmd.get_after_help().is_some() {
-		man.render_extra_section(&mut output).context("extra")?;
+		man.render_extra_section(&mut out).context("extra")?;
 	};
 	if has_version(cmd) {
-		man.render_version_section(&mut output).context("version")?;
+		man.render_version_section(&mut out).context("version")?;
 	};
 	if cmd.get_author().is_some() {
-		man.render_authors_section(&mut output).context("authors")?;
+		man.render_authors_section(&mut out).context("authors")?;
 	};
 	Ok(())
 }
