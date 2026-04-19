@@ -328,6 +328,10 @@ pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 
 #[rustfmt::skip]
 pub const TEMPLATE: &str = "[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})";
+pub const SPINNER_PAT: [&str; 13] = [
+	"⠉⠙", "⠈⠹", " ⢹", " ⣸", "⢀⣰", "⣀⣠", "⣄⣀", "⣆⡀", "⣇ ", "⡏ ", "⠏⠁", "⠋⠉", "  ",
+];
+pub const PROGRESS_PAT: &str = "=>-";
 
 #[must_use]
 pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
@@ -338,10 +342,8 @@ pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
 			.with_key("eta", |state: &ProgressState, w: &mut dyn Write| {
 				write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap();
 			})
-			.progress_chars("=>-")
-			.tick_strings(&[
-				"⠉⠙", "⠈⠹", " ⢹", " ⣸", "⢀⣰", "⣀⣠", "⣄⣀", "⣆⡀", "⣇ ", "⡏ ", "⠏⠁", "⠋⠉", "  ",
-			]),
+			.progress_chars(PROGRESS_PAT)
+			.tick_strings(&SPINNER_PAT),
 	);
 	// pb.set_tab_width(4);
 	pb
