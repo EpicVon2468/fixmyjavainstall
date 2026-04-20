@@ -23,7 +23,7 @@ value_enum_extensions!(
 	cfg_select! {
 		target_os = "linux" => Self::Symlink,
 		target_os = "macos" => Self::Path,
-		target_os = "windows" => Self::Path,
+		windows => Self::Path,
 		_ => panic!("Unsupported host!"),
 	},
 	match *self {
