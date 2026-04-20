@@ -2,9 +2,10 @@ use anyhow::{Context as _, Result};
 
 use crate::cli::{FujiCmd, Software};
 use crate::cmd_manage::cmd_manage;
+use crate::jvm::feature::Feature;
 use crate::jvm::jvm::JVM;
 use crate::jvm::major_version::MajorVersion;
-use crate::jvm::{Feature, Op, Preset};
+use crate::jvm::{Op, Preset};
 use crate::wrong_cmd;
 
 pub fn cmd_preset(op: Op) -> Result<()> {

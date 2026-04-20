@@ -5,7 +5,8 @@ use anyhow::{Context as _, Result};
 
 use crate::arch::Arch;
 use crate::commands::{download, extract_jvm};
-use crate::jvm::{Feature, JavaVersion};
+use crate::jvm::JavaVersion;
+use crate::jvm::feature::Feature;
 use crate::os::OS;
 
 pub type DownloadJVMFn = fn(args: DownloadJVMArgs) -> Result<()>;

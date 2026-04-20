@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use anyhow::{Context as _, Result};
 
 use crate::commands::io_failure;
-use crate::jvm::Feature;
+use crate::jvm::feature::Feature;
 
 #[inline]
 #[must_use]

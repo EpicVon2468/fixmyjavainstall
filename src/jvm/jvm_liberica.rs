@@ -6,7 +6,7 @@ use anyhow::{Context as _, Result};
 use serde::{Deserialize as Deserialise, Serialize as Serialise};
 
 use crate::arch::Arch;
-use crate::jvm::Feature;
+use crate::jvm::feature::Feature;
 use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};
 use crate::jvm::major_version::MajorVersion;
 use crate::os::OS;

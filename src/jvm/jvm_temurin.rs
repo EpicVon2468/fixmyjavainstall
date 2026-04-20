@@ -1,7 +1,7 @@
 //! Temurin (previously AdoptOpenJDK) by Eclipse/Adoptium – <https://adoptium.net/>.
 use anyhow::Result;
 
-use crate::jvm::Feature;
+use crate::jvm::feature::Feature;
 use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};
 
 // https://github.com/adoptium/api.adoptium.net/blob/main/docs/cookbook.adoc

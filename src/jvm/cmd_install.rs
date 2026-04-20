@@ -5,6 +5,7 @@ use anyhow::{Context as _, Result};
 
 use crate::cmd_link::{link_impl, symlink_link};
 use crate::commands::io_failure;
+use crate::jvm::feature::Feature;
 use crate::jvm::jvm::JVM;
 use crate::jvm::jvm_generic::{DownloadJVMArgs, DownloadJVMFn};
 use crate::jvm::jvm_java_se::download_java_se;
@@ -13,7 +14,7 @@ use crate::jvm::jvm_liberica::{download_liberica, get_liberica_download};
 use crate::jvm::jvm_temurin::download_temurin;
 use crate::jvm::major_version::MajorVersion;
 use crate::jvm::wrapper::{gen_wrapper, install_wrapper};
-use crate::jvm::{Feature, JavaVersion, Op};
+use crate::jvm::{JavaVersion, Op};
 use crate::os::OS;
 use crate::{FUJI_DIR, wrong_cmd};
 
