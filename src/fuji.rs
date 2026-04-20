@@ -128,6 +128,7 @@ pub const FUJI_DIR: &str = cfg_select! {
 /// # Examples
 ///
 /// Creating a shorthand / alias for `fuji foo bar baz`:
+///
 /// ```
 /// use fuji::alias_entrypoint;
 ///
@@ -136,6 +137,7 @@ pub const FUJI_DIR: &str = cfg_select! {
 /// ```
 ///
 /// Creating a shorthand / alias for `fuji manage jvm preset`:
+///
 /// ```
 /// use fuji::alias_entrypoint;
 ///
@@ -209,11 +211,11 @@ pub fn entrypoint(args: FujiArgs) -> Result<()> {
 fn unsafe_checks() {
 	#[cfg(feature = "dev")]
 	// SAFETY:
-	// Problem(s): Mutation of environ can be thread unsafe.
+	// Problem(s):
+	// - Mutation of `environ` can be thread unsafe.
 	// Excuse(s):
-	// - I'm not doing multi-threading.
-	// - I want a stack trace available in development immediately.
-	// - This code can't exactly fail.
+	// - Fuji does not feature multi-threading involving reading or writing `environ`.
+	// - The new value is trusted input and known to be safe at compile-time.
 	unsafe {
 		use std::env::{set_var, var};
 
@@ -224,11 +226,11 @@ fn unsafe_checks() {
 	#[cfg(unix)]
 	// SAFETY:
 	// Problem(s):
-	// - A user may run as non-root by accident, or due to a lack of knowledge.
-	// - To check this, the `geteuid` function from `libc` is needed.
+	// - A user may run as non-root by accident, due to a lack of knowledge, or because they are using a permissions manager.
+	// - To check for this & provide a warning as needed, the `geteuid` function from `libc` is required.
 	// - `libc` is unsafe.
 	// Excuse(s):
-	// - From `getuid(2)`: "ERRORS These functions are always successful and never modify errno".
+	// - From `getuid(2)`: "These functions are always successful and never modify errno.".
 	unsafe {
 		// SAFETY: The function declarations given below are in line with the header files of `libc`.
 		unsafe extern "C" {
@@ -251,7 +253,7 @@ fn unsafe_checks() {
 			///
 			/// ---
 			///
-			/// ```c
+			/// ```
 			/// #include <unistd.h>
 			///
 			/// uid_t geteuid(void);
@@ -267,10 +269,12 @@ fn unsafe_checks() {
 	};
 }
 
+/// Lockfile for Fuji.
+///
 /// - \*BSD does not have `/var/lock` (nor `/opt` for that matter).
 /// 	- <https://man.freebsd.org/cgi/man.cgi?hier>.
 /// 	- <https://man.openbsd.org/hier>.
-/// 	- <https://man.netbsd.org/hier.7>.
+/// 	- <https://man.netbsd.org/hier.7/>.
 /// - macOS does not have `/var/lock`.
 /// 	- <https://keith.github.io/xcode-man-pages/hier.7.html#/var/>.
 /// - Windows (obviously) does not have `/var/lock`.
