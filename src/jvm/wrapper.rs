@@ -114,6 +114,7 @@ fn gen_features<F: Fn(&str, &str) -> String>(
 			"Wayland support (requires Vulkan) – https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype",
 			"-Dawt.tookit.name=WLToolkit",
 		);
+		// TODO: "export _JAVA_AWT_WM_NONREPARENTING=1\n\n"
 		requires_vulkan = true;
 	};
 	// https://docs.oracle.com/en/java/javase/25/troubleshoot/java-2d-properties.html

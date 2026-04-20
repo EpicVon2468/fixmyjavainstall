@@ -14,6 +14,8 @@
 - [ ] Automagic JVM selection
 - [ ] `fuji manual install` ("think make vs. make install")
 - [ ] custom sysroot/prefix
-- [ ] Research / implement file locks
+- [X] Research / implement file locks
+    - [ ] Optimise locking to remove all potential for interception
 - [ ] Allow adding `Feature`s to already-installed JVMs (including non-fuji)
-- [ ] `Append` for `features`
+- [X] `Append` for `features`
+- [ ] List all modified/created folders & files in a log somewhere?
