@@ -13,9 +13,15 @@ pub enum Feature {
 	DCEVM,
 	/// JDK Enhancement Proposal 519 (Compact Object Headers) – <https://openjdk.org/jeps/519>.
 	///
+	/// This feature relates to [Project Lilliput](https://openjdk.org/projects/lilliput/).
+	///
 	/// This feature can generally be considered stable, and is recommended for its strong performance benefits.
 	///
 	/// Additionally, some JVM vendors have backported this feature to previous versions, and [it may be enabled by default in future](https://openjdk.org/jeps/534).
+	///
+	/// See also:
+	///
+	/// - <https://openjdk.org/projects/lilliput/>.
 	#[value(name = "jep-519", alias = "compact-object-headers")]
 	JEP519,
 	/// Wayland support (requires Vulkan) – <https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype>.
@@ -38,7 +44,14 @@ pub enum Feature {
 	OpenGL,
 	/// Metal support for AWT/Swing (macOS) – <https://developer.apple.com/metal/>.
 	///
+	/// Also known as [Project Lanai](https://openjdk.org/projects/lanai/).
+	///
 	/// If you're on macOS, use this instead of OpenGL (Apple has deprecated OpenGL on macOS).
+	///
+	/// See also:
+	///
+	/// - <https://openjdk.org/jeps/382>.
+	/// - <https://openjdk.org/projects/lanai/>.
 	#[cfg(any(target_os = "macos", feature = "multi-os"))]
 	Metal,
 	/// Vulkan for AWT/Swing.
