@@ -61,7 +61,7 @@ pub enum Op {
 
 		/// The OS for the requested JVM.
 		#[cfg(feature = "multi-os")]
-		#[arg(short, long, alias = "os", default_value_t)]
+		#[arg(short, long, visible_alias = "os", default_value_t)]
 		operating_system: OS,
 
 		/// The features for the requested JVM.
