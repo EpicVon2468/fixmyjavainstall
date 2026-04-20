@@ -15,6 +15,7 @@ use crate::wrong_cmd;
 #[derive(Subcommand)]
 #[command(author)]
 pub enum Op {
+	/// Installs Kotlin.
 	#[command(author)]
 	Install {
 		#[arg(short, long, default_value_t)]
@@ -32,6 +33,7 @@ pub enum Op {
 		#[arg(default_value = "stable")]
 		version: String,
 	},
+	/// Removes Kotlin.
 	#[command(author, visible_alias = "uninstall")]
 	Remove,
 }

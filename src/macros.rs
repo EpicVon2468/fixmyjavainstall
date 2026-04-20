@@ -45,11 +45,11 @@ macro_rules! check_status {
 	}};
 }
 
-/// [`Locks`][`std::fs::File::lock`] a file.
+/// [`Locks`][`std::fs::File::try_lock`] a file.
 #[macro_export]
 macro_rules! lock {
 	($file:ident) => {
-		$file.lock().context("Couldn't acquire file lock!")?;
+		$file.try_lock().context("Couldn't acquire file lock!")?;
 	};
 }
 

@@ -205,7 +205,7 @@ pub fn entrypoint(args: FujiArgs) -> Result<()> {
 		};
 	};
 	#[cfg(target_os = "linux")]
-	assert_singleton_process()?;
+	let lock: File = claim_singleton_process()?;
 	let result: Result<()> = args.command.map_or_else(
 		|| Ok(()),
 		|command: FujiCmd| match command {
@@ -216,23 +216,30 @@ pub fn entrypoint(args: FujiArgs) -> Result<()> {
 		},
 	);
 	#[cfg(target_os = "linux")]
-	remove_file(LOCK).context(format!("Couldn't remove lockfile {LOCK}!"))?;
+	unclaim_singleton_process(lock)?;
 	result
 }
 
 pub const LOCK: &str = "/var/lock/fixurjavainstall.lock";
 
-fn assert_singleton_process() -> Result<()> {
+fn claim_singleton_process() -> Result<File> {
 	if exists(LOCK).is_ok_and(|exists: bool| exists) {
 		eprintln!("Couldn't acquire lockfile {LOCK}!");
-		stdout().flush()?;
-		stderr().flush()?;
+		// try to flush, but don't escape back upwards if it fails
+		let _ = stdout().flush();
+		let _ = stderr().flush();
 		abort();
 	};
 	let mut file: File =
 		File::create_new(LOCK).context(format!("Couldn't acquire lockfile {LOCK}!"))?;
 	lock!(file);
 	writeln!(file, "{}\n", id()).context(format!("Couldn't write to lockfile {LOCK}!"))?;
+	Ok(file)
+}
+
+#[allow(clippy::needless_pass_by_value, reason = "Not using it anywhere else.")]
+fn unclaim_singleton_process(file: File) -> Result<()> {
 	unlock!(file);
+	remove_file(LOCK).context(format!("Couldn't remove lockfile {LOCK}!"))?;
 	Ok(())
 }
