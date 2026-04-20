@@ -191,41 +191,7 @@ pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 /// assert_eq!(entrypoint(FujiArgs::parse()), Ok(()));
 /// ```
 pub fn entrypoint(args: FujiArgs) -> Result<()> {
-	#[cfg(feature = "dev")]
-	// SAFETY:
-	// Problem: Mutation of environ can be thread unsafe.
-	// Excuses:
-	// - I'm not doing multi-threading.
-	// - I want a stack trace available in development immediately.
-	// - This code can't exactly fail.
-	unsafe {
-		use std::env::{set_var, var};
-
-		if var("RUST_BACKTRACE").is_err() {
-			set_var("RUST_BACKTRACE", "1");
-		};
-	};
-	#[cfg(unix)]
-	// SAFETY:
-	// Problem:
-	// - A user may run as non-root by accident, or due to a lack of knowledge.
-	// - To check this, getuid() from `libc` is needed.
-	// - `libc` is unsafe.
-	// Excuses:
-	// - From `man 2 getuid`: "ERRORS These functions are always successful and never modify errno".
-	unsafe {
-		// SAFETY: The function declarations given below are in line with the header files of `libc`.
-		unsafe extern "C" {
-
-			fn getuid() -> u32;
-		}
-
-		if getuid() != 0 {
-			eprintln!(
-				"Fuji ran by non-root user!  If you are not using a permissions manager (i.e. `apparmor`), then this is likely a mistake!"
-			);
-		};
-	};
+	unsafe_checks();
 	#[cfg(target_os = "linux")]
 	let lock: File = claim_singleton_process()?;
 	let result: Result<()> = args.command.map_or_else(
@@ -240,6 +206,43 @@ pub fn entrypoint(args: FujiArgs) -> Result<()> {
 	#[cfg(target_os = "linux")]
 	unclaim_singleton_process(lock)?;
 	result
+}
+
+fn unsafe_checks() {
+	#[cfg(feature = "dev")]
+	// SAFETY:
+	// Problem(s): Mutation of environ can be thread unsafe.
+	// Excuse(s):
+	// - I'm not doing multi-threading.
+	// - I want a stack trace available in development immediately.
+	// - This code can't exactly fail.
+	unsafe {
+		use std::env::{set_var, var};
+
+		if var("RUST_BACKTRACE").is_err() {
+			set_var("RUST_BACKTRACE", "1");
+		};
+	};
+	#[cfg(unix)]
+	// SAFETY:
+	// Problem(s):
+	// - A user may run as non-root by accident, or due to a lack of knowledge.
+	// - To check this, getuid() from `libc` is needed.
+	// - `libc` is unsafe.
+	// Excuse(s):
+	// - From `man 2 getuid`: "ERRORS These functions are always successful and never modify errno".
+	unsafe {
+		// SAFETY: The function declarations given below are in line with the header files of `libc`.
+		unsafe extern "C" {
+			fn getuid() -> u32;
+		}
+
+		if getuid() != 0 {
+			eprintln!(
+				"Fuji ran by non-root user!  If you are not using a permissions manager (i.e. `apparmor`), then this is likely a mistake!"
+			);
+		};
+	};
 }
 
 pub const LOCK: &str = "/var/lock/fixurjavainstall.lock";
