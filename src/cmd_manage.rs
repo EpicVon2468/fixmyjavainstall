@@ -9,10 +9,11 @@ pub fn cmd_manage(command: FujiCmd) -> Result<()> {
 	let FujiCmd::Manage { software }: FujiCmd = command else {
 		wrong_cmd!(cmd_manage);
 	};
+	#[allow(unreachable_patterns)]
 	match software {
 		Software::JVM { .. } => manage_jvm(software).context("JVM")?,
 		Software::Kotlin { .. } => manage_kotlin(software).context("Kotlin")?,
-		Software::KotlinNative { .. } => todo!(),
+		_ => panic!("Unsupported software (not yet implemented?)!"),
 	};
 	Ok(())
 }

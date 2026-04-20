@@ -57,6 +57,7 @@ pub enum FujiCmd {
 	},
 }
 
+#[non_exhaustive]
 #[derive(Subcommand)]
 #[command(author, subcommand_value_name = "SOFTWARE")]
 pub enum Software {
@@ -72,8 +73,4 @@ pub enum Software {
 		#[command(subcommand)]
 		op: crate::kotlin::Op,
 	},
-	// TODO: merge into Kotlin
-	/// Manages the Kotlin/Native compiler – <https://kotlinlang.org/docs/native-overview.html>.
-	#[command(author, hide = true)]
-	KotlinNative {},
 }

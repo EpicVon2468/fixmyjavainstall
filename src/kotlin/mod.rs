@@ -20,6 +20,7 @@ pub enum Op {
 		#[arg(short, long, alias = "os", default_value_t)]
 		operating_system: OS,
 
+		/// <https://kotlinlang.org/docs/native-overview.html>.
 		#[arg(short = 'n', long)]
 		include_native: bool,
 
