@@ -2,15 +2,15 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
+/// Fix Ur Java Install – A JVM & Kotlin management utility.
+///
+/// (Re)writing this in Rust was simpler than debugging and 'fixing' the bash script(s).  I am serious.
 #[derive(Parser)]
 #[command(
 	version,
 	long_version = "0.2.1 – \"Move at a reasonable pace and pretty please can GitHub Actions work this time...?\"",
 	author
 )]
-/// Fix Ur Java Install – A JVM & Kotlin management utility.
-///
-/// (Re)writing this in Rust was simpler than debugging and 'fixing' the bash script(s).  I am serious.
 pub struct FujiArgs {
 	#[command(subcommand)]
 	pub command: Option<FujiCmd>,
@@ -61,14 +61,17 @@ pub enum FujiCmd {
 #[command(author, subcommand_value_name = "SOFTWARE")]
 pub enum Software {
 	/// Manages the Java Virtual Machine – <https://www.java.com/>.
-	#[command(display_name = "fuji-jvm", alias = "java", author)]
+	#[command(author, display_name = "fuji-jvm", alias = "java")]
 	JVM {
 		#[command(subcommand)]
 		op: crate::jvm::Op,
 	},
 	/// Manages the Kotlin Programming Language – <https://kotlinlang.org/>.
-	#[command(display_name = "fuji-kt", alias = "kt", author)]
-	Kotlin {},
+	#[command(author, display_name = "fuji-kt", alias = "kt")]
+	Kotlin {
+		#[command(subcommand)]
+		op: crate::kotlin::Op,
+	},
 	// TODO: merge into Kotlin
 	/// Manages the Kotlin/Native compiler – <https://kotlinlang.org/docs/native-overview.html>.
 	#[command(author, hide = true)]

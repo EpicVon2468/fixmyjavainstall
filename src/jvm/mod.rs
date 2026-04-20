@@ -74,8 +74,8 @@ pub enum Op {
 		#[arg(long)]
 		dry_run: bool,
 
-		/// The version for the requested JVM
-		#[arg(value_parser = FujiValueEnumParser::default())]
+		/// The version for the requested JVM.
+		#[arg(value_parser = FujiValueEnumParser::default(), value_enum)]
 		version: MajorVersion,
 	},
 	/// Removes the currently installed JVM (only affects JVMs installed via fuji).
