@@ -21,6 +21,7 @@ pub enum Feature {
 	///
 	/// See also:
 	///
+	/// - <https://openjdk.org/jeps/534>.
 	/// - <https://openjdk.org/projects/lilliput/>.
 	#[value(name = "jep-519", alias = "compact-object-headers")]
 	JEP519,
@@ -30,7 +31,6 @@ pub enum Feature {
 	///
 	/// See also:
 	///
-	/// - <https://github.com/openjdk/wakefield/>.
 	/// - <https://openjdk.org/projects/wakefield/>.
 	#[cfg(any(target_os = "linux", feature = "multi-os"))]
 	#[value(aliases = vec!["wakefield", "wltoolkit", "wl"])]
@@ -65,7 +65,9 @@ pub enum Feature {
 	JCEF,
 	/// Allows all Java modules to use the (soon to be) restricted native library access – <https://openjdk.org/jeps/472>.
 	///
-	/// Additionally, for developers, it is recommended that you switch to [Project Panama](https://openjdk.org/projects/panama/) (Foreign Functions & Memory API).
+	/// JNI is to be replaced by [Project Panama](https://openjdk.org/projects/panama/) (Foreign Functions & Memory API).
+	///
+	/// Developers are discouraged from using JNI, and should instead favour the newer FFM API.
 	///
 	/// See also:
 	///
@@ -76,7 +78,9 @@ pub enum Feature {
 	Native,
 	/// Allows use of the (soon to be) restricted sun.misc.Unsafe API access – <https://openjdk.org/jeps/471>.
 	///
-	/// Additionally, for developers, it is recommended that you switch to [Project Panama](https://openjdk.org/projects/panama/) (Foreign Functions & Memory API).
+	/// JNI is to be replaced by [Project Panama](https://openjdk.org/projects/panama/) (Foreign Functions & Memory API).
+	///
+	/// Developers are discouraged from using JNI, and should instead favour the newer FFM API.
 	///
 	/// See also:
 	///
