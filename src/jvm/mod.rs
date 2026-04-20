@@ -26,7 +26,7 @@ pub mod jvm_temurin;
 pub mod major_version;
 pub mod wrapper;
 
-use anyhow::{Context as _, Result};
+use anyhow::{Context as _, Result, bail};
 
 use clap::{ArgAction, Subcommand};
 
@@ -42,6 +42,7 @@ use crate::jvm::major_version::MajorVersion;
 use crate::os::OS;
 use crate::wrong_cmd;
 
+#[non_exhaustive]
 #[derive(Subcommand)]
 #[command(author)]
 pub enum Op {
@@ -89,6 +90,7 @@ pub enum Op {
 	},
 }
 
+#[non_exhaustive]
 #[derive(Subcommand)]
 #[command(subcommand_value_name = "PRESET")]
 pub enum Preset {
@@ -110,10 +112,12 @@ pub fn manage_jvm(software: Software) -> Result<()> {
 	let Software::JVM { op }: Software = software else {
 		wrong_cmd!(manage_jvm);
 	};
+	#[allow(unreachable_patterns)]
 	match op {
 		Op::Install { .. } => cmd_install::cmd_install(op).context("Couldn't install JVM!"),
 		Op::Remove => todo!("fuji-jvm remove"),
 		Op::Preset { .. } => cmd_preset::cmd_preset(op).context("Couldn't install JVM preset!"),
+		_ => bail!("noop"),
 	}
 }
 

@@ -27,7 +27,9 @@
 	clippy::wildcard_imports,
 	clippy::uninlined_format_args,
 	clippy::equatable_if_let,
-	clippy::enum_glob_use
+	clippy::enum_glob_use,
+	clippy::panic,
+	clippy::panic_in_result_fn
 )]
 #![deny(
 	clippy::undocumented_unsafe_blocks,

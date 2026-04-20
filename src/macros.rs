@@ -105,7 +105,7 @@ macro_rules! display {
 					"{}",
 					match *self {
 						$($variant => $string,)*
-						_ => panic!("Not implemented!"),
+						_ => return std::fmt::Result::Err(std::fmt::Error),
 					}
 				)
 			}

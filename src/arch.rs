@@ -26,7 +26,7 @@ value_enum_extensions!(
 		target_arch = "x86_64" => Self::X64,
 		any(target_arch = "aarch64", target_arch = "arm") => Self::Aarch64,
 		target_arch = "riscv64" => Self::Riscv64,
-		_ => panic!("Unsupported help!"),
+		_ => panic!("Unsupported host!"),
 	},
 	match *self {
 		Self::X64 => "x64",

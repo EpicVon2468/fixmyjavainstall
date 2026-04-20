@@ -6,7 +6,7 @@ use std::io::copy;
 use std::path::{Component, Components, Path, PathBuf};
 use std::time::Duration;
 
-use anyhow::{Context as _, Result};
+use anyhow::{Context as _, Result, bail};
 
 use flate2::read::GzDecoder;
 
@@ -195,7 +195,7 @@ pub fn extract_jvm_zip(dest: &Path, input: &File, is_mac: bool) -> Result<()> {
 			.context("Couldn't get entry in JVM archive (ZIP)!")?;
 		if entry.is_symlink() {
 			println!("Absolutely not go fuck yourself");
-			panic!("https://www.youtube.com/watch?v=yhDMpYkML2k");
+			bail!("https://www.youtube.com/watch?v=yhDMpYkML2k");
 		};
 		let size: u64 = entry.size();
 		extract_jvm_entry(
@@ -273,12 +273,10 @@ where
 	// https://stackoverflow.com/questions/845593/how-do-i-untar-a-subdirectory-into-the-current-directory
 	// --strip-components 1
 	components.next();
-	assert!(
-		!components
-			.clone()
-			.any(|comp: Component| comp == Component::ParentDir),
-		"Component::ParentDir found!"
-	);
+	#[rustfmt::skip]
+	if components.clone().any(|comp: Component| comp == Component::ParentDir) {
+		bail!("Component::ParentDir found!");
+	};
 	// macOS .tar.gz is laid out differently.  it's a '.app'...
 	if is_mac {
 		// skip "Contents"
