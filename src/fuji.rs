@@ -105,6 +105,12 @@ pub const FUJI_DIR: &str = cfg_select! {
 	_ => panic!("Unsupported host!"),
 };
 
+pub const LINK_DIR: &str = cfg_select! {
+	target_os = "linux" => "/usr/bin",
+	target_os = "macos" => "/usr/local/bin",
+	_ => panic!("Unsupported host!"),
+};
+
 /// Wrapper for [`entrypoint`], which takes in additional arguments for a shorthand / alias.
 ///
 /// # Arguments

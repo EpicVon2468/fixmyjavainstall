@@ -16,7 +16,7 @@ use crate::jvm::major_version::MajorVersion;
 use crate::jvm::wrapper::{gen_wrapper, install_wrapper};
 use crate::jvm::{JavaVersion, Op};
 use crate::os::OS;
-use crate::{FUJI_DIR, wrong_cmd};
+use crate::{FUJI_DIR, LINK_DIR, wrong_cmd};
 
 pub fn cmd_install(op: Op) -> Result<()> {
 	#[rustfmt::skip]
@@ -98,7 +98,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 	symlink_link(java_home, Path::new(FUJI_DIR).join("jvm").join("latest"))
 		.context("Couldn't symbolically link FUJI_DIR/jvm/latest to current install directory!")?;
 	println!("Installing {}/bin...", java_home.display());
-	link_impl(java_home, "/usr/bin", false).context("Couldn't install JAVA_HOME!")?;
+	link_impl(java_home, LINK_DIR, false).context("Couldn't install JAVA_HOME!")?;
 	println!("Done.\n");
 
 	#[cfg(target_os = "linux")]

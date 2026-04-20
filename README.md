@@ -13,7 +13,6 @@ MSRV: `1.95.0`.
 - macOS: `[BROKEN*]-[TESTED]`
   - All core functionality _should_ be working, but isn't.
   - Rootless breaks many things.
-  - `/usr/local/bin` is not on default path.
 - Windows: `[WORKING?]-[UNTESTED]`
   - Symbolic links for `%JAVA_HOME%\bin\java.exe` & `%JAVA_HOME%\bin\javaw.exe` don't work and can't be fixed.
     - Feature has been disabled, so this should _not_ crash.  Support will be re-evaluated in future.

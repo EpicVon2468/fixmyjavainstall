@@ -2,6 +2,8 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
+use crate::LINK_DIR;
+
 /// Fix Ur Java Install – A JVM & Kotlin management utility.
 ///
 /// (Re)writing this in Rust was simpler than debugging and 'fixing' the bash script(s).  I am serious.
@@ -27,7 +29,7 @@ pub enum FujiCmd {
 
 		/// Directory to link files into.  Does nothing on Windows.
 		#[cfg(any(not(windows), feature = "multi-os"))]
-		#[arg(short, long, value_name = "DIR", default_value = "/usr/bin")]
+		#[arg(short, long, value_name = "DIR", default_value = LINK_DIR)]
 		link_dir: PathBuf,
 
 		// TODO: 'InstallMethod' enumeration
