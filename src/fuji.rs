@@ -225,17 +225,41 @@ fn unsafe_checks() {
 	// SAFETY:
 	// Problem(s):
 	// - A user may run as non-root by accident, or due to a lack of knowledge.
-	// - To check this, getuid() from `libc` is needed.
+	// - To check this, the `geteuid` function from `libc` is needed.
 	// - `libc` is unsafe.
 	// Excuse(s):
-	// - From `man 2 getuid`: "ERRORS These functions are always successful and never modify errno".
+	// - From `getuid(2)`: "ERRORS These functions are always successful and never modify errno".
 	unsafe {
 		// SAFETY: The function declarations given below are in line with the header files of `libc`.
 		unsafe extern "C" {
-			fn getuid() -> u32;
+
+			/// `geteuid()` - get user identity.
+			///
+			/// Returns the effective user ID of the calling process.
+			///
+			/// # Errors
+			///
+			/// These functions are always successful and never modify `errno`.
+			///
+			/// # See Also
+			///
+			/// - [getuid(2)](https://man7.org/linux/man-pages/man2/getuid.2.html).
+			/// - [getresuid(2)](https://man7.org/linux/man-pages/man2/getresuid.2.html).
+			/// - [setreuid(2)](https://man7.org/linux/man-pages/man2/setreuid.2.html).
+			/// - [setuid(2)](https://man7.org/linux/man-pages/man2/setuid.2.html).
+			/// - [credentials(7)](https://man7.org/linux/man-pages/man7/credentials.7.html).
+			///
+			/// ---
+			///
+			/// ```c
+			/// #include <unistd.h>
+			///
+			/// uid_t geteuid(void);
+			/// ```
+			fn geteuid() -> u32;
 		}
 
-		if getuid() != 0 {
+		if geteuid() != 0 {
 			eprintln!(
 				"Fuji ran by non-root user!  If you are not using a permissions manager (i.e. `apparmor`), then this is likely a mistake!"
 			);
