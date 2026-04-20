@@ -39,14 +39,14 @@ pub enum Feature {
 	///
 	/// This has been bundled in OpenJDK for a long time, but isn't on by default.
 	///
-	/// macOS users, use Metal instead (Apple has deprecated OpenGL on macOS).
+	/// macOS users, use Metal instead ([Apple has deprecated OpenGL on macOS](https://appleinsider.com/articles/18/06/28/why-macos-mojave-requires-metal----and-deprecates-opengl)).
 	#[value(name = "opengl", alias = "gl")]
 	OpenGL,
 	/// Metal support for AWT/Swing (macOS) – <https://developer.apple.com/metal/>.
 	///
 	/// Also known as [Project Lanai](https://openjdk.org/projects/lanai/).
 	///
-	/// If you're on macOS, use this instead of OpenGL (Apple has deprecated OpenGL on macOS).
+	/// macOS users, use this instead of OpenGL ([Apple has deprecated OpenGL on macOS](https://appleinsider.com/articles/18/06/28/why-macos-mojave-requires-metal----and-deprecates-opengl/)).
 	///
 	/// See also:
 	///
