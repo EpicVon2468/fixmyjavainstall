@@ -192,7 +192,6 @@ pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 /// ```
 pub fn entrypoint(args: FujiArgs) -> Result<()> {
 	unsafe_checks();
-	#[cfg(target_os = "linux")]
 	let lock: File = claim_singleton_process()?;
 	let result: Result<()> = args.command.map_or_else(
 		|| Ok(()),
@@ -203,7 +202,6 @@ pub fn entrypoint(args: FujiArgs) -> Result<()> {
 			FujiCmd::Manual { .. } => cmd_man(command),
 		},
 	);
-	#[cfg(target_os = "linux")]
 	unclaim_singleton_process(lock)?;
 	result
 }
@@ -245,7 +243,23 @@ fn unsafe_checks() {
 	};
 }
 
-pub const LOCK: &str = "/var/lock/fixurjavainstall.lock";
+/// - \*BSD does not have `/var/lock` (nor `/opt` for that matter).
+/// 	- <https://man.freebsd.org/cgi/man.cgi?hier>.
+/// 	- <https://man.openbsd.org/hier>.
+/// 	- <https://man.netbsd.org/hier.7>.
+/// - macOS does not have `/var/lock`.
+/// 	- <https://keith.github.io/xcode-man-pages/hier.7.html#/var/>.
+/// - Windows (obviously) does not have `/var/lock`.
+/// - NixOS has `/var/lock`.
+/// 	- NixOS is only FHS noncompliant because of executable + library install locations.
+/// 	- I also had a friend double-check that `/var/lock` exists on their system.
+/// - Linux has `/var/lock`.
+/// 	- <https://man7.org/linux/man-pages/man7/hier.7.html>.
+pub const LOCK: &str = cfg_select! {
+	target_os = "linux" => "/var/lock/fixurjavainstall.lock",
+	windows => "\\Program Files\\fuji\\fixurjavainstall.lock",
+	_ => "/opt/fuji/fixurjavainstall.lock",
+};
 
 fn claim_singleton_process() -> Result<File> {
 	if exists(LOCK).is_ok_and(|exists: bool| exists) {
