@@ -232,7 +232,7 @@ fn assert_singleton_process() -> Result<()> {
 	let mut file: File =
 		File::create_new(LOCK).context(format!("Couldn't acquire lockfile {LOCK}!"))?;
 	lock!(file);
-	writeln!(file, "{}\n", dbg!(id())).context(format!("Couldn't write to lockfile {LOCK}!"))?;
+	writeln!(file, "{}\n", id()).context(format!("Couldn't write to lockfile {LOCK}!"))?;
 	unlock!(file);
 	Ok(())
 }

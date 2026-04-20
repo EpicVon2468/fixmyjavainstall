@@ -28,7 +28,7 @@ pub mod wrapper;
 
 use anyhow::{Context as _, Result};
 
-use clap::Subcommand;
+use clap::{ArgAction, Subcommand};
 
 use serde::{Deserialize as Deserialise, Serialize as Serialise};
 
@@ -64,11 +64,10 @@ pub enum Op {
 		#[arg(short, long, alias = "os", default_value_t)]
 		operating_system: OS,
 
-		// TODO: concat
 		/// The features for the requested JVM.
 		///
 		/// Note that not every JVM may support every feature, and some JVMs may only offer features for certain versions or with incompatibilities with other features.
-		#[arg(short, long)]
+		#[arg(short, long, action = ArgAction::Append, value_delimiter = ' ', num_args = 0..=1)]
 		features: Vec<Feature>,
 
 		/// Show execution path without actually installing the JVM.
