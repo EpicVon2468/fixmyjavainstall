@@ -105,9 +105,29 @@ pub const FUJI_DIR: &str = cfg_select! {
 	_ => panic!("Unsupported host!"),
 };
 
+/// Default link directory.
+///
+/// ### A note on the use of `/usr/bin` as opposed to `/usr/local/bin`:
+///
+/// From <https://refspecs.linuxfoundation.org/FHS_3.0/fhs/ch04s09.html>:
+///
+/// "Locally installed software must be placed within `/usr/local` rather than `/usr` _unless it is being installed to replace or upgrade software in `/usr`._"
+///
+/// ### A note on the use of `/usr/local/bin` as opposed to `/usr/bin` on macOS:
+///
+/// From <https://support.apple.com/en-gb/102149>:
+///
+/// "… System Integrity Protection restricts the root user account and limits the actions that the root user can perform …"
+///
+/// "… Before System Integrity Protection … the root user had no permission restrictions, so it could access any system folder or app …"
+///
+/// "… System Integrity Protection is designed to allow modification … only by processes that are signed by Apple and have special entitlements to write to system files …"
+///
+/// TL;DR: Apple sucks & doesn't let you write to `/usr/bin` even as root.
 pub const LINK_DIR: &str = cfg_select! {
 	target_os = "linux" => "/usr/bin",
 	target_os = "macos" => "/usr/local/bin",
+	windows => "",
 	_ => panic!("Unsupported host!"),
 };
 
