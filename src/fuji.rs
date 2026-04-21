@@ -64,7 +64,6 @@ pub mod jvm;
 pub mod kotlin;
 pub mod macros;
 pub mod os;
-#[cfg(windows)]
 pub mod win_link;
 
 use std::env::args_os;
@@ -221,7 +220,7 @@ pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 /// assert_eq!(entrypoint(FujiArgs::parse()), Ok(()));
 /// ```
 pub fn entrypoint(args: FujiArgs) -> Result<()> {
-	unsafe_checks();
+	unsafe_checks()?;
 	let lock: File = claim_singleton_process()?;
 	let result: Result<()> = args.command.map_or_else(
 		|| Ok(()),
@@ -236,7 +235,8 @@ pub fn entrypoint(args: FujiArgs) -> Result<()> {
 	result
 }
 
-fn unsafe_checks() {
+#[allow(clippy::unnecessary_wraps)]
+fn unsafe_checks() -> Result<()> {
 	#[cfg(feature = "dev")]
 	// SAFETY:
 	// Problem(s):
@@ -293,8 +293,24 @@ fn unsafe_checks() {
 			eprintln!(
 				"Fuji ran by non-root user!  If you are not using a permissions manager (i.e. `apparmor`), then this is likely a mistake!"
 			);
+			#[cfg(feature = "interactive")]
+			{
+				use anyhow::bail;
+
+				use dialoguer::Confirm;
+
+				let intentional: bool = Confirm::new()
+					.with_prompt("I know what I am doing:")
+					.wait_for_newline(true)
+					.interact()?;
+
+				if !intentional {
+					bail!("User unintentionally ran without root privileges!")
+				};
+			};
 		};
 	};
+	Ok(())
 }
 
 /// Lockfile for Fuji.
