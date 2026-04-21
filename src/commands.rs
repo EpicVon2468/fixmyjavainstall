@@ -339,7 +339,7 @@ pub fn progress_bar_template(len: u64, message: &str) -> ProgressBar {
 		ProgressStyle::with_template(message)
 			.unwrap()
 			.with_key("eta", |state: &ProgressState, w: &mut dyn Write| {
-				write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap();
+				let _ = write!(w, "{:.1}s", state.eta().as_secs_f64());
 			})
 			.progress_chars(PROGRESS_PAT)
 			.tick_strings(&SPINNER_PAT),

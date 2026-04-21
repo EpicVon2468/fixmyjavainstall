@@ -1,4 +1,10 @@
+use std::env::var;
+
+use anyhow::Result;
+
 use clap::ValueEnum;
+
+use dialoguer::Editor;
 
 use crate::value_enum_extensions;
 
@@ -31,3 +37,11 @@ value_enum_extensions!(
 		Self::UpdateAlternatives => "update-alternatives",
 	},
 );
+
+fn _test() -> Result<()> {
+	let _args: Option<String> = match var("FUJI__CMD__ARGS") {
+		Ok(value) => Some(value),
+		Err(_) => Editor::new().edit("Enter args for <command name here>:")?,
+	};
+	Ok(())
+}
