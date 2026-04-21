@@ -39,8 +39,8 @@ value_enum_extensions!(
 );
 
 fn _test() -> Result<()> {
-	let _args: Option<String> = match var("FUJI__CMD__ARGS") {
-		Ok(value) => Some(value),
+	let _args: Option<String> = match var("FUJI__CMD__ARGS").map(Some) {
+		Ok(value) => value,
 		Err(_) => Editor::new().edit("Enter args for <command name here>:")?,
 	};
 	Ok(())
