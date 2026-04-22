@@ -10,8 +10,8 @@ MSRV: `1.95.0`.
 
 - Linux: `[WORKING]-[TESTED]`
   - All core functionality is working, tested regularly.
-- macOS: `[BROKEN*]-[TESTED]`
-  - All core functionality _should_ be working, but isn't.
+- macOS: `[WORKING?]-[UNTESTED]`
+  - All core functionality _should_ be working.
   - Rootless breaks many things.
 - Windows: `[WORKING?]-[UNTESTED]`
   - Symbolic links for `%JAVA_HOME%\bin\java.exe` & `%JAVA_HOME%\bin\javaw.exe` don't work and can't be fixed.
