@@ -5,6 +5,8 @@ use std::path::Path;
 
 use anyhow::{Context as _, Result};
 
+use crate::exists;
+
 // https://specifications.freedesktop.org/desktop-entry/latest/
 // /usr/share/applications
 pub const FREEDESKTOP_ENTRY: &str = include_str!("../../fuji.java.desktop");
@@ -12,7 +14,7 @@ pub const FREEDESKTOP_ENTRY_TERMINAL: &str = include_str!("../../fuji.java.termi
 
 pub fn install_desktop_entries() -> Result<()> {
 	let base: &Path = Path::new("/usr/share/applications");
-	if !base.exists() {
+	if !exists!(base) {
 		return Ok(());
 	};
 	macro_rules! desktop_entry {

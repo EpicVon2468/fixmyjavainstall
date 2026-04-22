@@ -102,6 +102,13 @@ macro_rules! value_enum_extensions {
 }
 
 #[macro_export]
+macro_rules! exists {
+	($path:expr) => {
+		std::fs::exists($path).is_ok_and(|exists: bool| exists)
+	};
+}
+
+#[macro_export]
 macro_rules! display {
 	($name:ty, match *self {$($variant:pat => $string:expr),*,},) => {
 		#[automatically_derived]

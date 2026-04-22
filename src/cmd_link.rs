@@ -10,7 +10,7 @@ use indicatif::ProgressBar;
 
 use crate::cli::FujiCmd;
 use crate::commands::{has_program, io_failure, progress_bar};
-use crate::{wait_and_check_status, wrong_cmd};
+use crate::{exists, wait_and_check_status, wrong_cmd};
 
 #[cfg(any(not(windows), feature = "multi-os"))]
 pub fn cmd_link(command: FujiCmd) -> Result<()> {
@@ -106,7 +106,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Result<()> {
 	let source: &Path = source.as_ref();
 	let dest: &Path = dest.as_ref();
-	if dest.exists() {
+	if exists!(dest) {
 		#[rustfmt::skip]
 		if dest.is_file() {
 			remove_file(dest)

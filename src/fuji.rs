@@ -68,7 +68,7 @@ pub mod win_link;
 
 use std::env::args_os;
 use std::ffi::OsString;
-use std::fs::{File, exists, remove_file};
+use std::fs::{File, remove_file};
 use std::io::Write as _;
 use std::process::{abort, id};
 
@@ -339,7 +339,7 @@ pub const LOCK: &str = cfg_select! {
 };
 
 fn claim_singleton_process() -> Result<File> {
-	if exists(LOCK).is_ok_and(|exists: bool| exists) {
+	if exists!(LOCK) {
 		eprintln!("Couldn't acquire lockfile {LOCK}!");
 		// try to flush, but don't escape back upwards if it fails
 		flush_all!();

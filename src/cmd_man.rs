@@ -12,17 +12,17 @@ use clap_mangen::roff::{Roff, roman};
 use flate2::read::GzEncoder;
 
 use crate::cli::{FujiArgs, FujiCmd};
-use crate::wrong_cmd;
+use crate::{exists, wrong_cmd};
 
 pub fn cmd_man(cmd: FujiCmd) -> Result<()> {
 	let FujiCmd::Manual { man_dir }: FujiCmd = cmd else {
 		wrong_cmd!(cmd_man);
 	};
 	let dir: &Path = &man_dir.join("man8");
-	if dir.exists() {
+	if exists!(dir) {
 		remove_dir_all(dir).context("remove_dir_all")?;
 	};
-	if !dir.exists() {
+	if !exists!(dir) {
 		create_dir_all(dir).context("create_dir_all")?;
 	};
 	dump_manual(FujiArgs::command(), dir)

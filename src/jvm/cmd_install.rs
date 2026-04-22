@@ -16,7 +16,7 @@ use crate::jvm::major_version::MajorVersion;
 use crate::jvm::wrapper::{gen_wrapper, install_wrapper};
 use crate::jvm::{JavaVersion, Op};
 use crate::os::OS;
-use crate::{FUJI_DIR, LINK_DIR, wrong_cmd};
+use crate::{FUJI_DIR, LINK_DIR, exists, wrong_cmd};
 
 pub fn cmd_install(op: Op) -> Result<()> {
 	#[rustfmt::skip]
@@ -148,7 +148,7 @@ fn wrap_executables(
 }
 
 fn clean_java_home(java_home: &Path) -> Result<()> {
-	if java_home.exists() {
+	if exists!(java_home) {
 		#[rustfmt::skip]
 		let result: Result<()> = if java_home.is_dir() {
 			remove_dir_all(java_home)

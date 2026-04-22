@@ -5,6 +5,7 @@ use anyhow::{Context as _, Result};
 
 use crate::arch::Arch;
 use crate::commands::{download, extract_jvm};
+use crate::exists;
 use crate::jvm::JavaVersion;
 use crate::jvm::feature::Feature;
 use crate::os::OS;
@@ -47,7 +48,7 @@ pub fn jvm_download_impl<S: AsRef<str>>(url: S, args: DownloadJVMArgs) -> Result
 		return Ok(());
 	};
 	// Might exist from a failed previous install
-	if archive.exists() {
+	if exists!(archive) {
 		#[rustfmt::skip]
 		if archive.is_dir() {
 			remove_dir_all(archive)
