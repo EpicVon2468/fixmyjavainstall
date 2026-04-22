@@ -4,8 +4,6 @@ use anyhow::Result;
 
 use clap::ValueEnum;
 
-use dialoguer::Editor;
-
 use crate::value_enum_extensions;
 
 // TODO: use environment variables to set args for commands (i.e FUJI_UPDATE_ALTERNATIVES_ARGS) -- https://crates.io/crates/shell-words/
@@ -38,10 +36,19 @@ value_enum_extensions!(
 	},
 );
 
+// noinspection RsReplaceMatchExpr
+#[allow(
+	clippy::unnecessary_wraps,
+	clippy::option_if_let_else,
+	clippy::manual_unwrap_or_default
+)]
 fn _test() -> Result<()> {
 	let _args: Option<String> = match var("FUJI__CMD__ARGS").map(Some) {
 		Ok(value) => value,
-		Err(_) => Editor::new().edit("Enter args for <command name here>:")?,
+		Err(_) => cfg_select! {
+			feature = "interactive" => dialoguer::Editor::new().edit("Enter args for <command name here>:")?,
+			_ => None,
+		},
 	};
 	Ok(())
 }
