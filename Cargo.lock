@@ -226,7 +226,6 @@ dependencies = [
  "console",
  "shell-words",
  "tempfile",
- "zeroize",
 ]
 
 [[package]]
@@ -326,6 +325,7 @@ dependencies = [
  "anyhow",
  "clap",
  "clap_mangen",
+ "console",
  "dialoguer",
  "flate2",
  "indicatif",

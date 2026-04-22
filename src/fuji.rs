@@ -69,12 +69,14 @@ pub mod win_link;
 use std::env::args_os;
 use std::ffi::OsString;
 use std::fs::{File, exists, remove_file};
-use std::io::{Write as _, stderr, stdout};
+use std::io::Write as _;
 use std::process::{abort, id};
 
 use anyhow::{Context as _, Result};
 
 use clap::Parser as _;
+
+use console::style;
 
 use crate::cli::{FujiArgs, FujiCmd};
 #[cfg(any(not(windows), feature = "multi-os"))]
@@ -291,7 +293,10 @@ fn unsafe_checks() -> Result<()> {
 
 		if geteuid() != 0 {
 			eprintln!(
-				"Fuji ran by non-root user!  If you are not using a permissions manager (i.e. `apparmor`), then this is likely a mistake!"
+				"{}",
+				style(
+					"Fuji ran by non-root user!  If you are not using a permissions manager (i.e. `apparmor`), then this is likely a mistake!"
+				).red()
 			);
 			#[cfg(feature = "interactive")]
 			{
@@ -337,8 +342,7 @@ fn claim_singleton_process() -> Result<File> {
 	if exists(LOCK).is_ok_and(|exists: bool| exists) {
 		eprintln!("Couldn't acquire lockfile {LOCK}!");
 		// try to flush, but don't escape back upwards if it fails
-		let _ = stdout().flush();
-		let _ = stderr().flush();
+		flush_all!();
 		abort();
 	};
 	let mut file: File =

@@ -62,6 +62,14 @@ macro_rules! unlock {
 }
 
 #[macro_export]
+macro_rules! flush_all {
+	() => {{
+		let _ = std::io::stdout().flush();
+		let _ = std::io::stderr().flush();
+	}};
+}
+
+#[macro_export]
 macro_rules! value_enum_extensions {
 	($name:ty) => {
 		$crate:value_enum_extensions!(
