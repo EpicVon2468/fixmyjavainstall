@@ -325,10 +325,9 @@ pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
 	Ok(())
 }
 
-#[rustfmt::skip]
-pub const TEMPLATE: &str = "[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})";
+pub const TEMPLATE: &str = "[{elapsed_precise}] {spinner:.cyan} [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})";
 pub const SPINNER_PAT: [&str; 13] = [
-	"⠉⠙", "⠈⠹", " ⢹", " ⣸", "⢀⣰", "⣀⣠", "⣄⣀", "⣆⡀", "⣇ ", "⡏ ", "⠏⠁", "⠋⠉", "  ",
+	"⠉⠙", "⠈⠹", " ⢹", " ⣸", "⢀⣰", "⣀⣠", "⣄⣀", "⣆⡀", "⣇ ", "⡏ ", "⠏⠁", "⠋⠉", "⣏⣹",
 ];
 pub const PROGRESS_PAT: &str = "=>-";
 

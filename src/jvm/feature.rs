@@ -53,6 +53,7 @@ pub enum Feature {
 	/// - <https://openjdk.org/jeps/382>.
 	/// - <https://openjdk.org/projects/lanai/>.
 	#[cfg(any(target_os = "macos", feature = "multi-os"))]
+	#[value(alias = "lanai")]
 	Metal,
 	/// Vulkan for AWT/Swing.
 	///
