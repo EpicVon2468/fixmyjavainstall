@@ -1,13 +1,13 @@
 # Installation:
 
-Latest version: `v0.2.1: "Move at a reasonable pace and pretty please can GitHub Actions work this time...?"`
+Latest version: `v0.3.0: "It's me.  John Progress Bar."`
 
 You can [download the latest release](https://github.com/EpicVon2468/fixmyjavainstall/releases/latest/) if there is one for your system and architecture.
 
 You can also install using cargo with:
 
 ```shell
-cargo install --git https://github.com/EpicVon2468/fixmyjavainstall --tag v0.2.1
+cargo install --git https://github.com/EpicVon2468/fixmyjavainstall --tag v0.3.0
 ```
 
 Or by running:
