@@ -1,11 +1,12 @@
 #![cfg(feature = "tui")]
 
-use std::time::Instant;
-
 use anyhow::{Context as _, Result};
 
 use console::{Key, Term};
 
+use ratatui::layout::{Constraint, Layout, Rect};
+use ratatui::style::Stylize as _;
+use ratatui::text::Line;
 use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
 
 pub fn main() -> Result<()> {
@@ -29,5 +30,14 @@ fn _main(mut terminal: DefaultTerminal) -> Result<()> {
 }
 
 fn render(frame: &mut Frame) {
-	frame.render_widget(format!("foo bar {:?}", Instant::now()), frame.area());
+	let layout: Layout = Layout::vertical([Constraint::Length(1), Constraint::Fill(1)]).spacing(1);
+	let [title, main] = frame.area().layout(&layout);
+	render_title(&mut *frame, title);
+}
+
+fn render_title(frame: &mut Frame, layout: Rect) {
+	let title: Line = Line::from("Fix Ur Java Install – A JVM & Kotlin Management Utility.")
+		.centered()
+		.bold();
+	frame.render_widget(title, layout);
 }
