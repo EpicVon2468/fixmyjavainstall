@@ -1,7 +1,6 @@
 #![cfg(feature = "tui")]
 mod state;
 
-use std::os::linux::raw::stat;
 use anyhow::{Context as _, Result};
 
 use console::{Key, Term};
