@@ -1,6 +1,6 @@
 [package]
 name = "fuji"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Mavity The Madity"]
 edition = "2024"
 rust-version = "1.95.0"
@@ -82,6 +82,7 @@ ring = { git = "https://github.com/briansmith/ring" }
 
 [package.metadata.dist]
 dist = true
+allow-dirty = true
 
 # The profile that 'dist' will build with
 [profile.dist]
