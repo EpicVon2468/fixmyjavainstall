@@ -52,13 +52,14 @@ value_enum_extensions!(
 	clippy::option_if_let_else,
 	clippy::manual_unwrap_or_default
 )]
-fn _test() -> Result<()> {
-	let _args: Option<String> = match var("FUJI__CMD__ARGS").map(Some) {
+fn get_args(method: &InstallMethod) -> Result<Vec<String>> {
+	let raw_args: Option<String> = match var(format!("FUJI__{method}__ARGS")).map(Some) {
 		Ok(value) => value,
 		Err(_) => cfg_select! {
 			feature = "interactive" => dialoguer::Editor::new().edit("Enter args for <command name here>:")?,
 			_ => None,
 		},
 	};
-	Ok(())
+	let args: Option<Result<Vec<String>, _>> = raw_args.as_deref().map(shell_words::split);
+	Ok(todo!())
 }

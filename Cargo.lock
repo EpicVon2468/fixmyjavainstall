@@ -330,6 +330,7 @@ dependencies = [
  "flate2",
  "indicatif",
  "serde",
+ "shell-words",
  "tar",
  "ureq",
  "which",
