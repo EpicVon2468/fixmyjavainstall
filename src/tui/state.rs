@@ -11,6 +11,10 @@ pub enum Tab {
 }
 
 impl Tab {
+	pub const fn value_names() -> &'static [&'static str] {
+		&["Foo", "Bar", "Baz"]
+	}
+
 	pub const fn ordinal(&self) -> u32 {
 		match *self {
 			Self::Foo => 0,
@@ -24,7 +28,7 @@ impl Tab {
 			0 => Some(Self::Foo),
 			1 => Some(Self::Bar),
 			2 => Some(Self::Baz),
-			_ => None
+			_ => None,
 		}
 	}
 
