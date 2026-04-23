@@ -50,7 +50,8 @@ value_enum_extensions!(
 #[allow(
 	clippy::unnecessary_wraps,
 	clippy::option_if_let_else,
-	clippy::manual_unwrap_or_default
+	clippy::manual_unwrap_or_default,
+	unused
 )]
 fn get_args(method: &InstallMethod) -> Result<Vec<String>> {
 	let raw_args: Option<String> = match var(format!("FUJI__{method}__ARGS")).map(Some) {
