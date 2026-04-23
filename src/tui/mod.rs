@@ -1,5 +1,7 @@
 #![cfg(feature = "tui")]
+mod state;
 
+use std::os::linux::raw::stat;
 use anyhow::{Context as _, Result};
 
 use console::{Key, Term};
@@ -8,6 +10,8 @@ use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::style::Stylize as _;
 use ratatui::text::Line;
 use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
+
+use crate::tui::state::{State, Tab};
 
 pub fn main() -> Result<()> {
 	let terminal: DefaultTerminal = try_init().context("Couldn't initialise ratatui!")?;
@@ -19,17 +23,26 @@ pub fn main() -> Result<()> {
 
 fn _main(mut terminal: DefaultTerminal) -> Result<()> {
 	let term: Term = Term::stdout();
+	let mut state = State { tab: Tab::Foo };
 	loop {
-		terminal.draw(render)?;
+		terminal.draw(|frame: &mut Frame| render(frame, &state))?;
 		// term.read_key() blocks until input is received.
 		// Normally I'd complain, but this is probably good to avoid re-computing logic every frame when not needed
-		if term.read_key()? == Key::Char('q') {
-			break Ok(());
+		let key: Key = term.read_key()?;
+		match key {
+			Key::Char('q') => break Ok(()),
+			Key::ArrowLeft => {
+				state.tab.shift_self_left();
+			},
+			Key::ArrowRight => {
+				state.tab.shift_self_right();
+			},
+			_ => (),
 		};
 	}
 }
 
-fn render(frame: &mut Frame) {
+fn render(frame: &mut Frame, state: &State) {
 	let layout: Layout = Layout::vertical([Constraint::Length(1), Constraint::Fill(1)]).spacing(1);
 	let [title, main] = frame.area().layout(&layout);
 	render_title(&mut *frame, title);
