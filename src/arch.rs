@@ -6,6 +6,8 @@ use clap::ValueEnum;
 use crate::value_enum_extensions;
 
 /// An enumeration of CPU architectures.
+///
+/// A note on 32-bit (x86) architectures: <https://openjdk.org/jeps/503>.
 #[non_exhaustive]
 #[derive(ValueEnum, Clone)]
 pub enum Arch {
