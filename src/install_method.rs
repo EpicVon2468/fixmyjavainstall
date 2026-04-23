@@ -12,13 +12,23 @@ use crate::value_enum_extensions;
 pub enum InstallMethod {
 	/// PATH environment variable modification.
 	Path,
-	#[cfg(any(unix, feature = "multi-os"))]
 	/// Symbolic linking.
 	#[value(hide = cfg!(all(not(unix), not(feature = "multi-os"))))]
 	Symlink,
 	/// <https://man7.org/linux/man-pages/man1/update-alternatives.1.html>.
 	#[value(hide = cfg!(all(not(target_os = "linux"), not(feature = "multi-os"))))]
 	UpdateAlternatives,
+}
+
+impl InstallMethod {
+	/// Returns the name of a program required by this [`InstallMethod`], if applicable.
+	#[must_use]
+	pub const fn program_name(&self) -> Option<&str> {
+		match *self {
+			Self::UpdateAlternatives => Some("update-alternatives"),
+			_ => None,
+		}
+	}
 }
 
 value_enum_extensions!(
