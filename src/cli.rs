@@ -10,7 +10,7 @@ use crate::LINK_DIR;
 #[derive(Parser)]
 #[command(
 	version,
-	long_version = "0.4.0 – \"There is no v0.3 in ba sing se\"",
+	long_version = "0.4.1 – \"Pfft, Intel macOS is EOL in a few years anyway\"",
 	author
 )]
 pub struct FujiArgs {
