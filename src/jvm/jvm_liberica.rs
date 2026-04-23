@@ -6,9 +6,11 @@ use anyhow::{Context as _, Result};
 use serde::{Deserialize as Deserialise, Serialize as Serialise};
 
 use crate::arch::Arch;
+use crate::commands::require_intentional;
 use crate::jvm::feature::Feature;
 use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};
 use crate::jvm::major_version::MajorVersion;
+use crate::log_err;
 use crate::os::OS;
 
 pub fn download_liberica(args: DownloadJVMArgs) -> Result<()> {
@@ -32,7 +34,10 @@ pub fn get_liberica_download(
 		.first()
 		.context("No Liberica JVM was available for the provided request!")?;
 	if the_one.EOL {
-		eprintln!("The requested JVM is at End Of Life!  Consider upgrading to a newer version!");
+		log_err!(
+			"The requested JVM is marked as End Of Life!  Consider upgrading to a newer version!"
+		);
+		require_intentional("selected a JVM which is marked as End Of Life!")?;
 	};
 	Ok(the_one.downloadUrl.clone())
 }

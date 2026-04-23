@@ -61,11 +61,21 @@ macro_rules! unlock {
 	};
 }
 
+/// Silently [`flushes`][`std::io::Write::flush`] both [`stdout`][`std::io::stdout`] and [`stdin`][`std::io::stdin`].
+///
+/// The [`result`][`std::io::Result<()>`] of both calls is ignored (it is neither propagated upwards nor unwrapped).
 #[macro_export]
 macro_rules! flush_all {
 	() => {{
 		let _ = std::io::stdout().flush();
 		let _ = std::io::stderr().flush();
+	}};
+}
+
+#[macro_export]
+macro_rules! log_err {
+	($($arg:tt)*) => {{
+		eprintln!("{}", console::style(format!($($arg)*)).red());
 	}};
 }
 

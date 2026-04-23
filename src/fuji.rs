@@ -76,13 +76,12 @@ use anyhow::{Context as _, Result};
 
 use clap::Parser as _;
 
-use console::style;
-
 use crate::cli::{FujiArgs, FujiCmd};
 #[cfg(any(not(windows), feature = "multi-os"))]
 use crate::cmd_link::cmd_link;
 use crate::cmd_man::cmd_man;
 use crate::cmd_manage::cmd_manage;
+use crate::commands::require_intentional;
 
 /// The installation directory for fuji-managed programs.
 ///
@@ -292,27 +291,10 @@ fn unsafe_checks() -> Result<()> {
 		}
 
 		if geteuid() != 0 {
-			eprintln!(
-				"{}",
-				style(
-					"Fuji ran by non-root user!  If you are not using a permissions manager (i.e. `apparmor`), then this is likely a mistake!"
-				).red()
+			log_err!(
+				"Fuji ran by non-root user!  If you are not using a permissions manager (i.e. `apparmor`), then this is likely a mistake!"
 			);
-			#[cfg(feature = "interactive")]
-			{
-				use anyhow::bail;
-
-				use dialoguer::Confirm;
-
-				let intentional: bool = Confirm::new()
-					.with_prompt("I know what I am doing:")
-					.wait_for_newline(true)
-					.interact()?;
-
-				if !intentional {
-					bail!("User unintentionally ran without root privileges!")
-				};
-			};
+			require_intentional("ran without root privileges!")?;
 		};
 	};
 	Ok(())
@@ -340,7 +322,7 @@ pub const LOCK: &str = cfg_select! {
 
 fn claim_singleton_process() -> Result<File> {
 	if exists!(LOCK) {
-		eprintln!("Couldn't acquire lockfile {LOCK}!");
+		log_err!("Couldn't acquire lockfile {LOCK}!");
 		// try to flush, but don't escape back upwards if it fails
 		flush_all!();
 		abort();

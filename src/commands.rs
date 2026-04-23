@@ -368,3 +368,25 @@ pub fn is_wayland() -> bool {
 		|| var("WAYLAND_DISPLAY").is_ok()
 		|| var("XDG_SESSION_TYPE").is_ok_and(|var: String| var == "wayland")
 }
+
+// RustRover doesn't seem to fully understand cfg_select! {} yet, so have to use this for now...
+#[cfg(feature = "interactive")]
+pub fn require_intentional(message: &str) -> Result<()> {
+	let intentional: bool = dialoguer::Confirm::new()
+		.with_prompt("I know what I am doing:")
+		.wait_for_newline(true)
+		.default(false)
+		.interact()
+		.context("Unexpected error occurred in Confirm dialogue!")?;
+
+	if !intentional {
+		bail!("User unintentionally {}", message.to_owned());
+	};
+	Ok(())
+}
+
+#[expect(unused_variables)]
+#[cfg(not(feature = "interactive"))]
+pub const fn require_intentional(message: &str) -> Result<()> {
+	Ok(())
+}
