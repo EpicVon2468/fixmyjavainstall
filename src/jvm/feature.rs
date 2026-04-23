@@ -64,6 +64,7 @@ pub enum Feature {
 	///
 	/// Webdev???  In my JVM???
 	JCEF,
+	// TODO: lock all three of these behind a compile feature
 	/// Allows all Java modules to use the (soon to be) restricted native library access – <https://openjdk.org/jeps/472>.
 	///
 	/// JNI is to be replaced by [Project Panama](https://openjdk.org/projects/panama/) (Foreign Functions & Memory API).
@@ -88,6 +89,17 @@ pub enum Feature {
 	/// - <https://openjdk.org/projects/panama/>.
 	#[value(alias = "allow-unsafe")]
 	Unsafe,
+	/// Allows final to *not* mean final – <https://openjdk.org/jeps/500>.
+	///
+	/// This is a terrible idea, but sometimes it's needed.
+	///
+	/// Don't enable this unless you know what you're doing.
+	///
+	/// See also:
+	///
+	/// - <https://www.youtube.com/watch?v=KoOrPzGC_7w>.
+	#[value(alias = "no-final")]
+	Mutate,
 	/// Enables AWT font antialiasing.  This can improve readability and quality of text.
 	FontFix,
 	/// General fixes for NVIDIA GPUs on Linux.

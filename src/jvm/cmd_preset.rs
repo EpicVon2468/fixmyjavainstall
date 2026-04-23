@@ -37,8 +37,11 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 	};
 	configure_fast(&mut features)?;
 	features.push(Feature::Kotlin);
-	features.push(Feature::Native);
-	features.push(Feature::Unsafe);
+	// TODO: switch to opt-in instead of opt-out
+	{
+		features.push(Feature::Native);
+		features.push(Feature::Unsafe);
+	}
 	features.push(Feature::FontFix);
 	do_preset(JVM::JBR, features, MajorVersion::LTS)
 }

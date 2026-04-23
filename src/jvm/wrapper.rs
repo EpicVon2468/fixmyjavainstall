@@ -157,6 +157,12 @@ fn gen_features<F: Fn(&str, &str) -> String>(
 			"--sun-misc-unsafe-memory-access=allow",
 		);
 	};
+	if features.contains(&Feature::Mutate) {
+		fuji_jvm_arg(
+			"Allows final to not mean final",
+			"--enable-final-field-mutation=ALL-UNNAMED",
+		);
+	};
 	if features.contains(&Feature::FontFix) {
 		fuji_jvm_arg(
 			"Enables AWT font antialiasing.  This can improve readability and quality of text",
