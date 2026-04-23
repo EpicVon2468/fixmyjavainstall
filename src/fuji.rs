@@ -64,6 +64,8 @@ pub mod jvm;
 pub mod kotlin;
 pub mod macros;
 pub mod os;
+#[cfg(feature = "tui")]
+pub mod tui;
 pub mod win_link;
 
 use std::env::args_os;

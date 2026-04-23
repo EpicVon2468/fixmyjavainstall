@@ -65,7 +65,8 @@ allow = [
 	"MIT",
 	"Apache-2.0",
 	"ISC",
-	"BSD-3-Clause"
+	"BSD-3-Clause",
+	"Zlib"
 ]
 # The confidence threshold for detecting a licence from licence text.
 # The higher the value, the more closely the licence text must be to the
@@ -129,7 +130,9 @@ skip = [
 	{
 		crate = "wit-bindgen@0.51.0",
 		reason = "WASI/WASM is the source of all my problems"
-	}
+	},
+	"hashbrown",
+	"redox_syscall"
 ]
 # Similarly to `skip` allows you to skip certain crates during duplicate
 # detection. Unlike skip, it also includes the entire tree of transitive

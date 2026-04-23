@@ -22,6 +22,7 @@ multi-os = []
 dev = []
 interactive = ["dep:dialoguer"]
 openjdk-deprecated = []
+tui = ["dep:ratatui"]
 
 [lib]
 name = "fuji"
@@ -60,6 +61,15 @@ bench = false
 doc = false
 harness = false
 
+[[bin]]
+name = "fuji-tui"
+path = "src/bin/tui.rs"
+test = false
+doctest = false
+bench = false
+doc = false
+harness = false
+
 [dependencies]
 clap = { version = "4", features = ["derive", "string", "unstable-markdown", "unicode", "unstable-v5"] }
 clap_mangen = "0"
@@ -74,6 +84,7 @@ zip = { version = "8", features = ["deflate-flate2"], default-features = false }
 dialoguer = { version = "0", optional = true, default-features = false, features = ["editor"] }
 console = "0"
 shell-words = "1"
+ratatui = { version = "0", optional = true, default-features = false, features = ["std", "crossterm"] }
 
 [target.'cfg(windows)'.dependencies]
 windows-registry = "0"
