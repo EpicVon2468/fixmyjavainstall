@@ -1,13 +1,13 @@
 # Installation:
 
-Latest version: `v0.3.4: "..."`
+Latest version: `v0.4.0: "There is no v0.3 in ba sing se"`
 
 You can [download the latest release](https://github.com/EpicVon2468/fixmyjavainstall/releases/latest/) if there is one for your system and architecture.
 
 You can also install using cargo with:
 
 ```shell
-cargo install --git https://github.com/EpicVon2468/fixmyjavainstall --tag v0.3.4
+cargo install --git https://github.com/EpicVon2468/fixmyjavainstall --tag v0.4.0
 ```
 
 Or by running:
