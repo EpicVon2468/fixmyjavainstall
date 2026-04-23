@@ -21,6 +21,7 @@ autobins = false
 multi-os = []
 dev = []
 interactive = ["dep:dialoguer"]
+openjdk-deprecated = []
 
 [lib]
 name = "fuji"
