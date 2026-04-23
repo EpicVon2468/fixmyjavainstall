@@ -1,11 +1,9 @@
 #![cfg(feature = "tui")]
 
-#[derive(Debug)]
 pub struct State {
 	pub tab: Tab,
 }
 
-#[derive(Debug)]
 pub enum Tab {
 	Foo,
 	Bar,
@@ -31,7 +29,7 @@ impl Tab {
 	}
 
 	pub const fn first() -> Self {
-		Self::Foo
+		Self::get(0).unwrap()
 	}
 
 	pub const fn last() -> Self {
@@ -59,7 +57,7 @@ impl Tab {
 	pub const fn shift_right(&self) -> Self {
 		let mut ord: u32 = self.ordinal() + 1;
 		if ord > Self::last().ordinal() {
-			ord = Self::first().ordinal();
+			ord = 0;
 		};
 		Self::get(ord).unwrap()
 	}
