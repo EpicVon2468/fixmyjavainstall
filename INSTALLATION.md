@@ -1,13 +1,13 @@
 # Installation:
 
-Latest version: `v0.3.2: "So help me cargo-dist I will drop you right now"`
+Latest version: `v0.3.3: "..."`
 
 You can [download the latest release](https://github.com/EpicVon2468/fixmyjavainstall/releases/latest/) if there is one for your system and architecture.
 
 You can also install using cargo with:
 
 ```shell
-cargo install --git https://github.com/EpicVon2468/fixmyjavainstall --tag v0.3.2
+cargo install --git https://github.com/EpicVon2468/fixmyjavainstall --tag v0.3.3
 ```
 
 Or by running:
