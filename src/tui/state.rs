@@ -2,7 +2,7 @@
 
 use ratatui::buffer::Buffer;
 use ratatui::crossterm::event::Event;
-use ratatui::layout::{Alignment, Offset, Rect};
+use ratatui::layout::{HorizontalAlignment, Margin, Offset, Rect};
 use ratatui::widgets::{Block, Paragraph, StatefulWidget, Tabs, Widget as _};
 
 pub struct FujiState {
@@ -17,21 +17,27 @@ pub enum Tab {
 	Baz,
 }
 
+impl StatefulWidget for Tab {
+	type State = FujiState;
+
+	fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
+		StatefulWidget::render(&self, area, buf, state);
+	}
+}
+
 impl StatefulWidget for &Tab {
 	type State = FujiState;
 
 	fn render(self, area: Rect, buf: &mut Buffer, state: &mut FujiState) {
 		#[allow(unreachable_patterns)]
-		let text: &str = match *self {
-			Tab::Foo => "Something something foo",
-			Tab::Bar => "Something something bar",
-			Tab::Baz => "Something something baz",
+		let render_tab: fn(Rect, &mut Buffer, &mut FujiState) = match *self {
+			Tab::Foo => Tab::render_foo,
+			Tab::Bar => Tab::render_bar,
+			Tab::Baz => Tab::render_baz,
 			_ => unreachable!(),
 		};
-		let paragraph: Paragraph = Paragraph::new(text)
-			.alignment(Alignment::Center)
-			.block(Block::bordered());
-		paragraph.render(area, buf);
+		Block::bordered().render(area, buf);
+		render_tab(area.inner(Margin::new(1, 1)), buf, state);
 
 		#[allow(clippy::as_conversions)]
 		let tabs: Tabs = Tabs::new(Tab::value_names().to_owned())
@@ -42,6 +48,15 @@ impl StatefulWidget for &Tab {
 }
 
 impl Tab {
+	fn render_foo(area: Rect, buf: &mut Buffer, state: &mut FujiState) {
+		let paragraph: Paragraph = Paragraph::new("text").alignment(HorizontalAlignment::Center);
+		paragraph.render(area, buf);
+	}
+
+	fn render_bar(area: Rect, buf: &mut Buffer, state: &mut FujiState) {}
+
+	fn render_baz(area: Rect, buf: &mut Buffer, state: &mut FujiState) {}
+
 	pub const fn value_names() -> &'static [&'static str] {
 		&["Foo", "Bar", "Baz"]
 	}
