@@ -1,10 +1,11 @@
 #![cfg(feature = "tui")]
 mod state;
 
+use std::time::Duration;
+
 use anyhow::{Context as _, Result};
 
-use console::{Key, Term};
-
+use ratatui::crossterm::event::{Event, KeyCode, poll, read};
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::style::Stylize as _;
 use ratatui::text::Line;
@@ -15,27 +16,30 @@ use crate::tui::state::{State, Tab};
 pub fn main() -> Result<()> {
 	let terminal: DefaultTerminal = try_init().context("Couldn't initialise ratatui!")?;
 	#[expect(clippy::used_underscore_items)]
-	_main(terminal)?;
+	let result: Result<()> = _main(terminal);
 	try_restore().context("Couldn't restore terminal to original state!")?;
-	Ok(())
+	result
 }
 
 fn _main(mut terminal: DefaultTerminal) -> Result<()> {
-	let term: Term = Term::stdout();
 	let mut state = State { tab: Tab::Foo };
 	loop {
 		terminal.draw(|frame: &mut Frame| render(frame, &state))?;
-		// term.read_key() blocks until input is received.
-		// Normally I'd complain, but this is probably good to avoid re-computing logic every frame when not needed
-		match term.read_key()? {
-			Key::Char('q') => break Ok(()),
-			Key::ArrowLeft => {
-				state.tab.shift_self_left();
-			},
-			Key::ArrowRight => {
-				state.tab.shift_self_right();
-			},
-			_ => (),
+		if !poll(Duration::from_millis(0))? {
+			continue;
+		};
+		let event: Event = read()?;
+		if let Event::Key(key_event) = event {
+			match key_event.code {
+				KeyCode::Char('q') => break Ok(()),
+				KeyCode::Left => {
+					state.tab.shift_self_left();
+				},
+				KeyCode::Right => {
+					state.tab.shift_self_right();
+				},
+				_ => (),
+			};
 		};
 	}
 }
@@ -47,7 +51,7 @@ fn _main(mut terminal: DefaultTerminal) -> Result<()> {
 fn render(frame: &mut Frame, state: &State) {
 	let layout: Layout = Layout::vertical([Constraint::Length(1), Constraint::Fill(1)]).spacing(1);
 	let [title, main] = frame.area().layout(&layout);
-	render_title(&mut *frame, title);
+	render_title(frame, title);
 	frame.render_widget(&state.tab, main);
 }
 
