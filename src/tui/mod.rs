@@ -1,5 +1,6 @@
 #![cfg(feature = "tui")]
 mod state;
+mod tab;
 
 use std::time::Duration;
 
@@ -11,7 +12,7 @@ use ratatui::style::Stylize as _;
 use ratatui::text::Line;
 use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
 
-use crate::tui::state::FujiState;
+use crate::tui::state::{FujiState, Page};
 
 pub fn main() -> Result<()> {
 	let terminal: DefaultTerminal = try_init().context("Couldn't initialise ratatui!")?;
@@ -49,7 +50,13 @@ fn render(frame: &mut Frame, state: &mut FujiState) {
 	let layout: Layout = Layout::vertical([Constraint::Length(1), Constraint::Fill(1)]).spacing(1);
 	let [title, body] = frame.area().layout(&layout);
 	render_title(frame, title);
-	frame.render_stateful_widget(state.tab, body, state);
+	match state.page {
+		Page::Home => {},
+		Page::JVM { mut tab } => {
+			frame.render_stateful_widget(&mut tab, body, state);
+			state.page = Page::JVM { tab };
+		},
+	};
 }
 
 fn render_title(frame: &mut Frame, area: Rect) {
