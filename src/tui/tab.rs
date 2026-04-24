@@ -1,7 +1,7 @@
 use ratatui::buffer::Buffer;
 use ratatui::crossterm::event::{Event, KeyCode};
 use ratatui::layout::{HorizontalAlignment, Margin, Offset, Rect};
-use ratatui::prelude::{StatefulWidget, Widget};
+use ratatui::prelude::{StatefulWidget, Widget as _};
 use ratatui::widgets::{Block, BorderType, Paragraph, Tabs};
 
 use crate::tui::state::FujiState;
