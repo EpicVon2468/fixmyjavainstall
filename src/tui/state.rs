@@ -1,7 +1,7 @@
 #![cfg(feature = "tui")]
 
 use ratatui::buffer::Buffer;
-use ratatui::crossterm::event::Event;
+use ratatui::crossterm::event::{Event, KeyCode};
 use ratatui::layout::{HorizontalAlignment, Margin, Offset, Rect};
 use ratatui::widgets::{Block, Paragraph, StatefulWidget, Tabs, Widget as _};
 
@@ -29,6 +29,20 @@ impl StatefulWidget for &Tab {
 	type State = FujiState;
 
 	fn render(self, area: Rect, buf: &mut Buffer, state: &mut FujiState) {
+		state.event.clone().inspect(|event: &Event| {
+			if let Event::Key(key_event) = *event {
+				match key_event.code {
+					KeyCode::Left => {
+						state.tab.shift_self_left();
+					},
+					KeyCode::Right => {
+						state.tab.shift_self_right();
+					},
+					_ => (),
+				};
+			}
+		});
+
 		#[allow(unreachable_patterns)]
 		let render_tab: fn(Rect, &mut Buffer, &mut FujiState) = match *self {
 			Tab::Foo => Tab::render_foo,
