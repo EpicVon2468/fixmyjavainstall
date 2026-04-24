@@ -5,13 +5,13 @@ use std::time::Duration;
 
 use anyhow::{Context as _, Result};
 
-use ratatui::crossterm::event::{poll, read, Event, KeyCode};
+use ratatui::crossterm::event::{Event, KeyCode, poll, read};
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::style::Stylize as _;
 use ratatui::text::Line;
-use ratatui::{try_init, try_restore, DefaultTerminal, Frame};
+use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
 
-use crate::tui::state::{FujiState, Tab};
+use crate::tui::state::FujiState;
 
 pub fn main() -> Result<()> {
 	let terminal: DefaultTerminal = try_init().context("Couldn't initialise ratatui!")?;
@@ -22,10 +22,7 @@ pub fn main() -> Result<()> {
 }
 
 fn _main(mut terminal: DefaultTerminal) -> Result<()> {
-	let mut state = FujiState {
-		tab: Tab::Foo,
-		event: None,
-	};
+	let mut state: FujiState = FujiState::new();
 	loop {
 		terminal.draw(|frame: &mut Frame| render(frame, &mut state))?;
 		if !poll(Duration::from_millis(0))? {
@@ -52,7 +49,7 @@ fn render(frame: &mut Frame, state: &mut FujiState) {
 	let layout: Layout = Layout::vertical([Constraint::Length(1), Constraint::Fill(1)]).spacing(1);
 	let [title, body] = frame.area().layout(&layout);
 	render_title(frame, title);
-	frame.render_stateful_widget(&state.tab.clone(), body, &mut *state);
+	frame.render_stateful_widget(state.tab, body, state);
 }
 
 fn render_title(frame: &mut Frame, area: Rect) {

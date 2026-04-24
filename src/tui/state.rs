@@ -10,6 +10,15 @@ pub struct FujiState {
 	pub event: Option<Event>,
 }
 
+impl FujiState {
+	pub const fn new() -> Self {
+		Self {
+			tab: Tab::first(),
+			event: None,
+		}
+	}
+}
+
 #[derive(Copy, Clone)]
 pub enum Tab {
 	Foo,
