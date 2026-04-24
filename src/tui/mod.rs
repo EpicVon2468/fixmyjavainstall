@@ -17,7 +17,7 @@ pub fn main() -> Result<()> {
 	let terminal: DefaultTerminal = try_init().context("Couldn't initialise ratatui!")?;
 	#[expect(clippy::used_underscore_items)]
 	let result: Result<()> = _main(terminal);
-	try_restore().context("Couldn't restore terminal to original state!")?;
+	let _ = try_restore();
 	result
 }
 
