@@ -3,7 +3,7 @@
 use ratatui::buffer::Buffer;
 use ratatui::crossterm::event::{Event, KeyCode};
 use ratatui::layout::{HorizontalAlignment, Margin, Offset, Rect};
-use ratatui::widgets::{Block, Paragraph, StatefulWidget, Tabs, Widget as _};
+use ratatui::widgets::{Block, BorderType, Paragraph, StatefulWidget, Tabs, Widget as _};
 
 pub struct FujiState {
 	pub tab: Tab,
@@ -59,7 +59,9 @@ impl StatefulWidget for &Tab {
 			Tab::Baz => Tab::render_baz,
 			_ => unreachable!(),
 		};
-		Block::bordered().render(area, buf);
+		Block::bordered()
+			.border_type(BorderType::Rounded)
+			.render(area, buf);
 		render_tab(area.inner(Margin::new(1, 1)), buf, state);
 
 		#[allow(clippy::as_conversions)]
