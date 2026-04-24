@@ -1,6 +1,6 @@
 [package]
 name = "fuji"
-version = "0.4.1"
+version = "0.5.0"
 authors = ["Mavity The Madity"]
 edition = "2024"
 rust-version = "1.95.0"
