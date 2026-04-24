@@ -11,7 +11,7 @@ use ratatui::style::Stylize as _;
 use ratatui::text::Line;
 use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
 
-use crate::tui::state::{State, Tab};
+use crate::tui::state::{FujiState, Tab};
 
 pub fn main() -> Result<()> {
 	let terminal: DefaultTerminal = try_init().context("Couldn't initialise ratatui!")?;
@@ -22,14 +22,15 @@ pub fn main() -> Result<()> {
 }
 
 fn _main(mut terminal: DefaultTerminal) -> Result<()> {
-	let mut state = State { tab: Tab::Foo };
-	// TODO: place in State ?
-	let mut cur_event: Option<Event> = None;
+	let mut state = FujiState {
+		tab: Tab::Foo,
+		event: None,
+	};
 	loop {
-		terminal.draw(|frame: &mut Frame| render(frame, &state, cur_event.as_ref()))?;
+		terminal.draw(|frame: &mut Frame| render(frame, &mut state))?;
 		if !poll(Duration::from_millis(0))? {
-			if cur_event.is_some() {
-				cur_event.take();
+			if state.event.is_some() {
+				state.event.take();
 			};
 			continue;
 		};
@@ -46,7 +47,7 @@ fn _main(mut terminal: DefaultTerminal) -> Result<()> {
 				_ => (),
 			};
 		};
-		cur_event.replace(event);
+		state.event.replace(event);
 	}
 }
 
@@ -54,11 +55,11 @@ fn _main(mut terminal: DefaultTerminal) -> Result<()> {
 // https://github.com/ratatui/ratatui/tree/main/ratatui-widgets/examples
 // https://github.com/ratatui/ratatui/blob/main/ratatui-widgets/examples/block.rs
 // https://github.com/ratatui/ratatui/blob/main/ratatui-widgets/examples/tabs.rs
-fn render(frame: &mut Frame, state: &State, event: Option<&Event>) {
+fn render(frame: &mut Frame, state: &mut FujiState) {
 	let layout: Layout = Layout::vertical([Constraint::Length(1), Constraint::Fill(1)]).spacing(1);
 	let [title, main] = frame.area().layout(&layout);
 	render_title(frame, title);
-	frame.render_widget(&state.tab, main);
+	frame.render_stateful_widget(&state.tab.clone(), main, &mut *state);
 }
 
 fn render_title(frame: &mut Frame, area: Rect) {

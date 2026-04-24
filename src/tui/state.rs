@@ -1,21 +1,26 @@
 #![cfg(feature = "tui")]
 
 use ratatui::buffer::Buffer;
+use ratatui::crossterm::event::Event;
 use ratatui::layout::{Alignment, Offset, Rect};
-use ratatui::widgets::{Block, Paragraph, Tabs, Widget};
+use ratatui::widgets::{Block, Paragraph, StatefulWidget, Tabs, Widget as _};
 
-pub struct State {
+pub struct FujiState {
 	pub tab: Tab,
+	pub event: Option<Event>,
 }
 
+#[derive(Copy, Clone)]
 pub enum Tab {
 	Foo,
 	Bar,
 	Baz,
 }
 
-impl Widget for &Tab {
-	fn render(self, area: Rect, buf: &mut Buffer) {
+impl StatefulWidget for &Tab {
+	type State = FujiState;
+
+	fn render(self, area: Rect, buf: &mut Buffer, state: &mut FujiState) {
 		#[allow(unreachable_patterns)]
 		let text: &str = match *self {
 			Tab::Foo => "Something something foo",
@@ -41,8 +46,8 @@ impl Tab {
 		&["Foo", "Bar", "Baz"]
 	}
 
-	pub const fn ordinal(&self) -> u32 {
-		match *self {
+	pub const fn ordinal(self) -> u32 {
+		match self {
 			Self::Foo => 0,
 			Self::Bar => 1,
 			Self::Baz => 2,
@@ -71,7 +76,7 @@ impl Tab {
 		self
 	}
 
-	pub const fn shift_left(&self) -> Self {
+	pub const fn shift_left(self) -> Self {
 		let mut ord: i32 = self.ordinal().cast_signed() - 1;
 		if ord < 0 {
 			ord = Self::last().ordinal().cast_signed();
@@ -84,7 +89,7 @@ impl Tab {
 		self
 	}
 
-	pub const fn shift_right(&self) -> Self {
+	pub const fn shift_right(self) -> Self {
 		let mut ord: u32 = self.ordinal() + 1;
 		if ord > Self::last().ordinal() {
 			ord = 0;
