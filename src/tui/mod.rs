@@ -5,10 +5,9 @@ use anyhow::{Context as _, Result};
 
 use console::{Key, Term};
 
-use ratatui::layout::{Alignment, Constraint, Layout, Offset, Rect};
+use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::style::Stylize as _;
 use ratatui::text::Line;
-use ratatui::widgets::{Block, Paragraph, Tabs};
 use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
 
 use crate::tui::state::{State, Tab};
@@ -49,8 +48,7 @@ fn render(frame: &mut Frame, state: &State) {
 	let layout: Layout = Layout::vertical([Constraint::Length(1), Constraint::Fill(1)]).spacing(1);
 	let [title, main] = frame.area().layout(&layout);
 	render_title(&mut *frame, title);
-	render_tab_content(&mut *frame, main, state);
-	render_tab_list(&mut *frame, main + Offset::new(1, 0), state);
+	frame.render_widget(&state.tab, main);
 }
 
 fn render_title(frame: &mut Frame, area: Rect) {
@@ -58,26 +56,4 @@ fn render_title(frame: &mut Frame, area: Rect) {
 		.centered()
 		.bold();
 	frame.render_widget(title, area);
-}
-
-#[allow(clippy::as_conversions)]
-fn render_tab_list(frame: &mut Frame, area: Rect, state: &State) {
-	let tabs: Tabs = Tabs::new(Tab::value_names().to_owned())
-		.select(state.tab.ordinal() as usize)
-		.padding(" ", " ");
-	frame.render_widget(tabs, area);
-}
-
-#[allow(unreachable_patterns)]
-fn render_tab_content(frame: &mut Frame, area: Rect, state: &State) {
-	let text: &str = match state.tab {
-		Tab::Foo => "Something something foo",
-		Tab::Bar => "Something something bar",
-		Tab::Baz => "Something something baz",
-		_ => unreachable!(),
-	};
-	let paragraph: Paragraph = Paragraph::new(text)
-		.alignment(Alignment::Center)
-		.block(Block::bordered());
-	frame.render_widget(paragraph, area);
 }
