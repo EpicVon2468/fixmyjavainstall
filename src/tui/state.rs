@@ -42,7 +42,8 @@ impl StatefulWidget for &Tab {
 		#[allow(clippy::as_conversions)]
 		let tabs: Tabs = Tabs::new(Tab::value_names().to_owned())
 			.select(self.ordinal() as usize)
-			.padding(" ", " ");
+			.padding(" ", " ")
+			.divider("#");
 		tabs.render(area + Offset::new(1, 0), buf);
 	}
 }
