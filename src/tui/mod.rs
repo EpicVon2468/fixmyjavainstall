@@ -23,9 +23,14 @@ pub fn main() -> Result<()> {
 
 fn _main(mut terminal: DefaultTerminal) -> Result<()> {
 	let mut state = State { tab: Tab::Foo };
+	// TODO: place in State ?
+	let mut cur_event: Option<Event> = None;
 	loop {
-		terminal.draw(|frame: &mut Frame| render(frame, &state))?;
+		terminal.draw(|frame: &mut Frame| render(frame, &state, cur_event.as_ref()))?;
 		if !poll(Duration::from_millis(0))? {
+			if cur_event.is_some() {
+				cur_event.take();
+			};
 			continue;
 		};
 		let event: Event = read()?;
@@ -41,6 +46,7 @@ fn _main(mut terminal: DefaultTerminal) -> Result<()> {
 				_ => (),
 			};
 		};
+		cur_event.replace(event);
 	}
 }
 
@@ -48,7 +54,7 @@ fn _main(mut terminal: DefaultTerminal) -> Result<()> {
 // https://github.com/ratatui/ratatui/tree/main/ratatui-widgets/examples
 // https://github.com/ratatui/ratatui/blob/main/ratatui-widgets/examples/block.rs
 // https://github.com/ratatui/ratatui/blob/main/ratatui-widgets/examples/tabs.rs
-fn render(frame: &mut Frame, state: &State) {
+fn render(frame: &mut Frame, state: &State, event: Option<&Event>) {
 	let layout: Layout = Layout::vertical([Constraint::Length(1), Constraint::Fill(1)]).spacing(1);
 	let [title, main] = frame.area().layout(&layout);
 	render_title(frame, title);
