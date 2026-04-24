@@ -20,7 +20,7 @@ pub enum Tab {
 impl StatefulWidget for Tab {
 	type State = FujiState;
 
-	fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
+	fn render(self, area: Rect, buf: &mut Buffer, state: &mut FujiState) {
 		StatefulWidget::render(&self, area, buf, state);
 	}
 }
@@ -29,8 +29,8 @@ impl StatefulWidget for &Tab {
 	type State = FujiState;
 
 	fn render(self, area: Rect, buf: &mut Buffer, state: &mut FujiState) {
-		state.event.clone().inspect(|event: &Event| {
-			if let Event::Key(key_event) = *event {
+		state.event.as_ref().inspect(|event: &&Event| {
+			if let Event::Key(key_event) = **event {
 				match key_event.code {
 					KeyCode::Left => {
 						state.tab.shift_self_left();
