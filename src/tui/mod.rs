@@ -1,5 +1,6 @@
 #![cfg(feature = "tui")]
 mod app;
+mod page;
 mod tab;
 
 use anyhow::{Context as _, Result};

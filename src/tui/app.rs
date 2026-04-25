@@ -6,29 +6,17 @@ use std::time::Duration;
 use anyhow::Result;
 
 use ratatui::crossterm::event::{Event, KeyCode, poll, read};
-use ratatui::layout::{Constraint, Layout, Rect};
+use ratatui::layout::{Constraint, Layout};
 use ratatui::{DefaultTerminal, Frame};
 
+use crate::tui::page::Page;
+use crate::tui::page::jvm::JVMPage;
 use crate::tui::render_title;
 use crate::tui::tab::Tab;
 
 pub struct FujiApp {
 	pub page: Cell<Box<dyn Page>>,
 	pub event: Option<Event>,
-}
-
-pub trait Page {
-	fn render(&mut self, frame: &mut Frame, area: Rect, app: &mut FujiApp);
-}
-
-struct JVMPage {
-	tab: Tab,
-}
-
-impl Page for JVMPage {
-	fn render(&mut self, frame: &mut Frame, area: Rect, app: &mut FujiApp) {
-		frame.render_stateful_widget(&mut self.tab, area, app);
-	}
 }
 
 impl FujiApp {
