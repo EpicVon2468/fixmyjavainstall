@@ -19,3 +19,4 @@
 - [ ] Allow adding `Feature`s to already-installed JVMs (including non-fuji)
 - [X] `Append` for `features`
 - [ ] List all modified/created folders & files in a log somewhere?
+- [ ] [You have got to be kidding me](https://keith.github.io/xcode-man-pages/java_home.1.html).

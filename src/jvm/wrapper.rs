@@ -169,7 +169,7 @@ fn gen_features<F: Fn(&str, &str) -> String>(
 	if features.contains(&Feature::FontFix) {
 		fuji_jvm_arg(
 			"Enables AWT font antialiasing.  This can improve readability and quality of text",
-			"-Dawt.useSystemAAFontSettings=on",
+			"-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true",
 		);
 	};
 }

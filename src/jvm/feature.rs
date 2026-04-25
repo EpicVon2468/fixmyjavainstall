@@ -106,7 +106,7 @@ pub enum Feature {
 	#[cfg(feature = "openjdk-deprecated")]
 	#[value(alias = "no-final")]
 	Mutate,
-	/// Enables AWT font antialiasing.  This can improve readability and quality of text.
+	/// Enables AWT/Swing font antialiasing.  This can improve readability and quality of text.
 	FontFix,
 	/// General fixes for NVIDIA GPUs on Linux.
 	///
