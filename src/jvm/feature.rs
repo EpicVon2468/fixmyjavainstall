@@ -70,6 +70,8 @@ pub enum Feature {
 	///
 	/// Developers are discouraged from using JNI, and should instead favour the newer FFM API.
 	///
+	/// **This option will break the JVM if you are not on a version ≥ 24.**
+	///
 	/// See also:
 	///
 	/// - <https://inside.java/2024/12/09/quality-heads-up/>.
@@ -84,6 +86,8 @@ pub enum Feature {
 	///
 	/// Developers are discouraged from using JNI, and should instead favour the newer FFM API.
 	///
+	/// **This option will break the JVM if you are not on a version ≥ 23.**
+	///
 	/// See also:
 	///
 	/// - <https://openjdk.org/projects/panama/>.
@@ -92,9 +96,9 @@ pub enum Feature {
 	Unsafe,
 	/// Allows final to *not* mean final – <https://openjdk.org/jeps/500>.
 	///
-	/// This is a terrible idea, but sometimes it's needed.
+	/// This is a terrible idea, but sometimes it's needed; Don't enable this unless you know what you're doing.
 	///
-	/// Don't enable this unless you know what you're doing.
+	/// **This option will break the JVM if you are not on a version ≥ 26.**
 	///
 	/// See also:
 	///
