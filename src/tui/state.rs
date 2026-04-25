@@ -1,30 +1,40 @@
 #![cfg(feature = "tui")]
 
+use std::cell::Cell;
 use std::time::Duration;
 
 use anyhow::Result;
 
 use ratatui::crossterm::event::{Event, KeyCode, poll, read};
-use ratatui::layout::{Constraint, Layout};
+use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::{DefaultTerminal, Frame};
 
 use crate::tui::render_title;
 use crate::tui::tab::Tab;
 
 pub struct FujiApp {
-	pub page: Page,
+	pub page: Cell<Box<dyn Page>>,
 	pub event: Option<Event>,
 }
 
-pub enum Page {
-	Home,
-	JVM { tab: Tab },
+pub trait Page {
+	fn render(&mut self, frame: &mut Frame, app: &mut FujiApp, area: Rect);
+}
+
+struct JVMPage {
+	tab: Tab,
+}
+
+impl Page for JVMPage {
+	fn render(&mut self, frame: &mut Frame, app: &mut FujiApp, area: Rect) {
+		frame.render_stateful_widget(&mut self.tab, area, app);
+	}
 }
 
 impl FujiApp {
-	pub const fn new() -> Self {
+	pub fn new() -> Self {
 		Self {
-			page: Page::JVM { tab: Tab::Foo },
+			page: Cell::new(Box::new(JVMPage { tab: Tab::Foo })),
 			event: None,
 		}
 	}
@@ -53,12 +63,13 @@ impl FujiApp {
 			Layout::vertical([Constraint::Length(1), Constraint::Fill(1)]).spacing(1);
 		let [title, body] = frame.area().layout(&layout);
 		render_title(frame, title);
-		match self.page {
-			Page::Home => {},
-			Page::JVM { mut tab } => {
-				frame.render_stateful_widget(&mut tab, body, self);
-				self.page = Page::JVM { tab };
-			},
+		let ptr: *mut Box<dyn Page> = self.page.as_ptr();
+		// SAFETY: todo
+		let mut page: Box<dyn Page> = unsafe { ptr.read() };
+		page.render(frame, self, body);
+		// SAFETY: todo
+		unsafe {
+			ptr.write(page);
 		};
 	}
 }
