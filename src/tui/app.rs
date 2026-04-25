@@ -6,7 +6,8 @@ use std::time::Duration;
 use anyhow::Result;
 
 use ratatui::crossterm::event::{Event, KeyCode, poll, read};
-use ratatui::layout::{Constraint, Layout};
+use ratatui::layout::{Constraint, Layout, Margin};
+use ratatui::widgets::{Block, BorderType};
 use ratatui::{DefaultTerminal, Frame};
 
 use crate::tui::page::Page;
@@ -47,17 +48,24 @@ impl FujiApp {
 	}
 
 	fn render(&mut self, frame: &mut Frame) {
-		let layout: Layout =
-			Layout::vertical([Constraint::Length(1), Constraint::Fill(1)]).spacing(1);
-		let [title, body] = frame.area().layout(&layout);
+		let layout: Layout = Layout::vertical([
+			Constraint::Length(1),
+			Constraint::Fill(1),
+			Constraint::Length(2),
+		])
+		.spacing(1);
+		let [title, body, help] = frame.area().layout(&layout);
 		render_title(frame, title);
+		frame.render_widget(Self::BORDER, body);
 		let ptr: *mut Box<dyn Page> = self.page.as_ptr();
 		// SAFETY: todo
 		let mut page: Box<dyn Page> = unsafe { ptr.read() };
-		page.render(frame, body, self);
+		page.render(frame, body.inner(Margin::new(1, 1)), self);
 		// SAFETY: todo
 		unsafe {
 			ptr.write(page);
 		};
 	}
+
+	const BORDER: Block<'static> = Block::bordered().border_type(BorderType::Rounded);
 }

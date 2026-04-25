@@ -1,12 +1,11 @@
 use ratatui::buffer::Buffer;
 use ratatui::crossterm::event::{Event, KeyCode};
-use ratatui::layout::{HorizontalAlignment, Margin, Offset, Rect};
+use ratatui::layout::{HorizontalAlignment, Offset, Rect};
 use ratatui::prelude::{StatefulWidget, Widget as _};
-use ratatui::widgets::{Block, BorderType, Paragraph, Tabs};
+use ratatui::widgets::{Paragraph, Tabs};
 
 use crate::tui::app::FujiApp;
 
-#[derive(Copy, Clone)]
 pub enum Tab {
 	Foo,
 	Bar,
@@ -38,17 +37,14 @@ impl StatefulWidget for &mut Tab {
 			Tab::Baz => Tab::render_baz,
 			_ => unreachable!(),
 		};
-		Block::bordered()
-			.border_type(BorderType::Rounded)
-			.render(area, buf);
-		render_tab(area.inner(Margin::new(1, 1)), buf, state);
+		render_tab(area, buf, state);
 
 		#[allow(clippy::as_conversions)]
 		let tabs: Tabs = Tabs::new(Tab::value_names().to_owned())
 			.select(self.ordinal() as usize)
 			.padding(" ", " ")
 			.divider("#");
-		tabs.render(area + Offset::new(1, 0), buf);
+		tabs.render(area - Offset::new(0, 1), buf);
 	}
 }
 
@@ -66,8 +62,8 @@ impl Tab {
 		&["Foo", "Bar", "Baz"]
 	}
 
-	pub const fn ordinal(self) -> u32 {
-		match self {
+	pub const fn ordinal(&self) -> u32 {
+		match *self {
 			Self::Foo => 0,
 			Self::Bar => 1,
 			Self::Baz => 2,
@@ -96,7 +92,7 @@ impl Tab {
 		self
 	}
 
-	pub const fn shift_left(self) -> Self {
+	pub const fn shift_left(&self) -> Self {
 		let mut ord: i32 = self.ordinal().cast_signed() - 1;
 		if ord < 0 {
 			ord = Self::last().ordinal().cast_signed();
@@ -109,7 +105,7 @@ impl Tab {
 		self
 	}
 
-	pub const fn shift_right(self) -> Self {
+	pub const fn shift_right(&self) -> Self {
 		let mut ord: u32 = self.ordinal() + 1;
 		if ord > Self::last().ordinal() {
 			ord = 0;

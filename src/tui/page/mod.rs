@@ -1,3 +1,4 @@
+pub mod home;
 pub mod jvm;
 
 use ratatui::Frame;
