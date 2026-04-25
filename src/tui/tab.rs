@@ -4,7 +4,7 @@ use ratatui::layout::{HorizontalAlignment, Margin, Offset, Rect};
 use ratatui::prelude::{StatefulWidget, Widget as _};
 use ratatui::widgets::{Block, BorderType, Paragraph, Tabs};
 
-use crate::tui::state::FujiState;
+use crate::tui::state::FujiApp;
 
 #[derive(Copy, Clone)]
 pub enum Tab {
@@ -14,9 +14,9 @@ pub enum Tab {
 }
 
 impl StatefulWidget for &mut Tab {
-	type State = FujiState;
+	type State = FujiApp;
 
-	fn render(self, area: Rect, buf: &mut Buffer, state: &mut FujiState) {
+	fn render(self, area: Rect, buf: &mut Buffer, state: &mut FujiApp) {
 		state.event.as_ref().inspect(|event: &&Event| {
 			if let Event::Key(key_event) = **event {
 				match key_event.code {
@@ -32,7 +32,7 @@ impl StatefulWidget for &mut Tab {
 		});
 
 		#[allow(unreachable_patterns)]
-		let render_tab: fn(Rect, &mut Buffer, &mut FujiState) = match *self {
+		let render_tab: fn(Rect, &mut Buffer, &mut FujiApp) = match *self {
 			Tab::Foo => Tab::render_foo,
 			Tab::Bar => Tab::render_bar,
 			Tab::Baz => Tab::render_baz,
@@ -53,14 +53,14 @@ impl StatefulWidget for &mut Tab {
 }
 
 impl Tab {
-	fn render_foo(area: Rect, buf: &mut Buffer, state: &mut FujiState) {
+	fn render_foo(area: Rect, buf: &mut Buffer, state: &mut FujiApp) {
 		let paragraph: Paragraph = Paragraph::new("text").alignment(HorizontalAlignment::Center);
 		paragraph.render(area, buf);
 	}
 
-	fn render_bar(area: Rect, buf: &mut Buffer, state: &mut FujiState) {}
+	fn render_bar(area: Rect, buf: &mut Buffer, state: &mut FujiApp) {}
 
-	fn render_baz(area: Rect, buf: &mut Buffer, state: &mut FujiState) {}
+	fn render_baz(area: Rect, buf: &mut Buffer, state: &mut FujiApp) {}
 
 	pub const fn value_names() -> &'static [&'static str] {
 		&["Foo", "Bar", "Baz"]

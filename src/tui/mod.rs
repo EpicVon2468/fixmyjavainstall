@@ -2,62 +2,27 @@
 mod state;
 mod tab;
 
-use std::time::Duration;
-
 use anyhow::{Context as _, Result};
 
-use ratatui::crossterm::event::{Event, KeyCode, poll, read};
-use ratatui::layout::{Constraint, Layout, Rect};
+use ratatui::layout::Rect;
 use ratatui::style::Stylize as _;
 use ratatui::text::Line;
 use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
 
-use crate::tui::state::{FujiState, Page};
+use crate::tui::state::FujiApp;
 
 pub fn main() -> Result<()> {
 	let terminal: DefaultTerminal = try_init().context("Couldn't initialise ratatui!")?;
-	#[expect(clippy::used_underscore_items)]
-	let result: Result<()> = _main(terminal);
+	let mut app: FujiApp = FujiApp::new();
+	let result: Result<()> = app.main(terminal);
 	let _ = try_restore();
 	result
-}
-
-fn _main(mut terminal: DefaultTerminal) -> Result<()> {
-	let mut state: FujiState = FujiState::new();
-	loop {
-		terminal.draw(|frame: &mut Frame| render(frame, &mut state))?;
-		if !poll(Duration::from_millis(0))? {
-			if state.event.is_some() {
-				state.event.take();
-			};
-			continue;
-		};
-		let event: Event = read()?;
-		if let Event::Key(key_event) = event
-			&& key_event.code == KeyCode::Char('q')
-		{
-			break Ok(());
-		};
-		state.event.replace(event);
-	}
 }
 
 // https://github.com/ratatui/ratatui/blob/main/examples/concepts/state/src/bin/stateful-widget.rs
 // https://github.com/ratatui/ratatui/tree/main/ratatui-widgets/examples
 // https://github.com/ratatui/ratatui/blob/main/ratatui-widgets/examples/block.rs
 // https://github.com/ratatui/ratatui/blob/main/ratatui-widgets/examples/tabs.rs
-fn render(frame: &mut Frame, state: &mut FujiState) {
-	let layout: Layout = Layout::vertical([Constraint::Length(1), Constraint::Fill(1)]).spacing(1);
-	let [title, body] = frame.area().layout(&layout);
-	render_title(frame, title);
-	match state.page {
-		Page::Home => {},
-		Page::JVM { mut tab } => {
-			frame.render_stateful_widget(&mut tab, body, state);
-			state.page = Page::JVM { tab };
-		},
-	};
-}
 
 fn render_title(frame: &mut Frame, area: Rect) {
 	let title: Line = Line::from("Fix Ur Java Install – A JVM & Kotlin Management Utility.")
