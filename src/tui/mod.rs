@@ -1,5 +1,5 @@
 #![cfg(feature = "tui")]
-mod state;
+mod app;
 mod tab;
 
 use anyhow::{Context as _, Result};
@@ -9,7 +9,7 @@ use ratatui::style::Stylize as _;
 use ratatui::text::Line;
 use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
 
-use crate::tui::state::FujiApp;
+use crate::tui::app::FujiApp;
 
 pub fn main() -> Result<()> {
 	let terminal: DefaultTerminal = try_init().context("Couldn't initialise ratatui!")?;

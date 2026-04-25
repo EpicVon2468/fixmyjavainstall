@@ -4,7 +4,7 @@ use ratatui::layout::{HorizontalAlignment, Margin, Offset, Rect};
 use ratatui::prelude::{StatefulWidget, Widget as _};
 use ratatui::widgets::{Block, BorderType, Paragraph, Tabs};
 
-use crate::tui::state::FujiApp;
+use crate::tui::app::FujiApp;
 
 #[derive(Copy, Clone)]
 pub enum Tab {

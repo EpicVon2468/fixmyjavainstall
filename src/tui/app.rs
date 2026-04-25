@@ -18,7 +18,7 @@ pub struct FujiApp {
 }
 
 pub trait Page {
-	fn render(&mut self, frame: &mut Frame, app: &mut FujiApp, area: Rect);
+	fn render(&mut self, frame: &mut Frame, area: Rect, app: &mut FujiApp);
 }
 
 struct JVMPage {
@@ -26,7 +26,7 @@ struct JVMPage {
 }
 
 impl Page for JVMPage {
-	fn render(&mut self, frame: &mut Frame, app: &mut FujiApp, area: Rect) {
+	fn render(&mut self, frame: &mut Frame, area: Rect, app: &mut FujiApp) {
 		frame.render_stateful_widget(&mut self.tab, area, app);
 	}
 }
@@ -66,7 +66,7 @@ impl FujiApp {
 		let ptr: *mut Box<dyn Page> = self.page.as_ptr();
 		// SAFETY: todo
 		let mut page: Box<dyn Page> = unsafe { ptr.read() };
-		page.render(frame, self, body);
+		page.render(frame, body, self);
 		// SAFETY: todo
 		unsafe {
 			ptr.write(page);
