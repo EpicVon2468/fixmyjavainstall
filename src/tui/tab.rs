@@ -39,9 +39,8 @@ impl StatefulWidget for &mut Tab {
 		};
 		render_tab(area, buf, state);
 
-		#[allow(clippy::as_conversions)]
 		let tabs: Tabs = Tabs::new(Tab::value_names().to_owned())
-			.select(self.ordinal() as usize)
+			.select(self.ordinal())
 			.padding(" ", " ")
 			.divider("#");
 		tabs.render(area - Offset::new(0, 1), buf);
@@ -49,7 +48,7 @@ impl StatefulWidget for &mut Tab {
 }
 
 impl Tab {
-	fn render_foo(area: Rect, buf: &mut Buffer, state: &mut FujiApp) {
+	fn render_foo(area: Rect, buf: &mut Buffer, _state: &mut FujiApp) {
 		let paragraph: Paragraph = Paragraph::new("text").alignment(HorizontalAlignment::Center);
 		paragraph.render(area, buf);
 	}
@@ -62,7 +61,7 @@ impl Tab {
 		&["Foo", "Bar", "Baz"]
 	}
 
-	pub const fn ordinal(&self) -> u32 {
+	pub const fn ordinal(&self) -> usize {
 		match *self {
 			Self::Foo => 0,
 			Self::Bar => 1,
@@ -70,7 +69,7 @@ impl Tab {
 		}
 	}
 
-	pub const fn get(ordinal: u32) -> Option<Self> {
+	pub const fn get(ordinal: usize) -> Option<Self> {
 		match ordinal {
 			0 => Some(Self::Foo),
 			1 => Some(Self::Bar),
@@ -93,7 +92,7 @@ impl Tab {
 	}
 
 	pub const fn shift_left(&self) -> Self {
-		let mut ord: i32 = self.ordinal().cast_signed() - 1;
+		let mut ord: isize = self.ordinal().cast_signed() - 1;
 		if ord < 0 {
 			ord = Self::last().ordinal().cast_signed();
 		};
@@ -106,7 +105,7 @@ impl Tab {
 	}
 
 	pub const fn shift_right(&self) -> Self {
-		let mut ord: u32 = self.ordinal() + 1;
+		let mut ord: usize = self.ordinal() + 1;
 		if ord > Self::last().ordinal() {
 			ord = 0;
 		};
