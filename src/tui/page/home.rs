@@ -1,7 +1,8 @@
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout, Rect};
-use ratatui::text::Text;
+use ratatui::text::{Line, Text};
 
+use crate::LONG_VERSION;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 use crate::tui::page::Page;
@@ -14,7 +15,17 @@ impl HomePage {
 	}
 
 	fn layout() -> Layout {
-		Layout::vertical([Constraint::Percentage(50), Constraint::Percentage(50)]).spacing(1)
+		Layout::vertical([Constraint::Length(7), Constraint::Fill(1)]).spacing(1)
+	}
+
+	fn render_logo_and_about(frame: &mut Frame, area: Rect) {
+		let [top, bottom] = area.layout(&Self::logo_and_about_layout());
+		frame.render_widget(Text::raw(Self::LOGO).centered(), top);
+		frame.render_widget(Line::from(LONG_VERSION).centered(), bottom);
+	}
+
+	fn logo_and_about_layout() -> Layout {
+		Layout::vertical([Constraint::Fill(1), Constraint::Length(1)])
 	}
 
 	pub const LOGO: &'static str = include_str!("../../../doc/logo.txt");
@@ -36,6 +47,6 @@ impl Component for HomePage {
 
 	fn render(&mut self, frame: &mut Frame, area: Rect, _app: &mut FujiApp) -> Self::Return {
 		let [top, _bottom] = area.layout(&Self::layout());
-		frame.render_widget(Text::raw(Self::LOGO).centered(), top);
+		Self::render_logo_and_about(frame, top);
 	}
 }

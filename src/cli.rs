@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
-use crate::LINK_DIR;
+use crate::{LINK_DIR, LONG_VERSION};
 
 /// Fix Ur Java Install – A JVM & Kotlin management utility.
 ///
@@ -10,7 +10,7 @@ use crate::LINK_DIR;
 #[derive(Parser)]
 #[command(
 	version,
-	long_version = "0.5.0 – \"GitHub Actions my behated\"",
+	long_version = LONG_VERSION,
 	author
 )]
 pub struct FujiArgs {
