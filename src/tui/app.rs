@@ -3,7 +3,7 @@
 use std::cell::Cell;
 use std::time::Duration;
 
-use anyhow::Result;
+use anyhow::{Context as _, Result};
 
 use ratatui::crossterm::event::{Event, KeyCode, poll, read};
 use ratatui::layout::{Constraint, Layout, Margin, Offset, Rect};
@@ -11,7 +11,7 @@ use ratatui::prelude::Line;
 use ratatui::style::{Style, Stylize as _};
 use ratatui::text::Span;
 use ratatui::widgets::{Block, BorderType};
-use ratatui::{DefaultTerminal, Frame};
+use ratatui::{DefaultTerminal, Frame, try_init};
 
 use crate::tui::page::Page;
 use crate::tui::page::jvm::JVMPage;
@@ -33,7 +33,11 @@ impl FujiApp {
 		}
 	}
 
-	pub fn main(&mut self, mut terminal: DefaultTerminal) -> Result<()> {
+	pub fn run() -> Result<()> {
+		Self::new().main(try_init().context("Couldn't initialise ratatui!")?)
+	}
+
+	pub fn main(mut self, mut terminal: DefaultTerminal) -> Result<()> {
 		loop {
 			terminal.draw(|frame: &mut Frame| self.render(frame))?;
 			if !poll(Duration::from_millis(0))? {
@@ -87,7 +91,7 @@ impl FujiApp {
 		};
 	}
 
-	const BORDER: Block<'static> = Block::bordered().border_type(BorderType::Rounded);
+	pub const BORDER: Block<'static> = Block::bordered().border_type(BorderType::Rounded);
 }
 
 /// Help section.
@@ -95,23 +99,31 @@ impl FujiApp {
 impl FujiApp {
 	fn render_help(frame: &mut Frame, area: Rect) {
 		let area: Rect = area + Offset::new(1, -1);
-		let [quit__help] = area.layout(&Self::help_layout());
-		Self::render_help__quit(frame, quit__help);
+		let [help__quit, help__back] = area.layout(&Self::help_layout());
+		Self::render_help__quit(frame, help__quit);
+		Self::render_help__back(frame, help__back);
 	}
 
 	fn help_layout() -> Layout {
-		Layout::horizontal([Constraint::Fill(1)]).spacing(1)
+		Layout::horizontal([Constraint::Fill(1), Constraint::Fill(1)]).spacing(1)
 	}
 
 	fn render_help__quit(frame: &mut Frame, area: Rect) {
-		frame.render_widget(
-			Line::from_iter([
-				Span::styled(":q", Style::new().on_white().black()),
-				Span::raw(" Quit"),
-			]),
-			area,
-		);
+		frame.render_widget(Self::help_entry(":q", "Quit"), area);
 	}
+
+	fn render_help__back(frame: &mut Frame, area: Rect) {
+		frame.render_widget(Self::help_entry("Esc", "Back"), area);
+	}
+
+	fn help_entry<'a>(key: &'a str, action: &str) -> Line<'a> {
+		Line::from_iter([
+			Span::styled(key, Self::HELP_KEY),
+			Span::raw(format!(" {action}")),
+		])
+	}
+
+	pub const HELP_KEY: Style = Style::new().on_white().black();
 }
 
 /// Keybinds.
