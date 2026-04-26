@@ -110,7 +110,8 @@ impl FujiApp {
 	fn render_title(frame: &mut Frame, area: Rect) {
 		let title: Line = Line::from("Fix Ur Java Install – A JVM & Kotlin Management Utility.")
 			.centered()
-			.bold();
+			.bold()
+			.magenta();
 		frame.render_widget(title, area);
 	}
 

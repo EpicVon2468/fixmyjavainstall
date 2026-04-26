@@ -1,6 +1,7 @@
 use console::Key;
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout, Rect};
+use ratatui::style::Stylize as _;
 use ratatui::text::{Line, Text};
 
 use crate::LONG_VERSION;
@@ -23,7 +24,7 @@ impl HomePage {
 
 	fn render_logo_and_about(frame: &mut Frame, area: Rect) {
 		let [top, bottom] = area.layout(&Self::logo_and_about_layout());
-		frame.render_widget(Text::raw(Self::LOGO).centered(), top);
+		frame.render_widget(Text::raw(Self::LOGO).centered().bold().magenta(), top);
 		frame.render_widget(Line::from(LONG_VERSION).centered(), bottom);
 	}
 
