@@ -1,11 +1,10 @@
 #![cfg(feature = "tui")]
 
 use std::cell::Cell;
-use std::time::Duration;
 
 use anyhow::{Context as _, Result};
 
-use ratatui::crossterm::event::{Event, KeyCode, poll, read};
+use ratatui::crossterm::event::{Event, KeyCode, read};
 use ratatui::layout::{Constraint, Layout, Margin, Offset, Rect};
 use ratatui::prelude::Line;
 use ratatui::style::{Style, Stylize as _};
@@ -40,13 +39,7 @@ impl FujiApp {
 	pub fn main(mut self, mut terminal: DefaultTerminal) -> Result<()> {
 		loop {
 			terminal.draw(|frame: &mut Frame| self.render(frame))?;
-			if !poll(Duration::from_millis(0))? {
-				if self.event.is_some() {
-					self.prev_event = self.event.take();
-				};
-				continue;
-			};
-			self.event.replace(read()?);
+			self.prev_event = self.event.replace(read()?);
 			if self.should_exit() {
 				break Ok(());
 			};
