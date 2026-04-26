@@ -1,6 +1,6 @@
 #![cfg(feature = "tui")]
 
-use std::cell::Cell;
+use std::cell::UnsafeCell;
 use std::mem::replace;
 
 use anyhow::{Context as _, Result};
@@ -20,7 +20,7 @@ use crate::tui::tab::Tab;
 use crate::{compiler_unreachable, matches_many};
 
 pub struct FujiApp {
-	page: Cell<Box<dyn Page>>,
+	page: UnsafeCell<Box<dyn Page>>,
 	event: Option<Key>,
 	prev_event: Option<Key>,
 }
@@ -29,7 +29,7 @@ pub struct FujiApp {
 impl FujiApp {
 	pub fn new() -> Self {
 		Self {
-			page: Cell::new(Box::new(JVMPage { tab: Tab::Foo })),
+			page: UnsafeCell::new(Box::new(JVMPage { tab: Tab::Foo })),
 			event: None,
 			prev_event: None,
 		}
@@ -37,6 +37,22 @@ impl FujiApp {
 
 	pub fn run() -> Result<()> {
 		Self::new().main(try_init().context("Couldn't initialise ratatui!")?)
+	}
+
+	fn page(&self) -> *mut Box<dyn Page> {
+		self.page.get()
+	}
+
+	fn get_page(&self) -> Box<dyn Page> {
+		// SAFETY: todo
+		unsafe { self.page().read() }
+	}
+
+	fn set_page(&mut self, value: Box<dyn Page>) {
+		// SAFETY: todo
+		unsafe {
+			self.page().write(value);
+		}
 	}
 }
 
@@ -79,14 +95,9 @@ impl FujiApp {
 		// Content box
 		frame.render_widget(Self::BORDER, area);
 		{
-			let ptr: *mut Box<dyn Page> = self.page.as_ptr();
-			// SAFETY: todo
-			let mut page: Box<dyn Page> = unsafe { ptr.read() };
+			let mut page: Box<dyn Page> = self.get_page();
 			page.render(frame, area.inner(Margin::new(1, 1)), self);
-			// SAFETY: todo
-			unsafe {
-				ptr.write(page);
-			};
+			self.set_page(page);
 		};
 	}
 
