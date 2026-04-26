@@ -57,15 +57,8 @@ impl FujiApp {
 		.spacing(1);
 		let [title, body, help] = frame.area().layout(&layout);
 		Self::render_title(frame, title);
-		frame.render_widget(Self::BORDER, body);
-		let ptr: *mut Box<dyn Page> = self.page.as_ptr();
-		// SAFETY: todo
-		let mut page: Box<dyn Page> = unsafe { ptr.read() };
-		page.render(frame, body.inner(Margin::new(1, 1)), self);
-		// SAFETY: todo
-		unsafe {
-			ptr.write(page);
-		};
+		self.render_body(frame, body);
+		Self::render_help(frame, help);
 	}
 
 	fn render_title(frame: &mut Frame, area: Rect) {
@@ -74,6 +67,23 @@ impl FujiApp {
 			.bold();
 		frame.render_widget(title, area);
 	}
+
+	fn render_body(&mut self, frame: &mut Frame, area: Rect) {
+		// Content box
+		frame.render_widget(Self::BORDER, area);
+		{
+			let ptr: *mut Box<dyn Page> = self.page.as_ptr();
+			// SAFETY: todo
+			let mut page: Box<dyn Page> = unsafe { ptr.read() };
+			page.render(frame, area.inner(Margin::new(1, 1)), self);
+			// SAFETY: todo
+			unsafe {
+				ptr.write(page);
+			};
+		};
+	}
+
+	fn render_help(frame: &mut Frame, area: Rect) {}
 
 	const BORDER: Block<'static> = Block::bordered().border_type(BorderType::Rounded);
 }

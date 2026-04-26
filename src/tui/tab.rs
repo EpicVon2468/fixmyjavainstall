@@ -92,7 +92,7 @@ impl Tab {
 	}
 
 	pub const fn shift_left(&self) -> Self {
-		let mut ord: isize = self.ordinal().cast_signed() - 1;
+		let mut ord: isize = self.ordinal().cast_signed().saturating_sub(1);
 		if ord < 0 {
 			ord = Self::last().ordinal().cast_signed();
 		};
@@ -105,7 +105,7 @@ impl Tab {
 	}
 
 	pub const fn shift_right(&self) -> Self {
-		let mut ord: usize = self.ordinal() + 1;
+		let mut ord: usize = self.ordinal().saturating_add(1);
 		if ord > Self::last().ordinal() {
 			ord = 0;
 		};
