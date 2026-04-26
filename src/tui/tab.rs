@@ -51,9 +51,9 @@ impl Tab {
 		frame.render_widget(paragraph, area);
 	}
 
-	fn render_bar(frame: &mut Frame, area: Rect, app: &mut FujiApp) {}
+	fn render_bar(_frame: &mut Frame, _area: Rect, _app: &mut FujiApp) {}
 
-	fn render_baz(frame: &mut Frame, area: Rect, app: &mut FujiApp) {}
+	fn render_baz(_frame: &mut Frame, _area: Rect, _app: &mut FujiApp) {}
 }
 
 /// Ordinal information.

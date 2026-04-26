@@ -65,7 +65,7 @@ impl FujiApp {
 	}
 }
 
-/// Rendering.
+/// Logic.
 impl FujiApp {
 	pub fn main(mut self, mut terminal: DefaultTerminal) -> Result<()> {
 		loop {
@@ -87,7 +87,10 @@ impl FujiApp {
 		};
 		self.set_page(page);
 	}
+}
 
+/// Rendering.
+impl FujiApp {
 	fn app_layout() -> Layout {
 		Layout::vertical([
 			Constraint::Length(1),
