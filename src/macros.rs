@@ -142,7 +142,7 @@ macro_rules! value_enum_extensions {
 #[macro_export]
 macro_rules! exists {
 	($path:expr) => {
-		std::fs::exists($path).is_ok_and(|exists: bool| exists)
+		std::fs::exists($path).unwrap_or(false)
 	};
 }
 

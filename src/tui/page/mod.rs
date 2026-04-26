@@ -1,6 +1,9 @@
 pub mod home;
 pub mod jvm;
 
+use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 
-pub trait Page: Component<Return = ()> {}
+pub trait Page: Component<Return = ()> {
+	fn propagate_page_events(&mut self, app: &FujiApp) -> (bool, Option<Box<dyn Page>>);
+}

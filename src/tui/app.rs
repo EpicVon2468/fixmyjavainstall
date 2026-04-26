@@ -28,7 +28,7 @@ pub struct FujiApp {
 impl FujiApp {
 	pub fn new() -> Self {
 		Self {
-			page: UnsafeCell::new(Box::new(JVMPage { tab: Tab::Foo })),
+			page: UnsafeCell::new(Box::new(JVMPage::new(Tab::Foo))),
 			event: None,
 			prev_event: None,
 		}
@@ -81,11 +81,12 @@ impl FujiApp {
 	/// See also: [`Component::propagate_events`][`crate::tui::component::Component::propagate_events`].
 	fn propagate_events(&mut self) {
 		let mut page: Box<dyn Page> = self.get_page();
-		if page.propagate_events(self) {
+		let (consumed, new_page) = page.propagate_page_events(self);
+		if consumed {
 			self.event.take();
 			self.prev_event.take();
 		};
-		self.set_page(page);
+		self.set_page(new_page.unwrap_or(page));
 	}
 }
 
@@ -142,7 +143,7 @@ impl FujiApp {
 	fn render_help_top_row(frame: &mut Frame, area: Rect) {
 		let [quit, back] = area.layout(&Self::help_top_row_layout());
 		Self::help_entry(frame, quit, ":q", "Quit");
-		Self::help_entry(frame, back, "Esc", "Back");
+		Self::help_entry(frame, back, "Backspace", "Back");
 	}
 
 	fn help_top_row_layout() -> Layout {
@@ -173,14 +174,13 @@ impl FujiApp {
 
 /// Keybinds.
 impl FujiApp {
-	fn check_key(&self, prev: bool, validate: &dyn Fn(&Key) -> bool) -> bool {
-		let event: Option<&Key> = if prev { &self.prev_event } else { &self.event }.as_ref();
-		event.is_some_and(validate)
+	const fn get_event(&self, prev: bool) -> Option<&Key> {
+		if prev { &self.prev_event } else { &self.event }.as_ref()
 	}
 
 	#[allow(clippy::needless_pass_by_value)]
 	fn key_down(&self, prev: bool, key: Key) -> bool {
-		self.check_key(prev, &|event: &Key| *event == key)
+		matches!(self.get_event(prev), Some(event_key) if *event_key == key)
 	}
 
 	pub fn is_key_down(&self, key: Key) -> bool {
