@@ -138,7 +138,11 @@ pub const LINK_DIR: &str = cfg_select! {
 };
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
-pub const LONG_VERSION: &str = concat!('v', env!("CARGO_PKG_VERSION"), " – \"GitHub Actions my behated\"");
+pub const LONG_VERSION: &str = concat!(
+	'v',
+	env!("CARGO_PKG_VERSION"),
+	" – \"GitHub Actions my behated\"",
+);
 
 /// Wrapper for [`entrypoint`], which takes in additional arguments for a shorthand / alias.
 ///
