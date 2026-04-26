@@ -1,7 +1,6 @@
 #![cfg(feature = "tui")]
 
 use std::cell::UnsafeCell;
-use std::mem::replace;
 
 use anyhow::{Context as _, Result};
 
@@ -44,12 +43,22 @@ impl FujiApp {
 	}
 
 	fn get_page(&self) -> Box<dyn Page> {
-		// SAFETY: todo
+		// SAFETY:
+		// Problem(s):
+		// - Pointers are unsafe.
+		// Excuse(s):
+		// - This function is only invoked by trusted callers in a safe manner.
+		// - Both this function and the underlying struct field are private and cannot be unexpectedly mutated.
 		unsafe { self.page().read() }
 	}
 
 	fn set_page(&mut self, value: Box<dyn Page>) {
-		// SAFETY: todo
+		// SAFETY:
+		// Problem(s):
+		// - Pointers are unsafe.
+		// Excuse(s):
+		// - This function is only invoked by trusted callers in a safe manner.
+		// - Both this function and the underlying struct field are private and cannot be unexpectedly mutated.
 		unsafe {
 			self.page().write(value);
 		}
@@ -62,7 +71,7 @@ impl FujiApp {
 		loop {
 			self.propagate_events();
 			terminal.draw(|frame: &mut Frame| self.render(frame))?;
-			self.prev_event = replace(&mut self.event, Self::update()?);
+			self.prev_event = std::mem::replace(&mut self.event, Self::update()?);
 			if self.should_exit() {
 				break Ok(());
 			};
