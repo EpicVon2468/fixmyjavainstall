@@ -14,8 +14,7 @@ use crate::tui::app::FujiApp;
 
 pub fn main() -> Result<()> {
 	let terminal: DefaultTerminal = try_init().context("Couldn't initialise ratatui!")?;
-	let mut app: FujiApp = FujiApp::new();
-	let result: Result<()> = app.main(terminal);
+	let result: Result<()> = FujiApp::new().main(terminal);
 	let _ = try_restore();
 	result
 }

@@ -21,6 +21,7 @@ pub struct FujiApp {
 	pub prev_event: Option<Event>,
 }
 
+/// Rendering.
 impl FujiApp {
 	pub fn new() -> Self {
 		Self {
@@ -28,22 +29,6 @@ impl FujiApp {
 			event: None,
 			prev_event: None,
 		}
-	}
-
-	pub fn key_pressed(&self, prev: bool, validate: &dyn Fn(KeyCode) -> bool) -> bool {
-		let event = if prev { &self.prev_event } else { &self.event }.as_ref();
-		if let Some(&Event::Key(key_event)) = event {
-			validate(key_event.code)
-		} else {
-			false
-		}
-	}
-
-	pub fn should_exit(&self) -> bool {
-		self.key_pressed(false, &|key| {
-			self.key_pressed(true, &|key| matches!(key, KeyCode::Char(':')))
-				&& matches!(key, KeyCode::Char('q'))
-		})
 	}
 
 	pub fn main(&mut self, mut terminal: DefaultTerminal) -> Result<()> {
@@ -83,4 +68,35 @@ impl FujiApp {
 	}
 
 	const BORDER: Block<'static> = Block::bordered().border_type(BorderType::Rounded);
+}
+
+/// Keybinds.
+impl FujiApp {
+	fn check_key(&self, prev: bool, validate: &dyn Fn(KeyCode) -> bool) -> bool {
+		let event: &Option<Event> = if prev { &self.prev_event } else { &self.event };
+		if let Some(Event::Key(key_event)) = *event {
+			validate(key_event.code)
+		} else {
+			false
+		}
+	}
+
+	fn key_down(&self, prev: bool, key: KeyCode) -> bool {
+		self.check_key(prev, &|event: KeyCode| event == key)
+	}
+
+	pub fn is_key_down(&self, key: KeyCode) -> bool {
+		self.key_down(false, key)
+	}
+
+	pub fn was_key_down(&self, key: KeyCode) -> bool {
+		self.key_down(true, key)
+	}
+
+	/// Whether the [`FujiApp`] should exit.
+	///
+	/// Returns: if the sequence `:q` was pressed.
+	pub fn should_exit(&self) -> bool {
+		self.was_key_down(KeyCode::Char(':')) && self.is_key_down(KeyCode::Char('q'))
+	}
 }
