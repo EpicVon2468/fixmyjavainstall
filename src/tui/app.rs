@@ -6,9 +6,10 @@ use std::time::Duration;
 use anyhow::Result;
 
 use ratatui::crossterm::event::{Event, KeyCode, poll, read};
-use ratatui::layout::{Constraint, Layout, Margin, Rect};
+use ratatui::layout::{Constraint, Layout, Margin, Offset, Rect};
 use ratatui::prelude::Line;
-use ratatui::style::Stylize as _;
+use ratatui::style::{Style, Stylize as _};
+use ratatui::text::Span;
 use ratatui::widgets::{Block, BorderType};
 use ratatui::{DefaultTerminal, Frame};
 
@@ -83,7 +84,15 @@ impl FujiApp {
 		};
 	}
 
-	fn render_help(frame: &mut Frame, area: Rect) {}
+	fn render_help(frame: &mut Frame, area: Rect) {
+		frame.render_widget(
+			Line::from_iter([
+				Span::styled(":q", Style::new().on_white().black()),
+				Span::raw(" Quit"),
+			]),
+			area + Offset::new(1, -1),
+		);
+	}
 
 	const BORDER: Block<'static> = Block::bordered().border_type(BorderType::Rounded);
 }
