@@ -7,7 +7,7 @@ use anyhow::{Context as _, Result};
 
 use console::Key;
 
-use ratatui::layout::{Constraint, Layout, Margin, Offset, Rect};
+use ratatui::layout::{Constraint, Layout, Margin, Rect};
 use ratatui::prelude::Line;
 use ratatui::style::{Style, Stylize as _};
 use ratatui::text::Span;

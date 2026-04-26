@@ -1,5 +1,6 @@
 #![cfg(feature = "tui")]
 mod app;
+mod component;
 mod page;
 mod tab;
 

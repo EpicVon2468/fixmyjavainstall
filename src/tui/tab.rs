@@ -1,11 +1,11 @@
 use console::Key;
 
-use ratatui::buffer::Buffer;
+use ratatui::Frame;
 use ratatui::layout::{HorizontalAlignment, Offset, Rect};
-use ratatui::prelude::{StatefulWidget, Widget as _};
 use ratatui::widgets::{Paragraph, Tabs};
 
 use crate::tui::app::FujiApp;
+use crate::tui::component::Component;
 
 pub enum Tab {
 	Foo,
@@ -13,41 +13,39 @@ pub enum Tab {
 	Baz,
 }
 
-impl StatefulWidget for &mut Tab {
-	type State = FujiApp;
-
-	fn render(self, area: Rect, buf: &mut Buffer, state: &mut FujiApp) {
-		if state.is_key_down(Key::ArrowLeft) {
+impl Component for Tab {
+	fn render(&mut self, frame: &mut Frame, area: Rect, app: &mut FujiApp) {
+		if app.is_key_down(Key::ArrowLeft) {
 			self.shift_self_left();
 		};
-		if state.is_key_down(Key::ArrowRight) {
+		if app.is_key_down(Key::ArrowRight) {
 			self.shift_self_right();
 		};
 
-		let render_tab: fn(Rect, &mut Buffer, &mut FujiApp) = match *self {
-			Tab::Foo => Tab::render_foo,
-			Tab::Bar => Tab::render_bar,
-			Tab::Baz => Tab::render_baz,
+		let render_tab: fn(&mut Frame, Rect, &mut FujiApp) = match *self {
+			Self::Foo => Self::render_foo,
+			Self::Bar => Self::render_bar,
+			Self::Baz => Self::render_baz,
 		};
-		render_tab(area, buf, state);
+		render_tab(frame, area, app);
 
-		let tabs: Tabs = Tabs::new(Tab::value_names().to_owned())
+		let tabs: Tabs = Tabs::new(Self::value_names().to_owned())
 			.select(self.ordinal())
 			.padding(" ", " ")
 			.divider("#");
-		tabs.render(area - Offset::new(0, 1), buf);
+		frame.render_widget(tabs, area - Offset::new(0, 1));
 	}
 }
 
 impl Tab {
-	fn render_foo(area: Rect, buf: &mut Buffer, _state: &mut FujiApp) {
+	fn render_foo(frame: &mut Frame, area: Rect, _app: &mut FujiApp) {
 		let paragraph: Paragraph = Paragraph::new("text").alignment(HorizontalAlignment::Center);
-		paragraph.render(area, buf);
+		frame.render_widget(paragraph, area);
 	}
 
-	fn render_bar(area: Rect, buf: &mut Buffer, state: &mut FujiApp) {}
+	fn render_bar(frame: &mut Frame, area: Rect, app: &mut FujiApp) {}
 
-	fn render_baz(area: Rect, buf: &mut Buffer, state: &mut FujiApp) {}
+	fn render_baz(frame: &mut Frame, area: Rect, app: &mut FujiApp) {}
 
 	pub const fn value_names() -> &'static [&'static str] {
 		&["Foo", "Bar", "Baz"]
