@@ -49,14 +49,17 @@ impl FujiApp {
 		}
 	}
 
-	fn render(&mut self, frame: &mut Frame) {
-		let layout: Layout = Layout::vertical([
+	fn app_layout() -> Layout {
+		Layout::vertical([
 			Constraint::Length(1),
 			Constraint::Fill(1),
 			Constraint::Length(2),
 		])
-		.spacing(1);
-		let [title, body, help] = frame.area().layout(&layout);
+		.spacing(1)
+	}
+
+	fn render(&mut self, frame: &mut Frame) {
+		let [title, body, help] = frame.area().layout(&Self::app_layout());
 		Self::render_title(frame, title);
 		self.render_body(frame, body);
 		Self::render_help(frame, help);
@@ -84,17 +87,31 @@ impl FujiApp {
 		};
 	}
 
+	const BORDER: Block<'static> = Block::bordered().border_type(BorderType::Rounded);
+}
+
+/// Help section.
+#[allow(non_snake_case)]
+impl FujiApp {
 	fn render_help(frame: &mut Frame, area: Rect) {
+		let area: Rect = area + Offset::new(1, -1);
+		let [quit__help] = area.layout(&Self::help_layout());
+		Self::render_help__quit(frame, quit__help);
+	}
+
+	fn help_layout() -> Layout {
+		Layout::horizontal([Constraint::Fill(1)]).spacing(1)
+	}
+
+	fn render_help__quit(frame: &mut Frame, area: Rect) {
 		frame.render_widget(
 			Line::from_iter([
 				Span::styled(":q", Style::new().on_white().black()),
 				Span::raw(" Quit"),
 			]),
-			area + Offset::new(1, -1),
+			area,
 		);
 	}
-
-	const BORDER: Block<'static> = Block::bordered().border_type(BorderType::Rounded);
 }
 
 /// Keybinds.
