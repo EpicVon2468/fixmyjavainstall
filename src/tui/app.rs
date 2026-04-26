@@ -60,12 +60,23 @@ impl FujiApp {
 impl FujiApp {
 	pub fn main(mut self, mut terminal: DefaultTerminal) -> Result<()> {
 		loop {
+			self.propagate_events();
 			terminal.draw(|frame: &mut Frame| self.render(frame))?;
 			self.prev_event = replace(&mut self.event, Self::update()?);
 			if self.should_exit() {
 				break Ok(());
 			};
 		}
+	}
+
+	/// See also: [`Component::propagate_events`][`crate::tui::component::Component::propagate_events`].
+	fn propagate_events(&mut self) {
+		let mut page: Box<dyn Page> = self.get_page();
+		if page.propagate_events(self) {
+			self.event.take();
+			self.prev_event.take();
+		};
+		self.set_page(page);
 	}
 
 	fn app_layout() -> Layout {
@@ -128,7 +139,7 @@ impl FujiApp {
 
 	fn render_help_bottom_row(frame: &mut Frame, area: Rect) {
 		let [select] = area.layout(&Self::help_bottom_row_layout());
-		Self::help_entry(frame, select, "Enter", "Confirm");
+		Self::help_entry(frame, select, "Enter", "Select");
 	}
 
 	fn help_bottom_row_layout() -> Layout {
