@@ -3,4 +3,4 @@ pub mod jvm;
 
 use crate::tui::component::Component;
 
-pub trait Page: Component {}
+pub trait Page: Component<Return = ()> {}

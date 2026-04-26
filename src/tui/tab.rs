@@ -14,7 +14,9 @@ pub enum Tab {
 }
 
 impl Component for Tab {
-	fn render(&mut self, frame: &mut Frame, area: Rect, app: &mut FujiApp) {
+	type Return = ();
+
+	fn render(&mut self, frame: &mut Frame, area: Rect, app: &mut FujiApp) -> Self::Return {
 		if app.is_key_down(Key::ArrowLeft) {
 			self.shift_self_left();
 		};

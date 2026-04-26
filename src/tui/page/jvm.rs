@@ -13,7 +13,9 @@ pub struct JVMPage {
 impl Page for JVMPage {}
 
 impl Component for JVMPage {
-	fn render(&mut self, frame: &mut Frame, area: Rect, app: &mut FujiApp) {
+	type Return = ();
+
+	fn render(&mut self, frame: &mut Frame, area: Rect, app: &mut FujiApp) -> Self::Return {
 		self.tab.render(frame, area, app);
 	}
 }

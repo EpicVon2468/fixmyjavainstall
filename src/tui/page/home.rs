@@ -10,5 +10,7 @@ pub struct HomePage;
 impl Page for HomePage {}
 
 impl Component for HomePage {
-	fn render(&mut self, frame: &mut Frame, area: Rect, app: &mut FujiApp) {}
+	type Return = ();
+
+	fn render(&mut self, frame: &mut Frame, area: Rect, app: &mut FujiApp) -> Self::Return {}
 }

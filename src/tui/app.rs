@@ -20,12 +20,12 @@ use crate::tui::tab::Tab;
 use crate::{compiler_unreachable, matches_many};
 
 pub struct FujiApp {
-	pub page: Cell<Box<dyn Page>>,
-	pub event: Option<Key>,
-	pub prev_event: Option<Key>,
+	page: Cell<Box<dyn Page>>,
+	event: Option<Key>,
+	prev_event: Option<Key>,
 }
 
-/// Rendering.
+/// Encapsulation (Rust is the only language where doing this can be for a good reason).
 impl FujiApp {
 	pub fn new() -> Self {
 		Self {
@@ -38,7 +38,10 @@ impl FujiApp {
 	pub fn run() -> Result<()> {
 		Self::new().main(try_init().context("Couldn't initialise ratatui!")?)
 	}
+}
 
+/// Rendering.
+impl FujiApp {
 	pub fn main(mut self, mut terminal: DefaultTerminal) -> Result<()> {
 		loop {
 			terminal.draw(|frame: &mut Frame| self.render(frame))?;
