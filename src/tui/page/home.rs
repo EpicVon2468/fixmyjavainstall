@@ -1,3 +1,4 @@
+use console::Key;
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::text::{Line, Text};
@@ -6,6 +7,8 @@ use crate::LONG_VERSION;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 use crate::tui::page::Page;
+use crate::tui::page::jvm::JVMPage;
+use crate::tui::tab::Tab;
 
 pub struct HomePage;
 
@@ -34,7 +37,14 @@ impl HomePage {
 impl Page for HomePage {
 	fn propagate_page_events(&mut self, app: &FujiApp) -> (bool, Option<Box<dyn Page>>) {
 		let consumed: bool = self.propagate_events(app);
-		(consumed, None)
+		if consumed {
+			return (true, None);
+		};
+		if app.is_key_down(Key::Enter) {
+			(true, Some(Box::new(JVMPage::new(Tab::Foo))))
+		} else {
+			(false, None)
+		}
 	}
 }
 

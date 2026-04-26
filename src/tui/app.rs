@@ -14,8 +14,7 @@ use ratatui::widgets::{Block, BorderType};
 use ratatui::{DefaultTerminal, Frame, try_init};
 
 use crate::tui::page::Page;
-use crate::tui::page::jvm::JVMPage;
-use crate::tui::tab::Tab;
+use crate::tui::page::home::HomePage;
 use crate::{compiler_unreachable, matches_many};
 
 pub struct FujiApp {
@@ -28,7 +27,7 @@ pub struct FujiApp {
 impl FujiApp {
 	pub fn new() -> Self {
 		Self {
-			page: UnsafeCell::new(Box::new(JVMPage::new(Tab::Foo))),
+			page: UnsafeCell::new(Box::new(HomePage::new())),
 			event: None,
 			prev_event: None,
 		}
