@@ -6,13 +6,14 @@ use std::time::Duration;
 use anyhow::Result;
 
 use ratatui::crossterm::event::{Event, KeyCode, poll, read};
-use ratatui::layout::{Constraint, Layout, Margin};
+use ratatui::layout::{Constraint, Layout, Margin, Rect};
+use ratatui::prelude::Line;
+use ratatui::style::Stylize as _;
 use ratatui::widgets::{Block, BorderType};
 use ratatui::{DefaultTerminal, Frame};
 
 use crate::tui::page::Page;
 use crate::tui::page::jvm::JVMPage;
-use crate::tui::render_title;
 use crate::tui::tab::Tab;
 
 pub struct FujiApp {
@@ -55,7 +56,7 @@ impl FujiApp {
 		])
 		.spacing(1);
 		let [title, body, help] = frame.area().layout(&layout);
-		render_title(frame, title);
+		Self::render_title(frame, title);
 		frame.render_widget(Self::BORDER, body);
 		let ptr: *mut Box<dyn Page> = self.page.as_ptr();
 		// SAFETY: todo
@@ -65,6 +66,13 @@ impl FujiApp {
 		unsafe {
 			ptr.write(page);
 		};
+	}
+
+	fn render_title(frame: &mut Frame, area: Rect) {
+		let title: Line = Line::from("Fix Ur Java Install – A JVM & Kotlin Management Utility.")
+			.centered()
+			.bold();
+		frame.render_widget(title, area);
 	}
 
 	const BORDER: Block<'static> = Block::bordered().border_type(BorderType::Rounded);
