@@ -81,7 +81,7 @@ macro_rules! log_err {
 
 #[macro_export]
 macro_rules! matches_many {
-	($expression:expr, $($variant:pat  $(if $guard:expr)?),* $(,)?) => {{
+	($expression:expr, $($variant:pat $(if $guard:expr)?),* $(,)?) => {{
 		#[allow(unreachable_code, unreachable_patterns)]
 		match $expression {
 			$($variant $(if $guard)? => true,)*

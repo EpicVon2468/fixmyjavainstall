@@ -91,32 +91,44 @@ impl FujiApp {
 }
 
 /// Help section.
-#[allow(non_snake_case)]
 impl FujiApp {
 	fn render_help(frame: &mut Frame, area: Rect) {
-		let area: Rect = area + Offset::new(1, -1);
-		let [help__quit, help__back] = area.layout(&Self::help_layout());
-		Self::render_help__quit(frame, help__quit);
-		Self::render_help__back(frame, help__back);
+		let [top, bottom] = area.layout(&Self::help_layout());
+		Self::render_help_top_row(frame, top);
+		Self::render_help_bottom_row(frame, bottom);
 	}
 
 	fn help_layout() -> Layout {
+		Layout::vertical([Constraint::Fill(1), Constraint::Fill(1)])
+	}
+
+	fn render_help_top_row(frame: &mut Frame, area: Rect) {
+		let [quit, back] = area.layout(&Self::help_top_row_layout());
+		Self::help_entry(frame, quit, ":q", "Quit");
+		Self::help_entry(frame, back, "Esc", "Back");
+	}
+
+	fn help_top_row_layout() -> Layout {
 		Layout::horizontal([Constraint::Fill(1), Constraint::Fill(1)]).spacing(1)
 	}
 
-	fn render_help__quit(frame: &mut Frame, area: Rect) {
-		frame.render_widget(Self::help_entry(":q", "Quit"), area);
+	fn render_help_bottom_row(frame: &mut Frame, area: Rect) {
+		let [select] = area.layout(&Self::help_bottom_row_layout());
+		Self::help_entry(frame, select, "Enter", "Confirm");
 	}
 
-	fn render_help__back(frame: &mut Frame, area: Rect) {
-		frame.render_widget(Self::help_entry("Esc", "Back"), area);
+	fn help_bottom_row_layout() -> Layout {
+		Layout::horizontal([Constraint::Fill(1)]).spacing(1)
 	}
 
-	fn help_entry<'a>(key: &'a str, action: &str) -> Line<'a> {
-		Line::from_iter([
-			Span::styled(key, Self::HELP_KEY),
-			Span::raw(format!(" {action}")),
-		])
+	fn help_entry(frame: &mut Frame, area: Rect, key: &str, action: &str) {
+		frame.render_widget(
+			Line::from_iter([
+				Span::styled(key, Self::HELP_KEY),
+				Span::raw(format!(" {action}")),
+			]),
+			area,
+		);
 	}
 
 	pub const HELP_KEY: Style = Style::new().on_white().black();
