@@ -1,5 +1,6 @@
+use console::Key;
+
 use ratatui::buffer::Buffer;
-use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::{HorizontalAlignment, Offset, Rect};
 use ratatui::prelude::{StatefulWidget, Widget as _};
 use ratatui::widgets::{Paragraph, Tabs};
@@ -16,10 +17,10 @@ impl StatefulWidget for &mut Tab {
 	type State = FujiApp;
 
 	fn render(self, area: Rect, buf: &mut Buffer, state: &mut FujiApp) {
-		if state.is_key_down(KeyCode::Left) {
+		if state.is_key_down(Key::ArrowLeft) {
 			self.shift_self_left();
 		};
-		if state.is_key_down(KeyCode::Right) {
+		if state.is_key_down(Key::ArrowRight) {
 			self.shift_self_right();
 		};
 

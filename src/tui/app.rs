@@ -1,10 +1,13 @@
 #![cfg(feature = "tui")]
 
 use std::cell::Cell;
+use std::mem::replace;
 
 use anyhow::{Context as _, Result};
 
-use ratatui::crossterm::event::{Event, KeyCode, read};
+use console::Key;
+
+use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::{Constraint, Layout, Margin, Offset, Rect};
 use ratatui::prelude::Line;
 use ratatui::style::{Style, Stylize as _};
@@ -15,11 +18,12 @@ use ratatui::{DefaultTerminal, Frame, try_init};
 use crate::tui::page::Page;
 use crate::tui::page::jvm::JVMPage;
 use crate::tui::tab::Tab;
+use crate::{compiler_unreachable, matches_many};
 
 pub struct FujiApp {
 	pub page: Cell<Box<dyn Page>>,
-	pub event: Option<Event>,
-	pub prev_event: Option<Event>,
+	pub event: Option<Key>,
+	pub prev_event: Option<Key>,
 }
 
 /// Rendering.
@@ -39,7 +43,7 @@ impl FujiApp {
 	pub fn main(mut self, mut terminal: DefaultTerminal) -> Result<()> {
 		loop {
 			terminal.draw(|frame: &mut Frame| self.render(frame))?;
-			self.prev_event = self.event.replace(read()?);
+			self.prev_event = replace(&mut self.event, Self::update()?);
 			if self.should_exit() {
 				break Ok(());
 			};
@@ -121,24 +125,21 @@ impl FujiApp {
 
 /// Keybinds.
 impl FujiApp {
-	fn check_key(&self, prev: bool, validate: &dyn Fn(KeyCode) -> bool) -> bool {
-		let event: &Option<Event> = if prev { &self.prev_event } else { &self.event };
-		if let Some(Event::Key(key_event)) = *event {
-			validate(key_event.code)
-		} else {
-			false
-		}
+	fn check_key(&self, prev: bool, validate: &dyn Fn(&Key) -> bool) -> bool {
+		let event: Option<&Key> = if prev { &self.prev_event } else { &self.event }.as_ref();
+		event.is_some_and(validate)
 	}
 
-	fn key_down(&self, prev: bool, key: KeyCode) -> bool {
-		self.check_key(prev, &|event: KeyCode| event == key)
+	#[allow(clippy::needless_pass_by_value)]
+	fn key_down(&self, prev: bool, key: Key) -> bool {
+		self.check_key(prev, &|event: &Key| *event == key)
 	}
 
-	pub fn is_key_down(&self, key: KeyCode) -> bool {
+	pub fn is_key_down(&self, key: Key) -> bool {
 		self.key_down(false, key)
 	}
 
-	pub fn was_key_down(&self, key: KeyCode) -> bool {
+	pub fn was_key_down(&self, key: Key) -> bool {
 		self.key_down(true, key)
 	}
 
@@ -146,6 +147,60 @@ impl FujiApp {
 	///
 	/// Returns: if the sequence `:q` was pressed.
 	pub fn should_exit(&self) -> bool {
-		self.was_key_down(KeyCode::Char(':')) && self.is_key_down(KeyCode::Char('q'))
+		self.was_key_down(Key::Char(':')) && self.is_key_down(Key::Char('q'))
+	}
+}
+
+/// Man-made horrors beyond your comprehension.
+impl FujiApp {
+	pub fn update() -> Result<Option<Key>> {
+		use ratatui::crossterm::event::{Event, read};
+
+		let event: Event = read()?;
+		if !event.is_key() {
+			return Ok(None);
+		};
+		let Event::Key(key_event): Event = event else {
+			compiler_unreachable!();
+		};
+
+		if matches_many!(
+			key_event.code,
+			KeyCode::F(_),
+			KeyCode::Null,
+			KeyCode::CapsLock,
+			KeyCode::ScrollLock,
+			KeyCode::NumLock,
+			KeyCode::PrintScreen,
+			KeyCode::Pause,
+			KeyCode::Menu,
+			KeyCode::KeypadBegin,
+			KeyCode::Media(_),
+		) {
+			return Ok(None);
+		};
+
+		let value: Key = match key_event.code {
+			KeyCode::Backspace => Key::Backspace,
+			KeyCode::Enter => Key::Enter,
+			KeyCode::Left => Key::ArrowLeft,
+			KeyCode::Right => Key::ArrowRight,
+			KeyCode::Up => Key::ArrowUp,
+			KeyCode::Down => Key::ArrowDown,
+			KeyCode::Home => Key::Home,
+			KeyCode::End => Key::End,
+			KeyCode::PageUp => Key::PageUp,
+			KeyCode::PageDown => Key::PageDown,
+			KeyCode::Tab => Key::Tab,
+			KeyCode::BackTab => Key::BackTab,
+			KeyCode::Delete => Key::Del,
+			KeyCode::Insert => Key::Insert,
+			KeyCode::Char(val) => Key::Char(val),
+			KeyCode::Esc => Key::Escape,
+			KeyCode::Modifier(_) => todo!(),
+			_ => compiler_unreachable!(),
+		};
+
+		Ok(Some(value))
 	}
 }

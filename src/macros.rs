@@ -80,14 +80,42 @@ macro_rules! log_err {
 }
 
 #[macro_export]
+macro_rules! matches_many {
+	($expression:expr, $($variant:pat  $(if $guard:expr)?),* $(,)?) => {{
+		#[allow(unreachable_code, unreachable_patterns)]
+		match $expression {
+			$($variant $(if $guard)? => true,)*
+			_ => false,
+		}
+	}};
+}
+
+#[macro_export]
+macro_rules! compiler_unreachable {
+	() => {{
+		// SAFETY: It isn't possible for this block of code to be reached.
+		unsafe {
+			std::hint::unreachable_unchecked();
+		};
+	}};
+}
+
+#[macro_export]
 macro_rules! value_enum_extensions {
-	($name:ty) => {
-		$crate:value_enum_extensions!(
+	($name:ty $(,)?) => {
+		$crate::value_enum_extensions!(
 			$name,
-			match *self {,},
+			todo!(),
 		);
 	};
-	($name:ty, $default:expr, match *self {$($variant:pat => $string:expr),*,},) => {
+	($name:ty, $default:expr $(,)?) => {
+		$crate::value_enum_extensions!(
+			$name,
+			$default,
+			match *self {}
+		);
+	};
+	($name:ty, $default:expr, match *self { $($variant:pat => $string:expr),* $(,)? } $(,)?) => {
 		#[automatically_derived]
 		impl Default for $name {
 			fn default() -> Self {
@@ -120,7 +148,7 @@ macro_rules! exists {
 
 #[macro_export]
 macro_rules! display {
-	($name:ty, match *self {$($variant:pat => $string:expr),*,},) => {
+	($name:ty, match *self { $($variant:pat => $string:expr),* $(,)? } $(,)?) => {
 		#[automatically_derived]
 		impl std::fmt::Display for $name {
 			#[allow(unreachable_code, unreachable_patterns)]
