@@ -24,12 +24,10 @@ impl StatefulWidget for &mut Tab {
 			self.shift_self_right();
 		};
 
-		#[allow(unreachable_patterns)]
 		let render_tab: fn(Rect, &mut Buffer, &mut FujiApp) = match *self {
 			Tab::Foo => Tab::render_foo,
 			Tab::Bar => Tab::render_bar,
 			Tab::Baz => Tab::render_baz,
-			_ => unreachable!(),
 		};
 		render_tab(area, buf, state);
 

@@ -7,7 +7,6 @@ use anyhow::{Context as _, Result};
 
 use console::Key;
 
-use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::{Constraint, Layout, Margin, Offset, Rect};
 use ratatui::prelude::Line;
 use ratatui::style::{Style, Stylize as _};
@@ -154,7 +153,7 @@ impl FujiApp {
 /// Man-made horrors beyond your comprehension.
 impl FujiApp {
 	pub fn update() -> Result<Option<Key>> {
-		use ratatui::crossterm::event::{Event, read};
+		use ratatui::crossterm::event::{Event, KeyCode, ModifierKeyCode, read};
 
 		let event: Event = read()?;
 		if !event.is_key() {
@@ -176,6 +175,17 @@ impl FujiApp {
 			KeyCode::Menu,
 			KeyCode::KeypadBegin,
 			KeyCode::Media(_),
+			KeyCode::Modifier(modifier) if matches_many!(
+				modifier,
+				ModifierKeyCode::LeftControl,
+				ModifierKeyCode::RightControl,
+				ModifierKeyCode::LeftSuper,
+				ModifierKeyCode::RightSuper,
+				ModifierKeyCode::LeftHyper,
+				ModifierKeyCode::RightHyper,
+				ModifierKeyCode::LeftMeta,
+				ModifierKeyCode::RightMeta,
+			),
 		) {
 			return Ok(None);
 		};
@@ -197,7 +207,14 @@ impl FujiApp {
 			KeyCode::Insert => Key::Insert,
 			KeyCode::Char(val) => Key::Char(val),
 			KeyCode::Esc => Key::Escape,
-			KeyCode::Modifier(_) => todo!(),
+			KeyCode::Modifier(modifier) => match modifier {
+				ModifierKeyCode::LeftShift
+				| ModifierKeyCode::RightShift
+				| ModifierKeyCode::IsoLevel3Shift
+				| ModifierKeyCode::IsoLevel5Shift => Key::Shift,
+				ModifierKeyCode::LeftAlt | ModifierKeyCode::RightAlt => Key::Alt,
+				_ => compiler_unreachable!(),
+			},
 			_ => compiler_unreachable!(),
 		};
 
