@@ -42,9 +42,11 @@ impl FujiApp {
 
 	/// # Safety
 	///
-	/// You must always call [`FujiApp::set_page`] before the value returned by this method goes out-of-scope.
+	/// You must always call [`Self::set_page`] before the value returned by this method goes out-of-scope.
 	///
-	/// Failure to do so means that the underlying value of [`FujiApp::page`] will be automagically [`dropped`][`std::mem::drop`] by Rust.
+	/// The value which is passed to the [`Self::set_page`] is irrelevant – the only requirement is that _some value_ is restored via [`Self::set_page`] before the value returned by this method goes out-of-scope.
+	///
+	/// Failure to do so means that the underlying value of [`Self::page`] will be automagically [`dropped`][`std::mem::drop`] by Rust.
 	///
 	/// This can lead to:
 	///
@@ -52,7 +54,8 @@ impl FujiApp {
 	/// - Use-after-free bugs.
 	/// - Segmentation faults.
 	/// - Memory leaks.
-	fn get_page(&self) -> Box<dyn Page> {
+	/// - Double `free()`s.
+	unsafe fn get_page(&self) -> Box<dyn Page> {
 		// SAFETY:
 		// Problem(s):
 		// - Pointers are unsafe.
@@ -69,6 +72,7 @@ impl FujiApp {
 		// Excuse(s):
 		// - This function is only invoked by trusted callers in a safe manner.
 		// - Both this function and the underlying struct field are private and cannot be unexpectedly mutated.
+		// - Mutations of [`Self::page`] are not inherently unsafe, and may be performed without consequence.
 		unsafe {
 			self.page().write(value);
 		}
@@ -90,7 +94,12 @@ impl FujiApp {
 
 	/// See also: [`Component::propagate_events`][`crate::tui::component::Component::propagate_events`].
 	fn propagate_events(&mut self) {
-		let mut page: Box<dyn Page> = self.get_page();
+		// SAFETY:
+		// Problem(s):
+		// - If this value goes out of scope, undefined behaviour occurs (see [`Self::get_page`]).
+		// Excuse(s):
+		// - Before the end of scope, a call to [`Self::set_page`] is made, meaning that the contract of [`Self::get_page`] is never violated.
+		let mut page: Box<dyn Page> = unsafe { self.get_page() };
 		let (consumed, new_page) = page.propagate_page_events(self);
 		if consumed {
 			self.event.take();
@@ -129,7 +138,12 @@ impl FujiApp {
 		// Content box
 		frame.render_widget(Self::BORDER, area);
 		{
-			let page: Box<dyn Page> = self.get_page();
+			// SAFETY:
+			// Problem(s):
+			// - If this value goes out of scope, undefined behaviour occurs (see [`Self::get_page`]).
+			// Excuse(s):
+			// - Before the end of scope, a call to [`Self::set_page`] is made, meaning that the contract of [`Self::get_page`] is never violated.
+			let page: Box<dyn Page> = unsafe { self.get_page() };
 			page.render(frame, area.inner(Margin::new(1, 1)), self);
 			self.set_page(page);
 		};

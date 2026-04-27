@@ -34,7 +34,8 @@
 #![deny(
 	clippy::undocumented_unsafe_blocks,
 	clippy::multiple_unsafe_ops_per_block,
-	reason = "Unsafe bad.  Kill it with fire!"
+	unsafe_op_in_unsafe_fn,
+	reason = "All unsafe code must be wrapped in one unsafe block per call, and be safety documented!"
 )]
 #![allow(clippy::tabs_in_doc_comments, reason = "Why???  Bad clippy!")]
 #![allow(
