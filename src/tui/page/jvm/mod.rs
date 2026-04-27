@@ -1,4 +1,6 @@
 #![cfg(feature = "tui")]
+pub mod install_option;
+
 use console::Key;
 
 use ratatui::Frame;
@@ -8,17 +10,30 @@ use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
-use crate::tui::tab::Tab;
+use crate::tui::page::jvm::install_option::InstallOption;
+use crate::tui::page::jvm::install_option::jvm_option::JVMOption;
 
-#[derive(Default)]
 pub struct JVMPage {
-	pub tab: Tab,
+	selected_tab: usize,
+	option_tabs: Vec<Box<dyn InstallOption>>,
 }
 
 impl JVMPage {
 	#[allow(unused)]
-	pub const fn new(tab: Tab) -> Self {
-		Self { tab }
+	pub fn new() -> Self {
+		Self {
+			selected_tab: 0,
+			option_tabs: vec![Box::new(JVMOption::default())],
+		}
+	}
+
+	#[allow(clippy::borrowed_box)]
+	fn selected_tab(&self) -> &Box<dyn InstallOption> {
+		self.option_tabs.get(self.selected_tab).unwrap()
+	}
+
+	fn selected_tab_mut(&mut self) -> &mut Box<dyn InstallOption> {
+		self.option_tabs.get_mut(self.selected_tab).unwrap()
 	}
 }
 
@@ -41,10 +56,10 @@ impl Component for JVMPage {
 	type Return = ();
 
 	fn propagate_events(&mut self, app: &FujiApp) -> bool {
-		self.tab.propagate_events(app)
+		self.selected_tab_mut().propagate_events(app)
 	}
 
 	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) -> Self::Return {
-		self.tab.render(frame, area, app);
+		self.selected_tab().render(frame, area, app);
 	}
 }

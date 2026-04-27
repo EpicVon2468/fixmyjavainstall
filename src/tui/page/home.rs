@@ -33,7 +33,7 @@ impl Page for HomePage {
 			return (true, None);
 		};
 		if app.is_key_down(Key::Enter) {
-			(true, Some(Box::new(JVMPage::default())))
+			(true, Some(Box::new(JVMPage::new())))
 		} else {
 			(false, None)
 		}
