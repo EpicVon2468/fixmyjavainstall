@@ -41,6 +41,18 @@ impl FujiApp {
 		self.page.get()
 	}
 
+	/// # Safety
+	///
+	/// You must always call [`FujiApp::set_page`] before the value returned by this method goes out-of-scope.
+	///
+	/// Failure to do so means that the underlying value of [`FujiApp::page`] will be automagically [`dropped`][`std::mem::drop`] by Rust.
+	///
+	/// This can lead to:
+	///
+	/// - Undefined behaviour.
+	/// - Use-after-free bugs.
+	/// - Segmentation faults.
+	/// - Memory leaks.
 	fn get_page(&self) -> Box<dyn Page> {
 		// SAFETY:
 		// Problem(s):

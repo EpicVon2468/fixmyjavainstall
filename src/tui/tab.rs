@@ -28,8 +28,8 @@ impl Component for Tab {
 		false
 	}
 
-	fn render(&self, frame: &mut Frame, area: Rect, app: &mut FujiApp) -> Self::Return {
-		let render_content: fn(&mut Frame, Rect, &mut FujiApp) = match *self {
+	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) -> Self::Return {
+		let render_content: fn(&mut Frame, Rect, &FujiApp) = match *self {
 			Self::Foo => Self::render_foo,
 			Self::Bar => Self::render_bar,
 			Self::Baz => Self::render_baz,
@@ -46,14 +46,14 @@ impl Component for Tab {
 
 /// Rendering.
 impl Tab {
-	fn render_foo(frame: &mut Frame, area: Rect, _app: &mut FujiApp) {
+	fn render_foo(frame: &mut Frame, area: Rect, _app: &FujiApp) {
 		let paragraph: Paragraph = Paragraph::new("text").alignment(HorizontalAlignment::Center);
 		frame.render_widget(paragraph, area);
 	}
 
-	fn render_bar(_frame: &mut Frame, _area: Rect, _app: &mut FujiApp) {}
+	fn render_bar(_frame: &mut Frame, _area: Rect, _app: &FujiApp) {}
 
-	fn render_baz(_frame: &mut Frame, _area: Rect, _app: &mut FujiApp) {}
+	fn render_baz(_frame: &mut Frame, _area: Rect, _app: &FujiApp) {}
 }
 
 /// Ordinal information.

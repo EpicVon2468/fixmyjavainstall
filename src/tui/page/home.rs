@@ -56,7 +56,7 @@ impl Component for HomePage {
 		false
 	}
 
-	fn render(&self, frame: &mut Frame, area: Rect, _app: &mut FujiApp) -> Self::Return {
+	fn render(&self, frame: &mut Frame, area: Rect, _app: &FujiApp) -> Self::Return {
 		let [top, _bottom] = area.layout(&Self::layout());
 		Self::render_logo_and_about(frame, top);
 	}
