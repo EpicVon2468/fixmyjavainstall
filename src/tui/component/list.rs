@@ -27,7 +27,7 @@ impl<'a> List<'a> {
 		T::Item: Into<Span<'a>>, {
 		Self {
 			items: items.into_iter().map(Into::into).collect(),
-			confirmed_prefix: "[X]".into(),
+			confirmed_prefix: "[*]".into(),
 			unconfirmed_prefix: "[ ]".into(),
 			selected_style: Self::DEFAULT_STYLE,
 			confirmed_style: Self::DEFAULT_STYLE,

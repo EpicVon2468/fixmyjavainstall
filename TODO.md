@@ -20,3 +20,9 @@
 - [X] `Append` for `features`
 - [ ] List all modified/created folders & files in a log somewhere?
 - [ ] [You have got to be kidding me](https://keith.github.io/xcode-man-pages/java_home.1.html).
+- [ ] Support JVM languages:
+  - [X] Java
+  - [ ] Kotlin (in-progress)
+  - [ ] Clojure
+  - [ ] Scala (?)
+  - [ ] Groovy will not be implemented.  Please get rid of this cursed language.
