@@ -7,7 +7,7 @@ You can [download the latest release](https://github.com/EpicVon2468/fixmyjavain
 You can also install using cargo with:
 
 ```shell
-cargo install --git https://github.com/EpicVon2468/fixmyjavainstall --tag v0.5.0
+RUSTFLAGS="-C target-cpu=native" cargo install --git https://github.com/EpicVon2468/fixmyjavainstall --tag v0.5.0
 ```
 
 Or by running:
@@ -15,7 +15,7 @@ Or by running:
 ```shell
 git clone https://github.com/EpicVon2468/fixmyjavainstall
 cd fixmyjavainstall
-cargo build --release --path .
+RUSTFLAGS="-C target-cpu=native" cargo build --release --path .
 ```
 
 If you would like to be able to install a JVM not made for your system, add `--features multi-os` to your installation command.
