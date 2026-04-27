@@ -1,3 +1,4 @@
+#![cfg(feature = "tui")]
 use console::Key;
 
 use ratatui::Frame;

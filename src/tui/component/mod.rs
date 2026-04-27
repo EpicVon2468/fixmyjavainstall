@@ -1,3 +1,4 @@
+#![cfg(feature = "tui")]
 pub mod logo;
 
 use ratatui::Frame;

@@ -1,3 +1,4 @@
+#![cfg(feature = "tui")]
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::Line;

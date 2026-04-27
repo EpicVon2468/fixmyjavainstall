@@ -1,5 +1,4 @@
 #![cfg(feature = "tui")]
-
 use std::cell::UnsafeCell;
 
 use anyhow::{Context as _, Result};
