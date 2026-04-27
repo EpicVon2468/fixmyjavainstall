@@ -9,11 +9,13 @@ use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
 use crate::tui::tab::Tab;
 
+#[derive(Default)]
 pub struct JVMPage {
 	pub tab: Tab,
 }
 
 impl JVMPage {
+	#[allow(unused)]
 	pub const fn new(tab: Tab) -> Self {
 		Self { tab }
 	}
@@ -27,7 +29,7 @@ impl Page for JVMPage {
 		};
 		if app.is_key_down(Key::Backspace) {
 			// todo android-like backstack?
-			(true, Some(Box::new(HomePage::new())))
+			(true, Some(Box::new(HomePage::default())))
 		} else {
 			(false, None)
 		}

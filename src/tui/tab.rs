@@ -7,7 +7,9 @@ use ratatui::widgets::{Paragraph, Tabs};
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 
+#[derive(Default)]
 pub enum Tab {
+	#[default]
 	Foo,
 	Bar,
 	Baz,

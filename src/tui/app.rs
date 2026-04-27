@@ -27,7 +27,7 @@ pub struct FujiApp {
 impl FujiApp {
 	pub fn new() -> Self {
 		Self {
-			page: UnsafeCell::new(Box::new(HomePage::new())),
+			page: UnsafeCell::new(Box::new(HomePage::default())),
 			event: None,
 			prev_event: None,
 		}
@@ -109,7 +109,6 @@ impl FujiApp {
 			Constraint::Fill(1),
 			Constraint::Length(2),
 		])
-		.spacing(1)
 	}
 
 	fn render(&mut self, frame: &mut Frame) {
