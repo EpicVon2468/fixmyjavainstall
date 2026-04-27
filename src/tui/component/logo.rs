@@ -19,7 +19,13 @@ impl FujiLogo {
 		Self {}
 	}
 
-	pub const LOGO: &'static str = include_str!("../../../doc/logo.txt");
+	pub const LOGO: &'static str = "\
+		██████  ██   ██       ██  ███████\n\
+		██      ██   ██       ██    ▐█▌  \n\
+		██████  ██   ██       ██    ▐█▌  \n\
+		██      ██   ██  ██   ██    ▐█▌  \n\
+		██      ███████  ███████  ███████\
+	";
 
 	fn layout() -> Layout {
 		Layout::vertical([Constraint::Fill(1), Constraint::Length(1)])
