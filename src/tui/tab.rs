@@ -39,15 +39,15 @@ impl Component for Tab {
 		};
 		render_content(frame, area, app);
 
-		let tabs: Tabs = Tabs::new(Self::value_names().to_owned())
+		let tabs: Tabs = Tabs::new(Self::value_names())
 			.select(self.ordinal())
-			.padding(" ", " ")
 			.divider("#");
 		frame.render_widget(tabs, area - Offset::new(0, 1));
 	}
 }
 
 /// Rendering.
+#[allow(clippy::missing_const_for_fn)]
 impl Tab {
 	fn render_foo(frame: &mut Frame, area: Rect, _app: &FujiApp) {
 		let paragraph: Paragraph = Paragraph::new("text").alignment(HorizontalAlignment::Center);
@@ -61,8 +61,8 @@ impl Tab {
 
 /// Ordinal information.
 impl Tab {
-	pub const fn value_names() -> &'static [&'static str] {
-		&["Foo", "Bar", "Baz"]
+	pub const fn value_names() -> [&'static str; Self::LAST_ORDINAL + 1] {
+		["Foo", "Bar", "Baz"]
 	}
 
 	pub const fn ordinal(&self) -> usize {
