@@ -111,7 +111,7 @@ impl FujiApp {
 		let title: Line = Line::from("Fix Ur Java Install – A JVM & Kotlin Management Utility.")
 			.centered()
 			.bold()
-			.magenta();
+			.light_blue();
 		frame.render_widget(title, area);
 	}
 
@@ -119,7 +119,7 @@ impl FujiApp {
 		// Content box
 		frame.render_widget(Self::BORDER, area);
 		{
-			let mut page: Box<dyn Page> = self.get_page();
+			let page: Box<dyn Page> = self.get_page();
 			page.render(frame, area.inner(Margin::new(1, 1)), self);
 			self.set_page(page);
 		};

@@ -28,7 +28,7 @@ impl Component for Tab {
 		false
 	}
 
-	fn render(&mut self, frame: &mut Frame, area: Rect, app: &mut FujiApp) -> Self::Return {
+	fn render(&self, frame: &mut Frame, area: Rect, app: &mut FujiApp) -> Self::Return {
 		let render_content: fn(&mut Frame, Rect, &mut FujiApp) = match *self {
 			Self::Foo => Self::render_foo,
 			Self::Bar => Self::render_bar,

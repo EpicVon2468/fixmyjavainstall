@@ -24,7 +24,7 @@ impl HomePage {
 
 	fn render_logo_and_about(frame: &mut Frame, area: Rect) {
 		let [top, bottom] = area.layout(&Self::logo_and_about_layout());
-		frame.render_widget(Text::raw(Self::LOGO).centered().bold().magenta(), top);
+		frame.render_widget(Text::raw(Self::LOGO).centered().bold().light_blue(), top);
 		frame.render_widget(Line::from(LONG_VERSION).centered(), bottom);
 	}
 
@@ -56,7 +56,7 @@ impl Component for HomePage {
 		false
 	}
 
-	fn render(&mut self, frame: &mut Frame, area: Rect, _app: &mut FujiApp) -> Self::Return {
+	fn render(&self, frame: &mut Frame, area: Rect, _app: &mut FujiApp) -> Self::Return {
 		let [top, _bottom] = area.layout(&Self::layout());
 		Self::render_logo_and_about(frame, top);
 	}

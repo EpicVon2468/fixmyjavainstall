@@ -41,7 +41,7 @@ impl Component for JVMPage {
 		self.tab.propagate_events(app)
 	}
 
-	fn render(&mut self, frame: &mut Frame, area: Rect, app: &mut FujiApp) -> Self::Return {
+	fn render(&self, frame: &mut Frame, area: Rect, app: &mut FujiApp) -> Self::Return {
 		self.tab.render(frame, area, app);
 	}
 }
