@@ -34,6 +34,7 @@
 #![deny(
 	clippy::undocumented_unsafe_blocks,
 	clippy::multiple_unsafe_ops_per_block,
+	clippy::missing_safety_doc,
 	unsafe_op_in_unsafe_fn,
 	reason = "All unsafe code must be wrapped in one unsafe block per call, and be safety documented!"
 )]
@@ -283,6 +284,10 @@ fn unsafe_checks() -> Result<()> {
 			/// Returns the effective user ID of the calling process.
 			///
 			/// # Errors
+			///
+			/// These functions are always successful and never modify `errno`.
+			///
+			/// # Safety
 			///
 			/// These functions are always successful and never modify `errno`.
 			///
