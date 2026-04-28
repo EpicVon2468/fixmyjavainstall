@@ -363,10 +363,26 @@ pub fn io_failure<P: AsRef<Path>, S: AsRef<str>>(dest: P, msg: S) -> String {
 }
 
 #[must_use]
+#[cfg(target_os = "linux")]
 pub fn is_wayland() -> bool {
 	has_program("wayland-info")
 		|| var("WAYLAND_DISPLAY").is_ok()
 		|| var("XDG_SESSION_TYPE").is_ok_and(|var: String| var == "wayland")
+}
+
+#[cfg(target_os = "linux")]
+pub fn require_archlinux_java() -> Result<()> {
+	if has_program("archlinux-java") {
+		return Ok(());
+	};
+	crate::wait_and_check_status!(
+		std::process::Command::new("pacman")
+			.arg("-S")
+			.arg("java-runtime-common")
+			.spawn()?,
+		"pacman"
+	);
+	Ok(())
 }
 
 // RustRover doesn't seem to fully understand cfg_select! {} yet, so have to use this for now...

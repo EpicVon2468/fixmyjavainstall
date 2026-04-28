@@ -13,13 +13,13 @@ macro_rules! wrong_cmd {
 
 #[macro_export]
 macro_rules! wait_and_check_status {
-	($child:ident) => {
+	($child:expr) => {
 		$crate::wait_and_check_status!($child, "command");
 	};
-	($child:ident, $name:literal) => {
+	($child:expr, $name:literal) => {
 		$crate::wait_and_check_status!($child, $name, 1);
 	};
-	($child:ident, $name:literal, $substitute_code:expr) => {{
+	($child:expr, $name:literal, $substitute_code:expr) => {{
 		use std::process::ExitStatus;
 
 		let status: ExitStatus = $child.wait().context(concat!($name, " never started?"))?;
