@@ -1,7 +1,7 @@
 use std::fs::{create_dir_all, remove_dir_all, remove_file, rename};
 use std::path::{Path, PathBuf};
 
-use anyhow::{Context as _, Result, bail};
+use anyhow::{Context as _, Result};
 
 use crate::cmd_link::{link_impl, symlink_link};
 use crate::commands::io_failure;
@@ -16,7 +16,8 @@ use crate::jvm::major_version::MajorVersion;
 use crate::jvm::wrapper::{gen_wrapper, install_wrapper};
 use crate::jvm::{JavaVersion, Op};
 use crate::os::OS;
-use crate::{FUJI_DIR, LINK_DIR, exists, wrong_cmd};
+use crate::path_util::add_to_path;
+use crate::{FUJI_DIR, LINK_DIR, compiler_unreachable, exists, wrong_cmd};
 
 pub fn cmd_install(op: Op) -> Result<()> {
 	#[rustfmt::skip]
@@ -72,7 +73,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		JVM::JavaSE => download_java_se,
 		JVM::Temurin => download_temurin,
 		JVM::Liberica => download_liberica,
-		_ => bail!("noop"),
+		_ => compiler_unreachable!(),
 	};
 	#[rustfmt::skip]
 	download_jvm(DownloadJVMArgs {
@@ -99,6 +100,9 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		.context("Couldn't symbolically link FUJI_DIR/jvm/latest to current install directory!")?;
 	println!("Installing {}/bin...", java_home.display());
 	link_impl(java_home, LINK_DIR, false).context("Couldn't install JAVA_HOME!")?;
+	#[cfg(not(windows))]
+	add_to_path(java_home.join("bin").to_string_lossy())
+		.context("Couldn't add JAVA_HOME/bin to PATH!")?;
 	println!("Done.\n");
 
 	#[cfg(target_os = "linux")]

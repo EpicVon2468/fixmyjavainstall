@@ -26,7 +26,7 @@ pub mod jvm_temurin;
 pub mod major_version;
 pub mod wrapper;
 
-use anyhow::{Context as _, Result, bail};
+use anyhow::{Context as _, Result};
 
 use clap::{ArgAction, Subcommand};
 
@@ -40,7 +40,7 @@ use crate::jvm::jvm::JVM;
 use crate::jvm::major_version::MajorVersion;
 #[cfg(feature = "multi-os")]
 use crate::os::OS;
-use crate::wrong_cmd;
+use crate::{compiler_unreachable, wrong_cmd};
 
 #[non_exhaustive]
 #[derive(Subcommand)]
@@ -117,7 +117,7 @@ pub fn manage_jvm(software: Software) -> Result<()> {
 		Op::Install { .. } => cmd_install::cmd_install(op).context("Couldn't install JVM!"),
 		Op::Remove => todo!("fuji-jvm remove"),
 		Op::Preset { .. } => cmd_preset::cmd_preset(op).context("Couldn't install JVM preset!"),
-		_ => bail!("noop"),
+		_ => compiler_unreachable!(),
 	}
 }
 

@@ -70,6 +70,7 @@ pub mod jvm;
 pub mod kotlin;
 pub mod macros;
 pub mod os;
+pub mod path_util;
 #[cfg(feature = "tui")]
 pub mod tui;
 pub mod win_link;

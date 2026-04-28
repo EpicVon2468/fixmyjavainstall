@@ -5,7 +5,6 @@
 - [ ] Download Kotlin Native
 - [X] Look into why macOS `/usr/bin/*` is stubborn
     - [Oh dear...](https://apple.stackexchange.com/questions/193368/what-is-the-rootless-feature-in-el-capitan-really/)
-    - Double oh dear: `/usr/local/bin` is not in `$PATH` by default.
 - [ ] Get UNIX-likes to a stable release
 - [ ] Fix Windows (soon™)
 - [ ] Fix `cargo`-based installs not working with `sudo`
@@ -20,6 +19,7 @@
 - [X] `Append` for `features`
 - [ ] List all modified/created folders & files in a log somewhere?
 - [ ] [You have got to be kidding me](https://keith.github.io/xcode-man-pages/java_home.1.html).
+  - `/usr/libexec/java_home`
 - [ ] Support JVM languages:
   - [X] Java
   - [ ] Kotlin (in-progress)
