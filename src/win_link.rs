@@ -12,6 +12,15 @@ macro_rules! open_env {
 	};
 }
 
+macro_rules! env_or_fallback {
+	() => {
+		open_env!(LOCAL_MACHINE).unwrap_or_else(|_| {
+			open_env!(CURRENT_USER)
+				.context("Couldn't get Environment for HKEY_LOCAL_MACHINE or HKEY_CURRENT_USER")
+		});
+	};
+}
+
 // https://stackoverflow.com/questions/79701236/what-is-the-recommended-way-to-append-a-path-to-windows-path-environment-vari
 /// Appends `bin_dir` to the `PATH` environment variable.
 ///
@@ -21,10 +30,7 @@ pub fn win_link<P: AsRef<str>>(bin_dir: P) -> Result<()> {
 	println!("Updating PATH environment variable with bin_dir {bin_dir}");
 	// "To programmatically add or modify system environment variables, add them to the HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment registry key"
 	// https://learn.microsoft.com/en-gb/windows/win32/procthread/environment-variables
-	let environment = open_env!(LOCAL_MACHINE).unwrap_or_else(|_| {
-		open_env!(CURRENT_USER)
-			.context("Couldn't get Environment for HKEY_LOCAL_MACHINE or HKEY_CURRENT_USER")?
-	});
+	let environment = env_or_fallback!();
 	let prev_path: String = environment
 		.get_string("PATH")
 		.context("Couldn't get PATH environment variable!")?;
@@ -40,4 +46,11 @@ pub fn win_link<P: AsRef<str>>(bin_dir: P) -> Result<()> {
 		"Updated PATH environment variable!  Restart your current shell or open a new one for the change to take effect!"
 	);
 	Ok(())
+}
+
+pub fn set_java_home<S: Into<String>>(value: S) -> Result<()> {
+	let environment = env_or_fallback!();
+	environment
+		.set_string("JAVA_HOME", value.into())
+		.context("Couldn't modify environment variable!")
 }

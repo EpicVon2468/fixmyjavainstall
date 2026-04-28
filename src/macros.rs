@@ -48,7 +48,7 @@ macro_rules! check_status {
 /// [`Locks`][`std::fs::File::try_lock`] a file.
 #[macro_export]
 macro_rules! lock {
-	($file:ident) => {
+	($file:expr) => {
 		$file.try_lock().context("Couldn't acquire file lock!")?;
 	};
 }
@@ -56,7 +56,7 @@ macro_rules! lock {
 /// [`Unlocks`][`std::fs::File::unlock`] a file.
 #[macro_export]
 macro_rules! unlock {
-	($file:ident) => {
+	($file:expr) => {
 		$file.unlock().context("Couldn't release file lock!")?;
 	};
 }

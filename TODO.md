@@ -1,28 +1,41 @@
 # TODO:
 
-- [X] Download JVM
-- [ ] Download Kotlin
-- [ ] Download Kotlin Native
 - [X] Look into why macOS `/usr/bin/*` is stubborn
     - [Oh dear...](https://apple.stackexchange.com/questions/193368/what-is-the-rootless-feature-in-el-capitan-really/)
-- [ ] Get UNIX-likes to a stable release
+    - [ ] Workaround to provide the most equivalent experience to Linux as possible -- before 1.0.0
+- [ ] Get UNIX-likes to a stable release -- before 1.0.0
 - [ ] Fix Windows (soon™)
-- [ ] Fix `cargo`-based installs not working with `sudo`
-- [ ] Set `$JAVA_HOME` & `$PATH` persistently on UNIX-likes (or at least print export commands)
+- [ ] Fix `cargo`-based installs not working with `sudo` -- before 1.0.0
+- [ ] Set `$JAVA_HOME` & `$PATH` persistently on UNIX-likes (or at least print export commands) -- before 1.0.0
 - [ ] Changelog?
-- [ ] Automagic JVM selection
+- [ ] Automagic JVM selection -- before 1.0.0
 - [ ] `fuji manual install` ("think make vs. make install")
-- [ ] custom sysroot/prefix
-- [X] Research / implement file locks
-    - [ ] Optimise locking to remove all potential for interception
+- [ ] custom sysroot/prefix -- before 1.0.0
+- [ ] Optimise file locking to remove all potential for interception -- before 1.0.0
 - [ ] Allow adding `Feature`s to already-installed JVMs (including non-fuji)
-- [X] `Append` for `features`
-- [ ] List all modified/created folders & files in a log somewhere?
+- [ ] List all modified/created folders & files in a log somewhere (?)
 - [ ] [You have got to be kidding me](https://keith.github.io/xcode-man-pages/java_home.1.html).
   - `/usr/libexec/java_home`
+  - `java_home` searches for `/Library/Java/JavaVirtualMachines/openjdk-(\d)+` (not literally, this is regex for demonstrative purposes)
+  - This is potentially the easiest way to inject fuji JVMs on macOS, however it will require some adjustments to the extraction process
+  - [ ] Do not strip macOS `.tar.gz` downloads.  Place them elsewhere and use symlinks to maintain "normal" Fuji layout
+- [ ] Implement non-intrusive and [`archlinux-java`](https://wiki.archlinux.org/title/Java) compatible Arch support.
+  - [ ] Determine if on Arch(-like) system & apply compat as needed
+    - [ ] Check if either of the following regexes find  a match in `/etc/os-release`
+      - [ ] `(ID_LIKE="?([A-Za-z]+ +)*arch( ([A-Za-z]+ +)*)?"?)` (this isn't actually perfect, and technically doesn't match properly, but it _does_ work)
+      - [ ] `(ID="?arch"?)`
+      - Artix has `ID=artix`
+      - Arch has `ID=arch`
+      - Most Arch derivatives (excluding Artix) have `ID_LIKE=arch`
+      - Arch32 has `ID_LIKE="arch archlinux"`
+      - [ ] Simplify `ID_LIKE` regex if possible (do not support 32-bit?)
 - [ ] Support JVM languages:
   - [X] Java
-  - [ ] Kotlin (in-progress)
+  - [ ] Kotlin (in-progress) -- before 1.0.0
+    - [ ] Kotlin/JVM -- before 1.0.0
+    - [ ] Kotlin/Native
   - [ ] Clojure
   - [ ] Scala (?)
-  - [ ] Groovy will not be implemented.  Please get rid of this cursed language.
+  - [ ] Groovy -- never
+- [ ] Clean-up or remove `multi-os` -- before 1.0.0
+- [ ] Use & implement `InstallMethod` -- before 1.0.0

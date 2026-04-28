@@ -46,7 +46,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	let bin: PathBuf = path.join("bin");
 
 	#[cfg(windows)]
-	return crate::path_util::add_to_path(bin.to_string_lossy());
+	return crate::env_util::add_to_path(bin.to_string_lossy());
 
 	#[allow(unreachable_code, reason = "Windows.")]
 	let can_use_update_alternatives: bool =

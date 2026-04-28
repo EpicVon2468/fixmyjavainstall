@@ -16,6 +16,7 @@ pub mod cmd_preset;
 #[cfg(target_os = "linux")]
 pub mod desktop;
 pub mod feature;
+pub mod java_home;
 #[expect(clippy::module_inception)]
 pub mod jvm;
 pub mod jvm_generic;

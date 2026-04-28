@@ -5,7 +5,9 @@ use anyhow::{Context as _, Result};
 
 use crate::cmd_link::{link_impl, symlink_link};
 use crate::commands::io_failure;
+use crate::env_util::add_to_path;
 use crate::jvm::feature::Feature;
+use crate::jvm::java_home::set_java_home;
 use crate::jvm::jvm::JVM;
 use crate::jvm::jvm_generic::{DownloadJVMArgs, DownloadJVMFn};
 use crate::jvm::jvm_java_se::download_java_se;
@@ -16,7 +18,6 @@ use crate::jvm::major_version::MajorVersion;
 use crate::jvm::wrapper::{gen_wrapper, install_wrapper};
 use crate::jvm::{JavaVersion, Op};
 use crate::os::OS;
-use crate::path_util::add_to_path;
 use crate::{FUJI_DIR, LINK_DIR, compiler_unreachable, exists, wrong_cmd};
 
 pub fn cmd_install(op: Op) -> Result<()> {
@@ -103,6 +104,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 	#[cfg(not(windows))]
 	add_to_path(java_home.join("bin").to_string_lossy())
 		.context("Couldn't add JAVA_HOME/bin to PATH!")?;
+	set_java_home(java_home.to_string_lossy())?;
 	println!("Done.\n");
 
 	#[cfg(target_os = "linux")]
