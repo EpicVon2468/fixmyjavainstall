@@ -15,53 +15,52 @@ use crate::tui::page::jvm::install_option::InstallOption;
 use crate::tui::page::jvm::install_option::jvm_option::JVMOption;
 
 pub struct JVMPage {
-	selected_tab: usize,
-	option_tabs: Vec<Box<dyn InstallOption>>,
-}
-
-impl JVMPage {
-	#[allow(clippy::borrowed_box)]
-	pub fn value_names(&self) -> Vec<&'static str> {
-		self.option_tabs
-			.iter()
-			.map(|tab: &Box<dyn InstallOption>| tab.tab_name())
-			.collect()
-	}
+	selected: usize,
+	tabs: Vec<Box<dyn InstallOption>>,
 }
 
 impl JVMPage {
 	#[allow(unused)]
 	pub fn new() -> Self {
 		Self {
-			selected_tab: 0,
-			option_tabs: vec![Box::new(JVMOption::default())],
+			selected: 0,
+			tabs: vec![Box::new(JVMOption::default())],
 		}
 	}
 
 	#[allow(clippy::borrowed_box)]
-	fn selected_tab(&self) -> &Box<dyn InstallOption> {
-		self.option_tabs.get(self.selected_tab).unwrap()
+	fn selected(&self) -> &Box<dyn InstallOption> {
+		self.tabs.get(self.selected).unwrap()
 	}
 
-	fn selected_tab_mut(&mut self) -> &mut Box<dyn InstallOption> {
-		self.option_tabs.get_mut(self.selected_tab).unwrap()
+	fn selected_mut(&mut self) -> &mut Box<dyn InstallOption> {
+		self.tabs.get_mut(self.selected).unwrap()
+	}
+
+	// TODO: can this be cached?
+	#[allow(clippy::borrowed_box)]
+	pub fn tab_names(&self) -> Vec<&'static str> {
+		self.tabs
+			.iter()
+			.map(|tab: &Box<dyn InstallOption>| tab.tab_name())
+			.collect()
 	}
 
 	fn shl(&mut self) -> &mut Self {
-		let mut new: isize = self.selected_tab.cast_signed().saturating_sub(1);
+		let mut new: isize = self.selected.cast_signed().saturating_sub(1);
 		if new < 0 {
-			new = self.option_tabs.len().saturating_sub(1).cast_signed();
+			new = self.tabs.len().saturating_sub(1).cast_signed();
 		};
-		self.selected_tab = new.cast_unsigned();
+		self.selected = new.cast_unsigned();
 		self
 	}
 
 	fn shr(&mut self) -> &mut Self {
-		let mut new: usize = self.selected_tab.saturating_add(1);
-		if new >= self.option_tabs.len() {
+		let mut new: usize = self.selected.saturating_add(1);
+		if new >= self.tabs.len() {
 			new = 0;
 		};
-		self.selected_tab = new;
+		self.selected = new;
 		self
 	}
 }
@@ -85,7 +84,7 @@ impl Component for JVMPage {
 	type Return = ();
 
 	fn propagate_events(&mut self, app: &FujiApp) -> bool {
-		if self.selected_tab_mut().propagate_events(app) {
+		if self.selected_mut().propagate_events(app) {
 			return true;
 		};
 		if app.is_key_down(Key::ArrowLeft) {
@@ -100,9 +99,9 @@ impl Component for JVMPage {
 	}
 
 	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) -> Self::Return {
-		self.selected_tab().render(frame, area, app);
-		let tabs: Tabs = Tabs::new(self.value_names())
-			.select(self.selected_tab)
+		self.selected().render(frame, area, app);
+		let tabs: Tabs = Tabs::new(self.tab_names())
+			.select(self.selected)
 			.divider("#");
 		frame.render_widget(tabs, area - Offset::new(0, 1));
 	}
