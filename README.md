@@ -8,8 +8,8 @@ MSRV: `1.95.0`.
 
 ## Status:
 
-- Linux: `[WORKING?]-[UNTESTED]`
-  - All core functionality _should_ be working.
+- Linux: `[WORKING]-[TESTED]`
+  - All core functionality is working, tested regularly.
 - macOS: `[WORKING?]-[UNTESTED]`
   - All core functionality _should_ be working.
   - Rootless breaks many things.

@@ -69,15 +69,15 @@ pub fn add_to_path<P: AsRef<str>>(dir: P) -> Result<()> {
 
 #[cfg(target_os = "linux")]
 pub const PREPEND_FUNCTION: &str = "\
-	prepend_dir_to_path() {\n\
-		case \":$PATH:\" in\n\
-			*:\"$1\":*)\n\
-				;;\n\
-			*)\n\
-				export PATH=\"$1:$PATH\"\n\
-				;;\n\
-		esac\n\
-	}\n\
+prepend_dir_to_path() {
+	case \":$PATH:\" in
+		*:\"$1\":*)
+			;;
+		*)
+			export PATH=\"$1:$PATH\"
+			;;
+	esac
+}
 ";
 
 #[cfg(target_os = "linux")]
