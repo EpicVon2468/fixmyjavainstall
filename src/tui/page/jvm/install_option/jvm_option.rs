@@ -21,7 +21,11 @@ impl Default for JVMOption {
 	}
 }
 
-impl InstallOption for JVMOption {}
+impl InstallOption for JVMOption {
+	fn tab_name(&self) -> &'static str {
+		"Build/Vendor"
+	}
+}
 
 impl Component for JVMOption {
 	type Return = ();

@@ -6,4 +6,6 @@ pub trait InstallOption: Component<Return = ()> {
 	fn is_completed(&self) -> bool {
 		true
 	}
+
+	fn tab_name(&self) -> &'static str;
 }

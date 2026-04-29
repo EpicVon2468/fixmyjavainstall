@@ -4,7 +4,8 @@ pub mod install_option;
 use console::Key;
 
 use ratatui::Frame;
-use ratatui::layout::Rect;
+use ratatui::layout::{Offset, Rect};
+use ratatui::widgets::Tabs;
 
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
@@ -16,6 +17,16 @@ use crate::tui::page::jvm::install_option::jvm_option::JVMOption;
 pub struct JVMPage {
 	selected_tab: usize,
 	option_tabs: Vec<Box<dyn InstallOption>>,
+}
+
+impl JVMPage {
+	#[allow(clippy::borrowed_box)]
+	pub fn value_names(&self) -> Vec<&'static str> {
+		self.option_tabs
+			.iter()
+			.map(|tab: &Box<dyn InstallOption>| tab.tab_name())
+			.collect()
+	}
 }
 
 impl JVMPage {
@@ -34,6 +45,24 @@ impl JVMPage {
 
 	fn selected_tab_mut(&mut self) -> &mut Box<dyn InstallOption> {
 		self.option_tabs.get_mut(self.selected_tab).unwrap()
+	}
+
+	fn shl(&mut self) -> &mut Self {
+		let mut new: isize = self.selected_tab.cast_signed().saturating_sub(1);
+		if new < 0 {
+			new = self.option_tabs.len().saturating_sub(1).cast_signed();
+		};
+		self.selected_tab = new.cast_unsigned();
+		self
+	}
+
+	fn shr(&mut self) -> &mut Self {
+		let mut new: usize = self.selected_tab.saturating_add(1);
+		if new >= self.option_tabs.len() {
+			new = 0;
+		};
+		self.selected_tab = new;
+		self
 	}
 }
 
@@ -56,10 +85,25 @@ impl Component for JVMPage {
 	type Return = ();
 
 	fn propagate_events(&mut self, app: &FujiApp) -> bool {
-		self.selected_tab_mut().propagate_events(app)
+		if self.selected_tab_mut().propagate_events(app) {
+			return true;
+		};
+		if app.is_key_down(Key::ArrowLeft) {
+			self.shl();
+			return true;
+		};
+		if app.is_key_down(Key::ArrowRight) {
+			self.shr();
+			return true;
+		};
+		false
 	}
 
 	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) -> Self::Return {
 		self.selected_tab().render(frame, area, app);
+		let tabs: Tabs = Tabs::new(self.value_names())
+			.select(self.selected_tab)
+			.divider("#");
+		frame.render_widget(tabs, area - Offset::new(0, 1));
 	}
 }
