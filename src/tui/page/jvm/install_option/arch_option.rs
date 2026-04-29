@@ -4,43 +4,41 @@ use clap::ValueEnum as _;
 use ratatui::Frame;
 use ratatui::layout::Rect;
 
-use crate::jvm::jvm::JVM;
+use crate::arch::Arch;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 use crate::tui::component::list::{List, ListEntry};
 use crate::tui::page::jvm::install_option::InstallOption;
 
-impl ListEntry for JVM {
+impl ListEntry for Arch {
 	fn long_name(&self) -> &'static str {
 		match *self {
-			Self::Auto => "Auto",
-			Self::JBR => "JetBrains Runtime",
-			Self::JavaSE => "Java Platform, Standard Edition",
-			Self::Temurin => "Eclipse Temurin",
-			Self::Liberica => "Liberica JDK",
+			Self::X64 => "x86-64",
+			Self::Aarch64 => "AArch64",
+			Self::Riscv64 => "RISC-V",
 		}
 	}
 }
 
-pub struct JVMOption {
+pub struct ArchOption {
 	list: List<'static>,
 }
 
-impl Default for JVMOption {
+impl Default for ArchOption {
 	fn default() -> Self {
 		Self {
-			list: List::from(JVM::value_variants()),
+			list: List::from(Arch::value_variants()),
 		}
 	}
 }
 
-impl InstallOption for JVMOption {
+impl InstallOption for ArchOption {
 	fn tab_name(&self) -> &'static str {
-		"Build/Vendor"
+		"Architecture"
 	}
 }
 
-impl Component for JVMOption {
+impl Component for ArchOption {
 	type Return = ();
 
 	fn propagate_events(&mut self, app: &FujiApp) -> bool {

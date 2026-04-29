@@ -12,7 +12,9 @@ use crate::tui::component::Component;
 use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
 use crate::tui::page::jvm::install_option::InstallOption;
+use crate::tui::page::jvm::install_option::arch_option::ArchOption;
 use crate::tui::page::jvm::install_option::jvm_option::JVMOption;
+use crate::tui::page::jvm::install_option::os_option::OSOption;
 
 pub struct JVMPage {
 	selected: usize,
@@ -24,7 +26,11 @@ impl JVMPage {
 	pub fn new() -> Self {
 		Self {
 			selected: 0,
-			tabs: vec![Box::new(JVMOption::default())],
+			tabs: vec![
+				Box::new(JVMOption::default()),
+				Box::new(ArchOption::default()),
+				Box::new(OSOption::default()),
+			],
 		}
 	}
 
@@ -100,9 +106,7 @@ impl Component for JVMPage {
 
 	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) -> Self::Return {
 		self.selected().render(frame, area, app);
-		let tabs: Tabs = Tabs::new(self.tab_names())
-			.select(self.selected)
-			.divider("#");
+		let tabs: Tabs = Tabs::new(self.tab_names()).select(self.selected);
 		frame.render_widget(tabs, area - Offset::new(0, 1));
 	}
 }

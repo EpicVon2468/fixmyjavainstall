@@ -4,43 +4,42 @@ use clap::ValueEnum as _;
 use ratatui::Frame;
 use ratatui::layout::Rect;
 
-use crate::jvm::jvm::JVM;
+use crate::os::OS;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 use crate::tui::component::list::{List, ListEntry};
 use crate::tui::page::jvm::install_option::InstallOption;
 
-impl ListEntry for JVM {
+impl ListEntry for OS {
 	fn long_name(&self) -> &'static str {
 		match *self {
-			Self::Auto => "Auto",
-			Self::JBR => "JetBrains Runtime",
-			Self::JavaSE => "Java Platform, Standard Edition",
-			Self::Temurin => "Eclipse Temurin",
-			Self::Liberica => "Liberica JDK",
+			// I'd like to interject—  NO!  YOU CAN COMPILE THE KERNEL WITH CLANG AND NOT GNU!  THERE ARE RUST VERSIONS OF THE COREUTILS!
+			Self::Linux => "Linux",
+			Self::OSX => "macOS",
+			Self::Windows => "Windows",
 		}
 	}
 }
 
-pub struct JVMOption {
+pub struct OSOption {
 	list: List<'static>,
 }
 
-impl Default for JVMOption {
+impl Default for OSOption {
 	fn default() -> Self {
 		Self {
-			list: List::from(JVM::value_variants()),
+			list: List::from(OS::value_variants()),
 		}
 	}
 }
 
-impl InstallOption for JVMOption {
+impl InstallOption for OSOption {
 	fn tab_name(&self) -> &'static str {
-		"Build/Vendor"
+		"Operating System"
 	}
 }
 
-impl Component for JVMOption {
+impl Component for OSOption {
 	type Return = ();
 
 	fn propagate_events(&mut self, app: &FujiApp) -> bool {

@@ -1,3 +1,4 @@
+#![cfg(feature = "tui")]
 use console::Key;
 use ratatui::Frame;
 use ratatui::layout::{Offset, Rect};
@@ -17,6 +18,24 @@ pub struct List<'a> {
 	unconfirmed_prefix: String,
 	selected_style: Style,
 	confirmed_style: Style,
+}
+
+pub trait ListEntry {
+	fn long_name(&self) -> &'static str;
+
+	fn short_name(&self) -> &'static str {
+		self.long_name()
+	}
+
+	fn description(&self) -> &'static str {
+		todo!()
+	}
+}
+
+impl<T: ListEntry> From<&[T]> for List<'static> {
+	fn from(value: &[T]) -> Self {
+		Self::new(value.iter().map(ListEntry::long_name))
+	}
 }
 
 #[allow(unused)]
