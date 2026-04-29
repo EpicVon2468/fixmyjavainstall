@@ -1,0 +1,6 @@
+- https://docs.oracle.com/javase/9/install/installation-jdk-and-jre-macos.htm
+- /Library/LaunchDaemons/*.plist
+- /Library/Java/Home
+- `/Library/Java/JavaVirtualMachines/openjdk-(\d)+`
+- /usr/libexec/java_home
+- https://stackoverflow.com/questions/25385934/setting-environment-variables-via-launchd-conf-no-longer-works-in-os-x-yosemite
