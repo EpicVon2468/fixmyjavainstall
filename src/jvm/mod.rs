@@ -36,6 +36,7 @@ use serde::{Deserialize as Deserialise, Serialize as Serialise};
 use crate::arch::Arch;
 use crate::cli::Software;
 use crate::fuji_value_enum::FujiValueEnumParser;
+use crate::install_method::InstallMethod;
 use crate::jvm::feature::Feature;
 use crate::jvm::jvm::JVM;
 use crate::jvm::major_version::MajorVersion;
@@ -52,7 +53,12 @@ pub enum Op {
 	#[command(author)]
 	Install {
 		/// The build/vendor for the requested JVM.
-		#[arg(short, long, alias = "java-virtual-machine", default_value = "jbr")]
+		#[arg(
+			short,
+			long,
+			visible_alias = "java-virtual-machine",
+			default_value = "jbr"
+		)]
 		jvm: JVM,
 
 		/// The architecture for the requested JVM.
@@ -65,6 +71,10 @@ pub enum Op {
 		#[cfg(feature = "multi-os")]
 		#[arg(short, long, visible_alias = "os", default_value_t)]
 		operating_system: OS,
+
+		/// The installation method for the requested JVM.
+		#[arg(short, long, default_value_t)]
+		install_method: InstallMethod,
 
 		/// The features for the requested JVM.
 		///

@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
+use crate::install_method::InstallMethod;
 use crate::{LINK_DIR, LONG_VERSION};
 
 /// Fix Ur Java Install – A JVM & Kotlin management utility.
@@ -32,11 +33,8 @@ pub enum FujiCmd {
 		#[arg(short, long, value_name = "DIR", default_value = LINK_DIR)]
 		link_dir: PathBuf,
 
-		// TODO: 'InstallMethod' enumeration
-		/// Whether to use update-alternatives for install.
-		#[cfg(any(target_os = "linux", feature = "multi-os"))]
 		#[arg(short, long, default_value_t)]
-		use_update_alternatives: bool,
+		install_method: InstallMethod,
 	},
 	/// Manages software.
 	#[command(author)]

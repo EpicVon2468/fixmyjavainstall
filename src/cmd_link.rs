@@ -4,13 +4,15 @@ use std::fs::{Metadata, ReadDir, remove_dir_all, remove_file};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command};
 
-use anyhow::{Context as _, Result};
+use anyhow::{Context as _, Result, bail};
 
 use indicatif::ProgressBar;
 
 use crate::cli::FujiCmd;
 use crate::commands::{has_program, io_failure, progress_bar};
-use crate::{exists, wait_and_check_status, wrong_cmd};
+use crate::env_util::add_to_path;
+use crate::install_method::InstallMethod;
+use crate::{compiler_unreachable, exists, wait_and_check_status, wrong_cmd};
 
 #[cfg(any(not(windows), feature = "multi-os"))]
 pub fn cmd_link(command: FujiCmd) -> Result<()> {
@@ -19,8 +21,7 @@ pub fn cmd_link(command: FujiCmd) -> Result<()> {
 		paths,
 		#[cfg(any(not(windows), feature = "multi-os"))]
 		link_dir,
-		#[cfg(any(target_os = "linux", feature = "multi-os"))]
-		use_update_alternatives,
+		install_method,
 	}: FujiCmd = command else {
 		wrong_cmd!(cmd_link);
 	};
@@ -30,7 +31,7 @@ pub fn cmd_link(command: FujiCmd) -> Result<()> {
 	let use_update_alternatives: bool = false;
 	for path in paths {
 		println!("Linking {}...", path.display());
-		link_impl(&path, &link_dir, use_update_alternatives)
+		link_impl(&path, &link_dir, &install_method)
 			.with_context(|| format!("Failed to link '{}'!", path.display()))?;
 		println!("Done.\n");
 	}
@@ -40,23 +41,19 @@ pub fn cmd_link(command: FujiCmd) -> Result<()> {
 pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	path: P,
 	link_dir: S,
-	use_update_alternatives: bool,
+	install_method: &InstallMethod,
 ) -> Result<()> {
 	let path: &Path = path.as_ref();
 	let bin: PathBuf = path.join("bin");
+	if install_method
+		.program_name()
+		.is_some_and(|program: &str| !has_program(program))
+	{
+		bail!("Couldn't find program '{install_method}' on system when explicitly requested!");
+	};
 
-	#[cfg(windows)]
-	return crate::env_util::add_to_path(bin.to_string_lossy());
-
-	#[allow(unreachable_code, reason = "Windows.")]
-	let can_use_update_alternatives: bool =
-		use_update_alternatives && has_program("update-alternatives");
-	if !can_use_update_alternatives && use_update_alternatives {
-		#[rustfmt::skip]
-		return Err(std::io::Error::new(
-			std::io::ErrorKind::NotFound,
-			"Couldn't find update-alternatives on system when explicitly requested!",
-		).into());
+	if *install_method == InstallMethod::Path {
+		return add_to_path(bin.to_string_lossy()).context("Couldn't link with path!");
 	};
 	let max_len: u64 = bin.metadata()?.len();
 	let pb: ProgressBar = progress_bar(max_len);
@@ -84,11 +81,13 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 			.file_name()
 			.context("Couldn't get filename for directory entry!")?;
 		let dest: PathBuf = link_dir.as_ref().join(filename);
-		if can_use_update_alternatives {
-			debian_link(file, filename, dest).context("Couldn't link with update-alternatives!")?;
-		} else {
-			symlink_link(file, dest).context("Couldn't link with symlink!")?;
-		};
+		match *install_method {
+			InstallMethod::Symlink =>
+				symlink_link(file, dest).context("Couldn't link with symlink!"),
+			InstallMethod::UpdateAlternatives =>
+				debian_link(file, filename, dest).context("Couldn't link with update-alternatives!"),
+			_ => compiler_unreachable!(),
+		}?;
 		progress = min(progress + metadata.len(), max_len);
 		pb.set_position(progress);
 	}

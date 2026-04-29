@@ -5,7 +5,6 @@ use anyhow::{Context as _, Result};
 
 use crate::cmd_link::{link_impl, symlink_link};
 use crate::commands::io_failure;
-use crate::env_util::add_to_path;
 use crate::jvm::feature::Feature;
 use crate::jvm::java_home::set_java_home;
 use crate::jvm::jvm::JVM;
@@ -27,6 +26,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		arch,
 		#[cfg(feature = "multi-os")]
 		operating_system: os,
+		install_method,
 		features,
 		dry_run,
 		version,
@@ -100,10 +100,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 	symlink_link(java_home, Path::new(FUJI_DIR).join("jvm").join("latest"))
 		.context("Couldn't symbolically link FUJI_DIR/jvm/latest to current install directory!")?;
 	println!("Installing {}/bin...", java_home.display());
-	link_impl(java_home, LINK_DIR, false).context("Couldn't install JAVA_HOME!")?;
-	#[cfg(not(windows))]
-	add_to_path(java_home.join("bin").to_string_lossy())
-		.context("Couldn't add JAVA_HOME/bin to PATH!")?;
+	link_impl(java_home, LINK_DIR, &install_method).context("Couldn't install JAVA_HOME!")?;
 	set_java_home(java_home.to_string_lossy())?;
 	println!("Done.\n");
 

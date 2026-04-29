@@ -8,7 +8,7 @@ use crate::value_enum_extensions;
 
 // TODO: use environment variables to set args for commands (i.e FUJI_UPDATE_ALTERNATIVES_ARGS) -- https://crates.io/crates/shell-words/
 #[non_exhaustive]
-#[derive(ValueEnum, Clone)]
+#[derive(ValueEnum, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum InstallMethod {
 	/// PATH environment variable modification.
 	Path,

@@ -12,7 +12,7 @@
 - [ ] `fuji manual install` ("think make vs. make install")
 - [ ] custom sysroot/prefix -- before 1.0.0
 - [ ] Optimise file locking to remove all potential for interception -- before 1.0.0
-- [ ] Allow adding `Feature`s to already-installed JVMs (including non-fuji)
+- [ ] Allow adding `Feature`s to already-installed JVMs (including non-fuji) (`fuji-jvm patch <...>`)
 - [ ] List all modified/created folders & files in a log somewhere (?)
 - [ ] [You have got to be kidding me](https://keith.github.io/xcode-man-pages/java_home.1.html).
   - `/usr/libexec/java_home`

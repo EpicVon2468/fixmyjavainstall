@@ -15,6 +15,6 @@ pub fn set_java_home<S: AsRef<str>>(_ignored: S) -> Result<()> {
 }
 
 #[cfg(target_os = "macos")]
-pub fn set_java_home<S: AsRef<str>>(value: S) -> Result<()> {
+pub fn set_java_home<S: AsRef<str>>(_ignored: S) -> Result<()> {
 	Ok(())
 }

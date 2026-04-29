@@ -37,13 +37,6 @@ fn preset_recommended(minimal: bool) -> Result<()> {
 	};
 	configure_fast(&mut features)?;
 	features.push(Feature::Kotlin);
-	// TODO: switch to opt-in instead of opt-out
-	#[cfg(feature = "openjdk-deprecated")]
-	{
-		features.push(Feature::Native);
-		features.push(Feature::Unsafe);
-		features.push(Feature::Mutate);
-	};
 	features.push(Feature::FontFix);
 	do_preset(JVM::JBR, features, MajorVersion::LTS)
 }
@@ -108,6 +101,7 @@ fn do_preset(jvm: JVM, features: Vec<Feature>, version: MajorVersion) -> Result<
 				arch: Default::default(),
 				#[cfg(feature = "multi-os")]
 				operating_system: Default::default(),
+				install_method: Default::default(),
 				features,
 				dry_run: false,
 				version,
