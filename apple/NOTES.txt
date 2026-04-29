@@ -4,3 +4,4 @@
 - `/Library/Java/JavaVirtualMachines/openjdk-(\d)+`
 - /usr/libexec/java_home
 - https://stackoverflow.com/questions/25385934/setting-environment-variables-via-launchd-conf-no-longer-works-in-os-x-yosemite
+- https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/Introduction.html
