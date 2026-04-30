@@ -9,17 +9,19 @@ use crate::tui::INVERTED;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 
-// TODO: abstract this out to allow single-select and multi-select
 // Based on ratatui-widget's Widget of the same name, except remade for my needs + Component trait
 #[derive(Default)]
 pub struct List<'a> {
 	items: Vec<Span<'a>>,
 	selected: usize,
-	confirmed: Option<usize>,
+	confirmed: Vec<usize>,
 	confirmed_prefix: String,
 	unconfirmed_prefix: String,
+	selected_prefix: String,
+	unselected_prefix: String,
 	selected_style: Style,
 	confirmed_style: Style,
+	multi_confirm: bool,
 }
 
 pub trait ListEntry {
@@ -30,15 +32,15 @@ pub trait ListEntry {
 	}
 }
 
-impl<T: ListEntry> From<&[T]> for List<'static> {
-	fn from(value: &[T]) -> Self {
-		Self::new(value.iter().map(ListEntry::name))
+impl List<'static> {
+	pub fn from<T: ListEntry>(items: &[T], multi_confirm: bool) -> Self {
+		Self::new(items.iter().map(T::name), multi_confirm)
 	}
 }
 
 #[allow(unused)]
 impl<'a> List<'a> {
-	pub fn new<T>(items: T) -> Self
+	pub fn new<T>(items: T, multi_confirm: bool) -> Self
 	where
 		T: IntoIterator,
 		T::Item: Into<Span<'a>>, {
@@ -48,6 +50,9 @@ impl<'a> List<'a> {
 			unconfirmed_prefix: "[ ]".into(),
 			selected_style: INVERTED,
 			confirmed_style: INVERTED,
+			selected_prefix: ">".into(),
+			unselected_prefix: " ".into(),
+			multi_confirm,
 			..Default::default()
 		}
 	}
@@ -59,6 +64,16 @@ impl<'a> List<'a> {
 
 	pub fn unconfirmed_prefix(&mut self, value: String) -> &mut Self {
 		self.unconfirmed_prefix = value;
+		self
+	}
+
+	pub fn selected_prefix(&mut self, value: String) -> &mut Self {
+		self.selected_prefix = value;
+		self
+	}
+
+	pub fn unselected_prefix(&mut self, value: String) -> &mut Self {
+		self.unselected_prefix = value;
 		self
 	}
 
@@ -100,18 +115,33 @@ impl<'a> List<'a> {
 		self
 	}
 
-	pub const fn is_confirmed(&self, value: usize) -> bool {
-		let Some(confirmed): Option<usize> = self.confirmed else {
-			return false;
-		};
-		confirmed == value
+	pub fn is_confirmed(&self, value: usize) -> bool {
+		self.confirmed.contains(&value)
 	}
 
-	pub const fn toggle_confirmed(&mut self, value: usize) {
-		if self.is_confirmed(value) {
-			self.confirmed = None;
+	pub fn toggle_confirmed(&mut self, value: usize) {
+		if self.multi_confirm {
+			self.toggle_confirmed_multi_confirm(value);
 		} else {
-			self.confirmed = Some(value);
+			self.toggle_confirmed_single_confirm(value);
+		};
+	}
+
+	fn toggle_confirmed_multi_confirm(&mut self, value: usize) {
+		if let Some(index) = self.confirmed.iter().position(|val: &usize| *val == value) {
+			// if the value already exists, remove it
+			self.confirmed.swap_remove(index);
+		} else {
+			self.confirmed.push(value);
+		};
+	}
+
+	fn toggle_confirmed_single_confirm(&mut self, value: usize) {
+		if self.confirmed.first() == Some(&value) {
+			// if the value already exists, remove it
+			self.confirmed.clear();
+		} else {
+			self.confirmed = vec![value];
 		};
 	}
 }
@@ -140,9 +170,15 @@ impl Component for List<'_> {
 		let mut area: Rect = area;
 		for (index, item) in self.items.iter().enumerate() {
 			let is_confirmed: bool = self.is_confirmed(index);
+			let is_selected = self.selected == index;
 			let line: Line = Line::styled(
 				format!(
-					"{} {item}",
+					"{} {} {item}",
+					if is_selected {
+						&self.selected_prefix
+					} else {
+						&self.unselected_prefix
+					},
 					if is_confirmed {
 						&self.confirmed_prefix
 					} else {
@@ -151,7 +187,7 @@ impl Component for List<'_> {
 				),
 				if is_confirmed {
 					self.confirmed_style
-				} else if self.selected == index {
+				} else if is_selected {
 					self.selected_style
 				} else {
 					Style::new()

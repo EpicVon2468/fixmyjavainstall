@@ -27,7 +27,7 @@ pub struct ArchOption {
 impl Default for ArchOption {
 	fn default() -> Self {
 		Self {
-			list: List::from(Arch::value_variants()),
+			list: List::from(Arch::value_variants(), false),
 		}
 	}
 }

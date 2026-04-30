@@ -29,7 +29,7 @@ pub struct JVMOption {
 impl Default for JVMOption {
 	fn default() -> Self {
 		Self {
-			list: List::from(JVM::value_variants()),
+			list: List::from(JVM::value_variants(), false),
 		}
 	}
 }

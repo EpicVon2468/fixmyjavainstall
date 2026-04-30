@@ -28,7 +28,7 @@ pub struct OSOption {
 impl Default for OSOption {
 	fn default() -> Self {
 		Self {
-			list: List::from(OS::value_variants()),
+			list: List::from(OS::value_variants(), false),
 		}
 	}
 }
