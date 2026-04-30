@@ -107,6 +107,6 @@ impl Component for JVMPage {
 	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) -> Self::Return {
 		self.selected().render(frame, area, app);
 		let tabs: Tabs = Tabs::new(self.tab_names()).select(self.selected);
-		frame.render_widget(tabs, area - Offset::new(0, 1));
+		frame.render_widget(tabs, area - Offset::new(1, 2));
 	}
 }

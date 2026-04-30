@@ -11,7 +11,7 @@ use crate::tui::component::list::{List, ListEntry};
 use crate::tui::page::jvm::install_option::InstallOption;
 
 impl ListEntry for JVM {
-	fn long_name(&self) -> &'static str {
+	fn name(&self) -> &'static str {
 		match *self {
 			Self::Auto => "Automatic",
 			Self::JBR => "JetBrains Runtime",

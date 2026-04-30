@@ -11,7 +11,7 @@ use crate::tui::component::list::{List, ListEntry};
 use crate::tui::page::jvm::install_option::InstallOption;
 
 impl ListEntry for Arch {
-	fn long_name(&self) -> &'static str {
+	fn name(&self) -> &'static str {
 		match *self {
 			Self::X64 => "x86-64",
 			Self::Aarch64 => "AArch64",

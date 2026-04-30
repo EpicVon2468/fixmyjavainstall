@@ -11,7 +11,7 @@ use crate::tui::component::list::{List, ListEntry};
 use crate::tui::page::jvm::install_option::InstallOption;
 
 impl ListEntry for OS {
-	fn long_name(&self) -> &'static str {
+	fn name(&self) -> &'static str {
 		match *self {
 			// I'd like to interject—  NO!  YOU CAN COMPILE THE KERNEL WITH CLANG AND NOT GCC!  THERE ARE RUST VERSIONS OF THE COREUTILS!
 			Self::Linux => "Linux",

@@ -22,11 +22,7 @@ pub struct List<'a> {
 }
 
 pub trait ListEntry {
-	fn long_name(&self) -> &'static str;
-
-	fn short_name(&self) -> &'static str {
-		self.long_name()
-	}
+	fn name(&self) -> &'static str;
 
 	fn description(&self) -> Option<&'static str> {
 		None
@@ -35,7 +31,7 @@ pub trait ListEntry {
 
 impl<T: ListEntry> From<&[T]> for List<'static> {
 	fn from(value: &[T]) -> Self {
-		Self::new(value.iter().map(ListEntry::long_name))
+		Self::new(value.iter().map(ListEntry::name))
 	}
 }
 

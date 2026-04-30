@@ -5,11 +5,11 @@ use anyhow::{Context as _, Result};
 
 use console::Key;
 
-use ratatui::layout::{Constraint, Layout, Margin, Rect};
+use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::Line;
 use ratatui::style::{Style, Stylize as _};
 use ratatui::text::Span;
-use ratatui::widgets::{Block, BorderType};
+use ratatui::widgets::{Block, BorderType, Padding};
 use ratatui::{DefaultTerminal, Frame, try_init};
 
 use crate::tui::page::Page;
@@ -100,7 +100,7 @@ impl FujiApp {
 		// Excuse(s):
 		// - Before the end of scope, a call to [`Self::set_page`] is made, meaning that the contract of [`Self::get_page`] is never violated.
 		let mut page: Box<dyn Page> = unsafe { self.get_page() };
-		let (consumed, new_page) = page.propagate_page_events(self);
+		let (consumed, new_page): (bool, Option<Box<dyn Page>>) = page.propagate_page_events(self);
 		if consumed {
 			self.event.take();
 			self.prev_event.take();
@@ -144,12 +144,14 @@ impl FujiApp {
 			// Excuse(s):
 			// - Before the end of scope, a call to [`Self::set_page`] is made, meaning that the contract of [`Self::get_page`] is never violated.
 			let page: Box<dyn Page> = unsafe { self.get_page() };
-			page.render(frame, area.inner(Margin::new(1, 1)), self);
+			page.render(frame, Self::BORDER.inner(area), self);
 			self.set_page(page);
 		};
 	}
 
-	pub const BORDER: Block<'static> = Block::bordered().border_type(BorderType::Rounded);
+	pub const BORDER: Block<'static> = Block::bordered()
+		.padding(Padding::uniform(1))
+		.border_type(BorderType::Rounded);
 }
 
 /// Help section.
