@@ -1,4 +1,5 @@
 #![cfg(feature = "tui")]
+pub mod help;
 pub mod list;
 pub mod logo;
 

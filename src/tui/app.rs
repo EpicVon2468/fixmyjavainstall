@@ -7,11 +7,12 @@ use console::Key;
 
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::Line;
-use ratatui::style::{Style, Stylize as _};
-use ratatui::text::Span;
+use ratatui::style::Stylize as _;
 use ratatui::widgets::{Block, BorderType, Padding};
 use ratatui::{DefaultTerminal, Frame, try_init};
 
+use crate::tui::component::Component as _;
+use crate::tui::component::help::HelpSection;
 use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
 use crate::{compiler_unreachable, matches_many};
@@ -21,6 +22,7 @@ pub struct FujiApp {
 	event: Option<Key>,
 	prev_event: Option<Key>,
 	layout: Layout,
+	help_section: HelpSection,
 }
 
 impl Default for FujiApp {
@@ -34,6 +36,7 @@ impl Default for FujiApp {
 				Constraint::Fill(1),
 				Constraint::Length(2),
 			]),
+			help_section: Default::default(),
 		}
 	}
 }
@@ -123,7 +126,7 @@ impl FujiApp {
 		let [title, body, help] = frame.area().layout(&self.layout);
 		self.render_title(frame, title);
 		self.render_body(frame, body);
-		Self::render_help(frame, help);
+		self.help_section.render(frame, help, self);
 	}
 
 	fn render_title(&mut self, frame: &mut Frame, area: Rect) {
@@ -164,55 +167,6 @@ impl FujiApp {
 	pub const BORDER: Block<'static> = Block::bordered()
 		.padding(Padding::uniform(1))
 		.border_type(BorderType::Rounded);
-}
-
-/// Help section.
-impl FujiApp {
-	fn render_help(frame: &mut Frame, area: Rect) {
-		let [top, bottom] = area.layout(&Self::help_layout());
-		Self::render_help_top_row(frame, top);
-		Self::render_help_bottom_row(frame, bottom);
-	}
-
-	fn help_layout() -> Layout {
-		Layout::vertical([Constraint::Fill(1), Constraint::Fill(1)])
-	}
-
-	fn render_help_top_row(frame: &mut Frame, area: Rect) {
-		let [quit, back, select] = area.layout(&Self::help_top_row_layout());
-		Self::help_entry(frame, quit, ":q", "Quit");
-		Self::help_entry(frame, back, "Backspace", "Back");
-		Self::help_entry(frame, select, "Enter", "Select");
-	}
-
-	fn help_top_row_layout() -> Layout {
-		Layout::horizontal([
-			Constraint::Fill(1),
-			Constraint::Fill(1),
-			Constraint::Fill(1),
-		])
-	}
-
-	// TODO: have page-specific keybinds show up on this row
-	fn render_help_bottom_row(_frame: &mut Frame, area: Rect) {
-		let [_] = area.layout(&Self::help_bottom_row_layout());
-	}
-
-	fn help_bottom_row_layout() -> Layout {
-		Layout::horizontal([Constraint::Fill(1)]).spacing(1)
-	}
-
-	fn help_entry(frame: &mut Frame, area: Rect, key: &str, action: &str) {
-		frame.render_widget(
-			Line::from_iter([
-				Span::styled(key, Self::HELP_KEY),
-				Span::raw(format!(" {action}")),
-			]),
-			area,
-		);
-	}
-
-	pub const HELP_KEY: Style = Style::new().on_white().black();
 }
 
 /// Keybinds.
