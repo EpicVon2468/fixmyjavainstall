@@ -5,6 +5,7 @@ mod page;
 
 use anyhow::Result;
 
+use ratatui::style::Style;
 use ratatui::try_restore;
 
 use crate::tui::app::FujiApp;
@@ -18,3 +19,5 @@ pub fn main() -> Result<()> {
 	let _ = try_restore();
 	result
 }
+
+pub const INVERTED: Style = Style::new().reversed();

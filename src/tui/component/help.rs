@@ -1,8 +1,9 @@
 #![cfg(feature = "tui")]
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout, Rect};
-use ratatui::prelude::{Line, Span, Style};
+use ratatui::prelude::{Line, Span};
 
+use crate::tui::INVERTED;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 
@@ -36,15 +37,10 @@ impl HelpSection {
 
 	fn help_entry(frame: &mut Frame, area: Rect, key: &str, action: &str) {
 		frame.render_widget(
-			Line::from_iter([
-				Span::styled(key, Self::HELP_KEY),
-				Span::raw(format!(" {action}")),
-			]),
+			Line::from_iter([Span::styled(key, INVERTED), Span::raw(format!(" {action}"))]),
 			area,
 		);
 	}
-
-	pub const HELP_KEY: Style = Style::new().on_white().black();
 }
 
 impl Default for HelpSection {

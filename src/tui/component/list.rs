@@ -5,6 +5,7 @@ use ratatui::layout::{Offset, Rect};
 use ratatui::style::Style;
 use ratatui::text::{Line, Span};
 
+use crate::tui::INVERTED;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 
@@ -45,13 +46,11 @@ impl<'a> List<'a> {
 			items: items.into_iter().map(Into::into).collect(),
 			confirmed_prefix: "[*]".into(),
 			unconfirmed_prefix: "[ ]".into(),
-			selected_style: Self::DEFAULT_STYLE,
-			confirmed_style: Self::DEFAULT_STYLE,
+			selected_style: INVERTED,
+			confirmed_style: INVERTED,
 			..Default::default()
 		}
 	}
-
-	const DEFAULT_STYLE: Style = Style::new().black().on_white();
 
 	pub fn confirmed_prefix(&mut self, value: String) -> &mut Self {
 		self.confirmed_prefix = value;
@@ -86,17 +85,17 @@ impl<'a> List<'a> {
 			// loop around
 			self.selected = self.last_index();
 		} else {
-			self.selected -= 1;
+			self.selected = self.selected.saturating_sub(1);
 		};
 		self
 	}
 
 	pub const fn select_next(&mut self) -> &mut Self {
-		if self.selected == self.last_index() {
+		if self.selected >= self.last_index() {
 			// loop around
 			self.selected = 0;
 		} else {
-			self.selected += 1;
+			self.selected = self.selected.saturating_add(1);
 		};
 		self
 	}
