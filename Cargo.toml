@@ -102,7 +102,7 @@ default-features = false
 [dependencies.ratatui]
 version = "0"
 optional = true
-features = ["std", "crossterm"]
+features = ["std", "crossterm", "layout-cache"]
 default-features = false
 
 [target.'cfg(windows)'.dependencies]
