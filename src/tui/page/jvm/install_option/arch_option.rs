@@ -15,7 +15,7 @@ impl ListEntry for Arch {
 		match *self {
 			Self::X64 => "x86-64",
 			Self::Aarch64 => "AArch64",
-			Self::Riscv64 => "RISC-V",
+			Self::Riscv64 => "RISC-V64",
 		}
 	}
 }

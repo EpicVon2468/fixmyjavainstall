@@ -8,6 +8,7 @@ use ratatui::text::{Line, Span};
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 
+// TODO: abstract this out to allow single-select and multi-select
 // Based on ratatui-widget's Widget of the same name, except remade for my needs + Component trait
 #[derive(Default)]
 pub struct List<'a> {
@@ -27,8 +28,8 @@ pub trait ListEntry {
 		self.long_name()
 	}
 
-	fn description(&self) -> &'static str {
-		todo!()
+	fn description(&self) -> Option<&'static str> {
+		None
 	}
 }
 
@@ -56,20 +57,24 @@ impl<'a> List<'a> {
 
 	const DEFAULT_STYLE: Style = Style::new().black().on_white();
 
-	pub fn confirmed_prefix(&mut self, value: String) {
+	pub fn confirmed_prefix(&mut self, value: String) -> &mut Self {
 		self.confirmed_prefix = value;
+		self
 	}
 
-	pub fn unconfirmed_prefix(&mut self, value: String) {
+	pub fn unconfirmed_prefix(&mut self, value: String) -> &mut Self {
 		self.unconfirmed_prefix = value;
+		self
 	}
 
-	pub const fn selected_style(&mut self, value: Style) {
+	pub const fn selected_style(&mut self, value: Style) -> &mut Self {
 		self.selected_style = value;
+		self
 	}
 
-	pub const fn confirmed_style(&mut self, value: Style) {
+	pub const fn confirmed_style(&mut self, value: Style) -> &mut Self {
 		self.confirmed_style = value;
+		self
 	}
 
 	pub const fn selected(&self) -> usize {
@@ -80,22 +85,24 @@ impl<'a> List<'a> {
 		self.items.len().saturating_sub(1)
 	}
 
-	pub const fn select_prev(&mut self) {
+	pub const fn select_prev(&mut self) -> &mut Self {
 		if self.selected == 0 {
 			// loop around
 			self.selected = self.last_index();
 		} else {
 			self.selected -= 1;
 		};
+		self
 	}
 
-	pub const fn select_next(&mut self) {
+	pub const fn select_next(&mut self) -> &mut Self {
 		if self.selected == self.last_index() {
 			// loop around
 			self.selected = 0;
 		} else {
 			self.selected += 1;
 		};
+		self
 	}
 
 	pub fn is_confirmed(&self, value: usize) -> bool {

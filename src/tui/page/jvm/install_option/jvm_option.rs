@@ -13,7 +13,7 @@ use crate::tui::page::jvm::install_option::InstallOption;
 impl ListEntry for JVM {
 	fn long_name(&self) -> &'static str {
 		match *self {
-			Self::Auto => "Auto",
+			Self::Auto => "Automatic",
 			Self::JBR => "JetBrains Runtime",
 			Self::JavaSE => "Java Platform, Standard Edition",
 			Self::Temurin => "Eclipse Temurin",

@@ -2,7 +2,6 @@
 mod app;
 mod component;
 mod page;
-mod tab;
 
 use anyhow::Result;
 
