@@ -1,9 +1,8 @@
 #![cfg(feature = "tui")]
 pub mod install_option;
 
-use console::Key;
-
 use ratatui::Frame;
+use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::{Offset, Rect};
 use ratatui::widgets::Tabs;
 
@@ -51,7 +50,7 @@ impl JVMPage {
 			.collect()
 	}
 
-	fn shl(&mut self) -> &mut Self {
+	fn shift_left(&mut self) -> &mut Self {
 		let mut new: isize = self.selected.cast_signed().saturating_sub(1);
 		if new < 0 {
 			new = self.tabs.len().saturating_sub(1).cast_signed();
@@ -60,7 +59,7 @@ impl JVMPage {
 		self
 	}
 
-	fn shr(&mut self) -> &mut Self {
+	fn shift_right(&mut self) -> &mut Self {
 		let mut new: usize = self.selected.saturating_add(1);
 		if new >= self.tabs.len() {
 			new = 0;
@@ -80,7 +79,7 @@ impl Page for JVMPage {
 		if consumed {
 			return (true, None);
 		};
-		if app.is_key_down(Key::Backspace) {
+		if app.is_key_down(KeyCode::Backspace) {
 			(true, Some(Box::new(HomePage::default())))
 		} else {
 			(false, None)
@@ -95,12 +94,12 @@ impl Component for JVMPage {
 		if self.selected_mut().propagate_events(app) {
 			return true;
 		};
-		if app.is_key_down(Key::ArrowLeft) {
-			self.shl();
+		if app.is_key_down(KeyCode::Left) {
+			self.shift_left();
 			return true;
 		};
-		if app.is_key_down(Key::ArrowRight) {
-			self.shr();
+		if app.is_key_down(KeyCode::Right) {
+			self.shift_right();
 			return true;
 		};
 		false

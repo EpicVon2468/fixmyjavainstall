@@ -1,6 +1,6 @@
 #![cfg(feature = "tui")]
-use console::Key;
 use ratatui::Frame;
+use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::{Offset, Rect};
 use ratatui::style::Style;
 use ratatui::text::{Line, Span};
@@ -110,15 +110,15 @@ impl Component for List<'_> {
 	type Return = ();
 
 	fn propagate_events(&mut self, app: &FujiApp) -> bool {
-		if app.is_key_down(Key::ArrowUp) {
+		if app.is_key_down(KeyCode::Up) {
 			self.select_prev();
 			return true;
 		};
-		if app.is_key_down(Key::ArrowDown) {
+		if app.is_key_down(KeyCode::Down) {
 			self.select_next();
 			return true;
 		};
-		if app.is_key_down(Key::Enter) {
+		if app.is_key_down(KeyCode::Enter) {
 			// toggle confirmed
 			if self.is_confirmed(self.selected) {
 				self.confirmed = None;

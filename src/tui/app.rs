@@ -3,8 +3,7 @@ use std::cell::UnsafeCell;
 
 use anyhow::{Context as _, Result};
 
-use console::Key;
-
+use ratatui::crossterm::event::{Event, KeyCode, read};
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::Line;
 use ratatui::style::Stylize as _;
@@ -15,12 +14,11 @@ use crate::tui::component::Component as _;
 use crate::tui::component::help::HelpSection;
 use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
-use crate::{compiler_unreachable, matches_many};
 
 pub struct FujiApp {
 	page: UnsafeCell<Box<dyn Page>>,
-	event: Option<Key>,
-	prev_event: Option<Key>,
+	event: Option<KeyCode>,
+	prev_event: Option<KeyCode>,
 	layout: Layout,
 	help_section: HelpSection,
 }
@@ -171,20 +169,19 @@ impl FujiApp {
 
 /// Keybinds.
 impl FujiApp {
-	const fn get_event(&self, prev: bool) -> Option<&Key> {
+	const fn get_event(&self, prev: bool) -> Option<&KeyCode> {
 		if prev { &self.prev_event } else { &self.event }.as_ref()
 	}
 
-	#[allow(clippy::needless_pass_by_value)]
-	fn key_down(&self, prev: bool, key: Key) -> bool {
+	fn key_down(&self, prev: bool, key: KeyCode) -> bool {
 		matches!(self.get_event(prev), Some(event_key) if *event_key == key)
 	}
 
-	pub fn is_key_down(&self, key: Key) -> bool {
+	pub fn is_key_down(&self, key: KeyCode) -> bool {
 		self.key_down(false, key)
 	}
 
-	pub fn was_key_down(&self, key: Key) -> bool {
+	pub fn was_key_down(&self, key: KeyCode) -> bool {
 		self.key_down(true, key)
 	}
 
@@ -192,78 +189,14 @@ impl FujiApp {
 	///
 	/// Returns: if the sequence `:q` was pressed.
 	pub fn should_exit(&self) -> bool {
-		self.was_key_down(Key::Char(':')) && self.is_key_down(Key::Char('q'))
+		self.was_key_down(KeyCode::Char(':')) && self.is_key_down(KeyCode::Char('q'))
 	}
-}
 
-/// Man-made horrors beyond your comprehension.
-impl FujiApp {
-	pub fn update() -> Result<Option<Key>> {
-		use ratatui::crossterm::event::{Event, KeyCode, ModifierKeyCode, read};
-
-		let event: Event = read()?;
-		if !event.is_key() {
-			return Ok(None);
-		};
-		let Event::Key(key_event): Event = event else {
-			compiler_unreachable!();
-		};
-
-		if matches_many!(
-			key_event.code,
-			KeyCode::F(_),
-			KeyCode::Null,
-			KeyCode::CapsLock,
-			KeyCode::ScrollLock,
-			KeyCode::NumLock,
-			KeyCode::PrintScreen,
-			KeyCode::Pause,
-			KeyCode::Menu,
-			KeyCode::KeypadBegin,
-			KeyCode::Media(_),
-			KeyCode::Modifier(modifier) if matches_many!(
-				modifier,
-				ModifierKeyCode::LeftControl,
-				ModifierKeyCode::RightControl,
-				ModifierKeyCode::LeftSuper,
-				ModifierKeyCode::RightSuper,
-				ModifierKeyCode::LeftHyper,
-				ModifierKeyCode::RightHyper,
-				ModifierKeyCode::LeftMeta,
-				ModifierKeyCode::RightMeta,
-			),
-		) {
-			return Ok(None);
-		};
-
-		let value: Key = match key_event.code {
-			KeyCode::Backspace => Key::Backspace,
-			KeyCode::Enter => Key::Enter,
-			KeyCode::Left => Key::ArrowLeft,
-			KeyCode::Right => Key::ArrowRight,
-			KeyCode::Up => Key::ArrowUp,
-			KeyCode::Down => Key::ArrowDown,
-			KeyCode::Home => Key::Home,
-			KeyCode::End => Key::End,
-			KeyCode::PageUp => Key::PageUp,
-			KeyCode::PageDown => Key::PageDown,
-			KeyCode::Tab => Key::Tab,
-			KeyCode::BackTab => Key::BackTab,
-			KeyCode::Delete => Key::Del,
-			KeyCode::Insert => Key::Insert,
-			KeyCode::Char(val) => Key::Char(val),
-			KeyCode::Esc => Key::Escape,
-			KeyCode::Modifier(modifier) => match modifier {
-				ModifierKeyCode::LeftShift
-				| ModifierKeyCode::RightShift
-				| ModifierKeyCode::IsoLevel3Shift
-				| ModifierKeyCode::IsoLevel5Shift => Key::Shift,
-				ModifierKeyCode::LeftAlt | ModifierKeyCode::RightAlt => Key::Alt,
-				_ => compiler_unreachable!(),
-			},
-			_ => compiler_unreachable!(),
-		};
-
-		Ok(Some(value))
+	pub fn update() -> Result<Option<KeyCode>> {
+		if let Event::Key(key_event) = read()? {
+			Ok(Some(key_event.code))
+		} else {
+			Ok(None)
+		}
 	}
 }

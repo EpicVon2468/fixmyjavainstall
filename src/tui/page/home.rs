@@ -1,7 +1,6 @@
 #![cfg(feature = "tui")]
-use console::Key;
-
 use ratatui::Frame;
+use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::{Constraint, Layout, Rect};
 
 use crate::tui::app::FujiApp;
@@ -10,14 +9,17 @@ use crate::tui::component::logo::FujiLogo;
 use crate::tui::page::Page;
 use crate::tui::page::jvm::JVMPage;
 
-#[derive(Default)]
 pub struct HomePage {
 	logo: FujiLogo,
+	layout: Layout,
 }
 
-impl HomePage {
-	fn layout() -> Layout {
-		Layout::vertical([Constraint::Length(7), Constraint::Fill(1)])
+impl Default for HomePage {
+	fn default() -> Self {
+		Self {
+			logo: Default::default(),
+			layout: Layout::vertical([Constraint::Length(7), Constraint::Fill(1)]),
+		}
 	}
 }
 
@@ -27,7 +29,7 @@ impl Page for HomePage {
 		if consumed {
 			return (true, None);
 		};
-		if app.is_key_down(Key::Enter) {
+		if app.is_key_down(KeyCode::Enter) {
 			(true, Some(Box::new(JVMPage::default())))
 		} else {
 			(false, None)
@@ -43,7 +45,7 @@ impl Component for HomePage {
 	}
 
 	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) -> Self::Return {
-		let [top, _bottom] = area.layout(&Self::layout());
+		let [top, _bottom] = area.layout(&self.layout);
 		self.logo.render(frame, top, app);
 	}
 }
