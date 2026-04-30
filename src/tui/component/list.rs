@@ -100,8 +100,19 @@ impl<'a> List<'a> {
 		self
 	}
 
-	pub fn is_confirmed(&self, value: usize) -> bool {
-		self.confirmed.is_some_and(|val: usize| val == value)
+	pub const fn is_confirmed(&self, value: usize) -> bool {
+		let Some(confirmed): Option<usize> = self.confirmed else {
+			return false;
+		};
+		confirmed == value
+	}
+
+	pub const fn toggle_confirmed(&mut self, value: usize) {
+		if self.is_confirmed(value) {
+			self.confirmed = None;
+		} else {
+			self.confirmed = Some(value);
+		};
 	}
 }
 
@@ -118,12 +129,7 @@ impl Component for List<'_> {
 			return true;
 		};
 		if app.is_key_down(KeyCode::Enter) {
-			// toggle confirmed
-			if self.is_confirmed(self.selected) {
-				self.confirmed = None;
-			} else {
-				self.confirmed = Some(self.selected);
-			};
+			self.toggle_confirmed(self.selected);
 			return true;
 		};
 		false

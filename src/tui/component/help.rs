@@ -12,6 +12,19 @@ pub struct HelpSection {
 	top_row_layout: Layout,
 }
 
+impl Default for HelpSection {
+	fn default() -> Self {
+		Self {
+			layout: Layout::vertical([Constraint::Fill(1), Constraint::Fill(1)]),
+			top_row_layout: Layout::horizontal([
+				Constraint::Fill(1),
+				Constraint::Fill(1),
+				Constraint::Fill(1),
+			]),
+		}
+	}
+}
+
 impl HelpSection {
 	fn render_help(&self, frame: &mut Frame, area: Rect) {
 		let [top, bottom] = area.layout(&self.layout);
@@ -32,27 +45,14 @@ impl HelpSection {
 	}
 
 	fn help_bottom_row_layout() -> Layout {
-		Layout::horizontal([Constraint::Fill(1)]).spacing(1)
+		Layout::horizontal([Constraint::Fill(1)])
 	}
 
 	fn help_entry(frame: &mut Frame, area: Rect, key: &str, action: &str) {
 		frame.render_widget(
-			Line::from_iter([Span::styled(key, INVERTED), Span::raw(format!(" {action}"))]),
+			Line::from_iter([Span::styled(key, INVERTED), format!(" {action}").into()]),
 			area,
 		);
-	}
-}
-
-impl Default for HelpSection {
-	fn default() -> Self {
-		Self {
-			layout: Layout::vertical([Constraint::Fill(1), Constraint::Fill(1)]),
-			top_row_layout: Layout::horizontal([
-				Constraint::Fill(1),
-				Constraint::Fill(1),
-				Constraint::Fill(1),
-			]),
-		}
 	}
 }
 
