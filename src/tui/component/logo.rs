@@ -10,15 +10,19 @@ use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 
 // requires at least a vertical Constraint::Length(6) (preferably 7 for the one line of space)
-#[derive(Default)]
-pub struct FujiLogo;
+pub struct FujiLogo {
+	layout: Layout,
+}
+
+impl Default for FujiLogo {
+	fn default() -> Self {
+		Self {
+			layout: Layout::vertical([Constraint::Fill(1), Constraint::Length(1)]),
+		}
+	}
+}
 
 impl FujiLogo {
-	#[allow(unused)]
-	pub const fn new() -> Self {
-		Self {}
-	}
-
 	pub const LOGO: &'static str = "\
 		██████  ██   ██       ██  ███████\n\
 		██      ██   ██       ██    ▐█▌  \n\
@@ -26,17 +30,13 @@ impl FujiLogo {
 		██      ██   ██  ██   ██    ▐█▌  \n\
 		██      ███████  ███████  ███████\
 	";
-
-	fn layout() -> Layout {
-		Layout::vertical([Constraint::Fill(1), Constraint::Length(1)])
-	}
 }
 
 impl Component for FujiLogo {
 	type Return = ();
 
 	fn render(&self, frame: &mut Frame, area: Rect, _app: &FujiApp) -> Self::Return {
-		let [top, bottom] = area.layout(&Self::layout());
+		let [top, bottom] = area.layout(&self.layout);
 		frame.render_widget(Text::from(Self::LOGO).centered().bold().light_blue(), top);
 		frame.render_widget(Line::from(LONG_VERSION).centered(), bottom);
 	}

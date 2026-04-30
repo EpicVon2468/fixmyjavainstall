@@ -57,6 +57,7 @@
 	clippy::upper_case_acronyms,
 	reason = "Shush"
 )]
+#![allow(clippy::borrowed_box)]
 #![doc = include_str!("../README.md")]
 pub mod arch;
 pub mod cli;

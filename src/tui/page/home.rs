@@ -16,11 +16,6 @@ pub struct HomePage {
 }
 
 impl HomePage {
-	#[allow(unused)]
-	pub const fn new(logo: FujiLogo) -> Self {
-		Self { logo }
-	}
-
 	fn layout() -> Layout {
 		Layout::vertical([Constraint::Length(7), Constraint::Fill(1)])
 	}
@@ -33,7 +28,7 @@ impl Page for HomePage {
 			return (true, None);
 		};
 		if app.is_key_down(Key::Enter) {
-			(true, Some(Box::new(JVMPage::new())))
+			(true, Some(Box::new(JVMPage::default())))
 		} else {
 			(false, None)
 		}

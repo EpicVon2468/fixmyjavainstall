@@ -21,9 +21,8 @@ pub struct JVMPage {
 	tabs: Vec<Box<dyn InstallOption>>,
 }
 
-impl JVMPage {
-	#[allow(unused)]
-	pub fn new() -> Self {
+impl Default for JVMPage {
+	fn default() -> Self {
 		Self {
 			selected: 0,
 			tabs: vec![
@@ -33,8 +32,9 @@ impl JVMPage {
 			],
 		}
 	}
+}
 
-	#[allow(clippy::borrowed_box)]
+impl JVMPage {
 	fn selected(&self) -> &Box<dyn InstallOption> {
 		self.tabs.get(self.selected).unwrap()
 	}
@@ -44,7 +44,6 @@ impl JVMPage {
 	}
 
 	// TODO: can this be cached?
-	#[allow(clippy::borrowed_box)]
 	pub fn tab_names(&self) -> Vec<&'static str> {
 		self.tabs
 			.iter()
@@ -72,13 +71,16 @@ impl JVMPage {
 }
 
 impl Page for JVMPage {
+	fn title(&self) -> Option<&'static str> {
+		"Installation Configuration".into()
+	}
+
 	fn propagate_page_events(&mut self, app: &FujiApp) -> (bool, Option<Box<dyn Page>>) {
 		let consumed: bool = self.propagate_events(app);
 		if consumed {
 			return (true, None);
 		};
 		if app.is_key_down(Key::Backspace) {
-			// todo android-like backstack?
 			(true, Some(Box::new(HomePage::default())))
 		} else {
 			(false, None)

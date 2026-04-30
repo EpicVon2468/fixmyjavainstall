@@ -42,7 +42,7 @@ impl FujiApp {
 
 	/// # Safety
 	///
-	/// You must always call [`Self::set_page`] before the value returned by this method goes out-of-scope.
+	/// You must always call [`Self::set_page`] before the value returned by this method goes out-of-scope (as such, this function cannot not be called safely without `&mut self` being available).
 	///
 	/// The value which is passed to the [`Self::set_page`] is irrelevant – the only requirement is that _some value_ is restored via [`Self::set_page`] before the value returned by this method goes out-of-scope.
 	///
@@ -121,17 +121,29 @@ impl FujiApp {
 
 	fn render(&mut self, frame: &mut Frame) {
 		let [title, body, help] = frame.area().layout(&Self::app_layout());
-		Self::render_title(frame, title);
+		self.render_title(frame, title);
 		self.render_body(frame, body);
 		Self::render_help(frame, help);
 	}
 
-	fn render_title(frame: &mut Frame, area: Rect) {
-		let title: Line = Line::from("Fix Ur Java Install – A JVM & Kotlin Management Utility.")
-			.centered()
-			.bold()
-			.light_blue();
+	fn render_title(&mut self, frame: &mut Frame, area: Rect) {
+		let title: Line = Line::from(self.get_title()).centered().bold().light_blue();
 		frame.render_widget(title, area);
+	}
+
+	fn get_title(&mut self) -> String {
+		// SAFETY:
+		// Problem(s):
+		// - If this value goes out of scope, undefined behaviour occurs (see [`Self::get_page`]).
+		// Excuse(s):
+		// - Before the end of scope, a call to [`Self::set_page`] is made, meaning that the contract of [`Self::get_page`] is never violated.
+		let page: Box<dyn Page> = unsafe { self.get_page() };
+		let title: String = format!(
+			"Fix Ur Java Install – {}",
+			page.title().unwrap_or("A JVM & Kotlin Management Utility.")
+		);
+		self.set_page(page);
+		title
 	}
 
 	fn render_body(&mut self, frame: &mut Frame, area: Rect) {
@@ -167,18 +179,23 @@ impl FujiApp {
 	}
 
 	fn render_help_top_row(frame: &mut Frame, area: Rect) {
-		let [quit, back] = area.layout(&Self::help_top_row_layout());
+		let [quit, back, select] = area.layout(&Self::help_top_row_layout());
 		Self::help_entry(frame, quit, ":q", "Quit");
 		Self::help_entry(frame, back, "Backspace", "Back");
+		Self::help_entry(frame, select, "Enter", "Select");
 	}
 
 	fn help_top_row_layout() -> Layout {
-		Layout::horizontal([Constraint::Fill(1), Constraint::Fill(1)]).spacing(1)
+		Layout::horizontal([
+			Constraint::Fill(1),
+			Constraint::Fill(1),
+			Constraint::Fill(1),
+		])
 	}
 
-	fn render_help_bottom_row(frame: &mut Frame, area: Rect) {
-		let [select] = area.layout(&Self::help_bottom_row_layout());
-		Self::help_entry(frame, select, "Enter", "Select");
+	// TODO: have page-specific keybinds show up on this row
+	fn render_help_bottom_row(_frame: &mut Frame, area: Rect) {
+		let [_] = area.layout(&Self::help_bottom_row_layout());
 	}
 
 	fn help_bottom_row_layout() -> Layout {

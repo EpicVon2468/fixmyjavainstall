@@ -40,3 +40,5 @@
 - [ ] Clean-up or remove `multi-os` -- before 1.0.0
 - [ ] Use & implement `InstallMethod` -- before 1.0.0
 - [ ] Eclipse Java LSP installation
+- [ ] Install locally built JDK/JDK from disc
+  - [ ] Allow automagically cloning + building from source by providing a git url?
