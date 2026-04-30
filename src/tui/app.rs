@@ -20,20 +20,28 @@ pub struct FujiApp {
 	page: UnsafeCell<Box<dyn Page>>,
 	event: Option<Key>,
 	prev_event: Option<Key>,
+	layout: Layout,
 }
 
-/// Encapsulation (Rust is the only language where doing this can be for a good reason).
-impl FujiApp {
-	pub fn new() -> Self {
+impl Default for FujiApp {
+	fn default() -> Self {
 		Self {
 			page: UnsafeCell::new(Box::new(HomePage::default())),
 			event: None,
 			prev_event: None,
+			layout: Layout::vertical([
+				Constraint::Length(1),
+				Constraint::Fill(1),
+				Constraint::Length(2),
+			]),
 		}
 	}
+}
 
+/// Encapsulation (Rust is the only language where doing this can be for a good reason).
+impl FujiApp {
 	pub fn run() -> Result<()> {
-		Self::new().main(try_init().context("Couldn't initialise ratatui!")?)
+		Self::default().main(try_init().context("Couldn't initialise ratatui!")?)
 	}
 
 	fn page(&self) -> *mut Box<dyn Page> {
@@ -81,7 +89,7 @@ impl FujiApp {
 
 /// Logic.
 impl FujiApp {
-	pub fn main(mut self, mut terminal: DefaultTerminal) -> Result<()> {
+	fn main(mut self, mut terminal: DefaultTerminal) -> Result<()> {
 		loop {
 			self.propagate_events();
 			terminal.draw(|frame: &mut Frame| self.render(frame))?;
@@ -111,16 +119,8 @@ impl FujiApp {
 
 /// Rendering.
 impl FujiApp {
-	fn app_layout() -> Layout {
-		Layout::vertical([
-			Constraint::Length(1),
-			Constraint::Fill(1),
-			Constraint::Length(2),
-		])
-	}
-
 	fn render(&mut self, frame: &mut Frame) {
-		let [title, body, help] = frame.area().layout(&Self::app_layout());
+		let [title, body, help] = frame.area().layout(&self.layout);
 		self.render_title(frame, title);
 		self.render_body(frame, body);
 		Self::render_help(frame, help);
@@ -140,7 +140,7 @@ impl FujiApp {
 		let page: Box<dyn Page> = unsafe { self.get_page() };
 		let title: String = format!(
 			"Fix Ur Java Install – {}",
-			page.title().unwrap_or("A JVM & Kotlin Management Utility.")
+			page.title().unwrap_or("A JVM & Kotlin Management Utility"),
 		);
 		self.set_page(page);
 		title
