@@ -140,20 +140,23 @@ impl Component for List<'_> {
 		let mut area: Rect = area;
 		for (index, item) in self.items.iter().enumerate() {
 			let is_confirmed: bool = self.is_confirmed(index);
-			let mut line: Line = Line::default().patch_style(if is_confirmed {
-				self.confirmed_style
-			} else if self.selected == index {
-				self.selected_style
-			} else {
-				Style::new()
-			});
-			line.push_span(if is_confirmed {
-				&self.confirmed_prefix
-			} else {
-				&self.unconfirmed_prefix
-			});
-			line.push_span(" ");
-			line.push_span(item.clone());
+			let line: Line = Line::styled(
+				format!(
+					"{} {item}",
+					if is_confirmed {
+						&self.confirmed_prefix
+					} else {
+						&self.unconfirmed_prefix
+					},
+				),
+				if is_confirmed {
+					self.confirmed_style
+				} else if self.selected == index {
+					self.selected_style
+				} else {
+					Style::new()
+				},
+			);
 			frame.render_widget(line, area);
 			area += Offset::new(0, 1);
 		}
