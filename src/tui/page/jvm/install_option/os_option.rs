@@ -4,6 +4,7 @@ use clap::ValueEnum as _;
 use ratatui::Frame;
 use ratatui::layout::Rect;
 
+use crate::install_option;
 use crate::os::OS;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
@@ -25,26 +26,10 @@ pub struct OSOption<'a> {
 	list: List<'a>,
 }
 
-impl Default for OSOption<'_> {
-	fn default() -> Self {
-		Self {
-			list: List::from(OS::value_variants(), false),
-		}
-	}
-}
+install_option!(OSOption, OS);
 
 impl const InstallOption for OSOption<'_> {
 	fn tab_name(&self) -> &'static str {
 		"Operating System"
-	}
-}
-
-impl Component for OSOption<'_> {
-	fn propagate_events(&mut self, app: &FujiApp) -> bool {
-		self.list.propagate_events(app)
-	}
-
-	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) -> Self::Return {
-		self.list.render(frame, area, app);
 	}
 }

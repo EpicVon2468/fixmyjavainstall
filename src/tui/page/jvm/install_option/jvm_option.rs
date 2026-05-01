@@ -4,6 +4,7 @@ use clap::ValueEnum as _;
 use ratatui::Frame;
 use ratatui::layout::Rect;
 
+use crate::install_option;
 use crate::jvm::jvm::JVM;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
@@ -26,26 +27,10 @@ pub struct JVMOption<'a> {
 	list: List<'a>,
 }
 
-impl Default for JVMOption<'_> {
-	fn default() -> Self {
-		Self {
-			list: List::from(JVM::value_variants(), false),
-		}
-	}
-}
+install_option!(JVMOption, JVM);
 
 impl const InstallOption for JVMOption<'_> {
 	fn tab_name(&self) -> &'static str {
 		"Build/Vendor"
-	}
-}
-
-impl Component for JVMOption<'_> {
-	fn propagate_events(&mut self, app: &FujiApp) -> bool {
-		self.list.propagate_events(app)
-	}
-
-	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) -> Self::Return {
-		self.list.render(frame, area, app);
 	}
 }

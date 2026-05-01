@@ -5,6 +5,7 @@ use ratatui::Frame;
 use ratatui::layout::Rect;
 
 use crate::arch::Arch;
+use crate::install_option;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 use crate::tui::component::list::{List, ListEntry};
@@ -24,26 +25,10 @@ pub struct ArchOption<'a> {
 	list: List<'a>,
 }
 
-impl Default for ArchOption<'_> {
-	fn default() -> Self {
-		Self {
-			list: List::from(Arch::value_variants(), false),
-		}
-	}
-}
+install_option!(ArchOption, Arch);
 
 impl const InstallOption for ArchOption<'_> {
 	fn tab_name(&self) -> &'static str {
 		"Architecture"
-	}
-}
-
-impl Component for ArchOption<'_> {
-	fn propagate_events(&mut self, app: &FujiApp) -> bool {
-		self.list.propagate_events(app)
-	}
-
-	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) -> Self::Return {
-		self.list.render(frame, area, app);
 	}
 }

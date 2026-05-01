@@ -12,7 +12,9 @@ use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
 use crate::tui::page::jvm::install_option::InstallOption;
 use crate::tui::page::jvm::install_option::arch_option::ArchOption;
+use crate::tui::page::jvm::install_option::feature_option::FeatureOption;
 use crate::tui::page::jvm::install_option::jvm_option::JVMOption;
+use crate::tui::page::jvm::install_option::method_option::MethodOption;
 use crate::tui::page::jvm::install_option::os_option::OSOption;
 
 pub struct JVMPage {
@@ -28,6 +30,8 @@ impl Default for JVMPage {
 				Box::new(JVMOption::default()),
 				Box::new(ArchOption::default()),
 				Box::new(OSOption::default()),
+				Box::new(MethodOption::default()),
+				Box::new(FeatureOption::default()),
 			],
 		}
 	}
