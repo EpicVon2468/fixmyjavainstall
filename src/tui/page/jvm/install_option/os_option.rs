@@ -21,11 +21,11 @@ impl const ListEntry for OS {
 	}
 }
 
-pub struct OSOption {
-	list: List<'static>,
+pub struct OSOption<'a> {
+	list: List<'a>,
 }
 
-impl Default for OSOption {
+impl Default for OSOption<'_> {
 	fn default() -> Self {
 		Self {
 			list: List::from(OS::value_variants(), false),
@@ -33,15 +33,13 @@ impl Default for OSOption {
 	}
 }
 
-impl const InstallOption for OSOption {
+impl const InstallOption for OSOption<'_> {
 	fn tab_name(&self) -> &'static str {
 		"Operating System"
 	}
 }
 
-impl Component for OSOption {
-	type Return = ();
-
+impl Component for OSOption<'_> {
 	fn propagate_events(&mut self, app: &FujiApp) -> bool {
 		self.list.propagate_events(app)
 	}

@@ -58,7 +58,16 @@
 	reason = "Shush"
 )]
 #![allow(clippy::borrowed_box)]
-#![feature(const_default, const_trait_impl, derive_const, const_clone, const_cmp)]
+#![feature(
+	const_default,
+	const_trait_impl,
+	derive_const,
+	const_clone,
+	const_cmp,
+	const_convert,
+	associated_type_defaults,
+	likely_unlikely
+)]
 #![doc = include_str!("../README.md")]
 pub mod arch;
 pub mod cli;
@@ -80,6 +89,7 @@ pub mod win_link;
 use std::env::args_os;
 use std::ffi::OsString;
 use std::fs::{File, remove_file};
+use std::hint::{likely, unlikely};
 use std::io::Write as _;
 use std::process::{abort, id};
 
@@ -266,7 +276,7 @@ fn unsafe_checks() -> Result<()> {
 	unsafe {
 		use std::env::{set_var, var};
 
-		if var("RUST_BACKTRACE").is_err() {
+		if likely(var("RUST_BACKTRACE").is_err()) {
 			set_var("RUST_BACKTRACE", "1");
 		};
 	};
@@ -312,7 +322,7 @@ fn unsafe_checks() -> Result<()> {
 			fn geteuid() -> u32;
 		}
 
-		if geteuid() != 0 {
+		if unlikely(geteuid() != 0) {
 			log_err!(
 				"Fuji ran by non-root user!  If you are not using a permissions manager (i.e. `apparmor`), then this is likely a mistake!"
 			);

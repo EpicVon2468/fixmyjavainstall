@@ -57,8 +57,6 @@ impl HelpSection {
 }
 
 impl Component for HelpSection {
-	type Return = ();
-
 	fn render(&self, frame: &mut Frame, area: Rect, _app: &FujiApp) -> Self::Return {
 		self.render_help(frame, area);
 	}

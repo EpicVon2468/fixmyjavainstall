@@ -22,11 +22,11 @@ impl const ListEntry for JVM {
 	}
 }
 
-pub struct JVMOption {
-	list: List<'static>,
+pub struct JVMOption<'a> {
+	list: List<'a>,
 }
 
-impl Default for JVMOption {
+impl Default for JVMOption<'_> {
 	fn default() -> Self {
 		Self {
 			list: List::from(JVM::value_variants(), false),
@@ -34,15 +34,13 @@ impl Default for JVMOption {
 	}
 }
 
-impl const InstallOption for JVMOption {
+impl const InstallOption for JVMOption<'_> {
 	fn tab_name(&self) -> &'static str {
 		"Build/Vendor"
 	}
 }
 
-impl Component for JVMOption {
-	type Return = ();
-
+impl Component for JVMOption<'_> {
 	fn propagate_events(&mut self, app: &FujiApp) -> bool {
 		self.list.propagate_events(app)
 	}

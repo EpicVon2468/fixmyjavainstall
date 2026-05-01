@@ -17,9 +17,11 @@ pub fn download_java_se(args: DownloadJVMArgs) -> Result<()> {
 		"osx" => "macos",
 		_ => os_name,
 	});
-	url.push('-');
-	url.push_str(&args.arch.to_string());
-	url.push_str("_bin.");
-	url.push_str(if args.is_win() { "zip" } else { "tar.gz" });
+	let _ = write!(
+		url,
+		"-{}_bin.{}",
+		args.arch,
+		if args.is_win() { "zip" } else { "tar.gz" },
+	);
 	jvm_download_impl(url, args)
 }

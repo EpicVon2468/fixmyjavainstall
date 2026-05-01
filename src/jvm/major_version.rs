@@ -37,7 +37,7 @@ impl FujiValueEnum for MajorVersion {
 		}
 	}
 
-	fn variants() -> &'static [Self] {
+	fn variants<'a>() -> &'a [Self] {
 		&[Self::Number(0), Self::Latest, Self::LTS]
 	}
 }

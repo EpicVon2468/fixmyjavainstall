@@ -1,4 +1,6 @@
 //! JetBrains Runtime by JetBrains – <https://github.com/JetBrains/JetBrainsRuntime/>.
+use std::fmt::Write as _;
+
 use anyhow::Result;
 
 use crate::jvm::JavaVersion;
@@ -16,19 +18,17 @@ pub fn download_jbr(args: DownloadJVMArgs) -> Result<()> {
 	if features.contains(&Feature::JCEF) {
 		url.push_str("_jcef");
 	};
-	url.push('-');
-	url.push_str(&version.specific);
-	url.push('-');
-	url.push_str(&args.os.to_string());
-	url.push('-');
+	let _ = write!(url, "-{}-{}-", version.specific, args.os);
 	#[cfg(any(target_env = "musl", feature = "multi-os"))]
 	if features.contains(&Feature::MUSL) {
 		url.push_str("musl-");
 	};
-	url.push_str(&args.arch.to_string());
-	url.push('-');
-	url.push_str(&version.revision);
-	url.push('.');
-	url.push_str(if args.is_win() { "zip" } else { "tar.gz" });
+	let _ = write!(
+		url,
+		"{}-{}.{}",
+		args.arch,
+		version.revision,
+		if args.is_win() { "zip" } else { "tar.gz" },
+	);
 	jvm_download_impl(url, args)
 }

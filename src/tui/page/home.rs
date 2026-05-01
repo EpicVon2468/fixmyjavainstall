@@ -38,8 +38,6 @@ impl Page for HomePage {
 }
 
 impl Component for HomePage {
-	type Return = ();
-
 	fn propagate_events(&mut self, app: &FujiApp) -> bool {
 		self.logo.propagate_events(app)
 	}

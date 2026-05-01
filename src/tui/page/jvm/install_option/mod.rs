@@ -10,5 +10,5 @@ pub const trait InstallOption: Component<Return = ()> {
 		true
 	}
 
-	fn tab_name(&self) -> &'static str;
+	fn tab_name(&self) -> &str;
 }

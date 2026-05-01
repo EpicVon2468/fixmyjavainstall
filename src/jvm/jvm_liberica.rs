@@ -82,9 +82,11 @@ pub fn get_liberica_endpoint(
 		"riscv64" => "riscv",
 		_ => arch_name,
 	});
-	url.push_str("&package-type=");
-	url.push_str(if os == &OS::Windows { "zip" } else { "tar.gz" });
-	url.push_str("&installation-type=archive");
+	let _ = write!(
+		url,
+		"&package-type={}&installation-type=archive",
+		if os == &OS::Windows { "zip" } else { "tar.gz" },
+	);
 	Ok(url)
 }
 

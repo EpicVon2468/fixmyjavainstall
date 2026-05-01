@@ -20,11 +20,11 @@ impl const ListEntry for Arch {
 	}
 }
 
-pub struct ArchOption {
-	list: List<'static>,
+pub struct ArchOption<'a> {
+	list: List<'a>,
 }
 
-impl Default for ArchOption {
+impl Default for ArchOption<'_> {
 	fn default() -> Self {
 		Self {
 			list: List::from(Arch::value_variants(), false),
@@ -32,15 +32,13 @@ impl Default for ArchOption {
 	}
 }
 
-impl const InstallOption for ArchOption {
+impl const InstallOption for ArchOption<'_> {
 	fn tab_name(&self) -> &'static str {
 		"Architecture"
 	}
 }
 
-impl Component for ArchOption {
-	type Return = ();
-
+impl Component for ArchOption<'_> {
 	fn propagate_events(&mut self, app: &FujiApp) -> bool {
 		self.list.propagate_events(app)
 	}

@@ -43,7 +43,7 @@ impl JVMPage {
 	}
 
 	// TODO: can this be cached?
-	pub fn tab_names(&self) -> Vec<&'static str> {
+	pub fn tab_names(&self) -> Vec<&str> {
 		self.tabs
 			.iter()
 			.map(|tab: &Box<dyn InstallOption>| tab.tab_name())
@@ -88,8 +88,6 @@ impl Page for JVMPage {
 }
 
 impl Component for JVMPage {
-	type Return = ();
-
 	fn propagate_events(&mut self, app: &FujiApp) -> bool {
 		if self.selected_mut().propagate_events(app) {
 			return true;

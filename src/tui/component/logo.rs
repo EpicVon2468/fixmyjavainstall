@@ -33,8 +33,6 @@ impl FujiLogo {
 }
 
 impl Component for FujiLogo {
-	type Return = ();
-
 	fn render(&self, frame: &mut Frame, area: Rect, _app: &FujiApp) -> Self::Return {
 		let [top, bottom] = area.layout(&self.layout);
 		frame.render_widget(Text::from(Self::LOGO).centered().bold().light_blue(), top);

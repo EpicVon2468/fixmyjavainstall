@@ -6,6 +6,7 @@ use clap::builder::PossibleValue;
 use clap::error::{ContextKind, ContextValue, ErrorKind};
 use clap::{Arg, Command, Error};
 
+// TODO: remove 'static requirement?
 pub trait FujiValueEnum: FromStr<Err = String> + 'static {
 	fn possible_values() -> impl Iterator<Item = PossibleValue> {
 		Self::variants().iter().filter_map(Self::to_possible_value)
@@ -15,12 +16,18 @@ pub trait FujiValueEnum: FromStr<Err = String> + 'static {
 	fn to_possible_value(&self) -> Option<PossibleValue>;
 
 	#[must_use]
-	fn variants() -> &'static [Self];
+	fn variants<'a>() -> &'a [Self];
 }
 
-#[derive(Clone)]
 #[derive_const(Default)]
 pub struct FujiValueEnumParser<T: FujiValueEnum>(PhantomData<T>);
+
+// PhantomData's Clone impl isn't const, so can't use #[derive_const(Clone)]
+impl<T: FujiValueEnum> const Clone for FujiValueEnumParser<T> {
+	fn clone(&self) -> Self {
+		Self(self.0)
+	}
+}
 
 impl<T: FujiValueEnum> FujiValueEnumParser<T> {
 	pub fn parse_impl(cmd: &Command, arg: Option<&Arg>, value: &OsStr) -> Result<T, Error> {

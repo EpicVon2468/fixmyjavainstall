@@ -25,16 +25,10 @@ pub struct List<'a> {
 }
 
 pub const trait ListEntry {
-	fn name(&self) -> &'static str;
+	fn name(&self) -> &str;
 
-	fn description(&self) -> Option<&'static str> {
+	fn description(&self) -> Option<&str> {
 		None
-	}
-}
-
-impl List<'static> {
-	pub fn from<T: ListEntry>(items: &[T], multi_confirm: bool) -> Self {
-		Self::new(items.iter().map(T::name), multi_confirm)
 	}
 }
 
@@ -55,6 +49,10 @@ impl<'a> List<'a> {
 			multi_confirm,
 			..Default::default()
 		}
+	}
+
+	pub fn from<T: ListEntry>(items: &'a [T], multi_confirm: bool) -> Self {
+		Self::new(items.iter().map(T::name), multi_confirm)
 	}
 
 	pub fn confirmed_prefix(&mut self, value: String) -> &mut Self {
@@ -147,8 +145,6 @@ impl<'a> List<'a> {
 }
 
 impl Component for List<'_> {
-	type Return = ();
-
 	fn propagate_events(&mut self, app: &FujiApp) -> bool {
 		if app.is_key_down(KeyCode::Up) {
 			self.select_prev();
