@@ -166,7 +166,7 @@ impl Component for List<'_> {
 		let mut area: Rect = area;
 		for (index, item) in self.items.iter().enumerate() {
 			let is_confirmed: bool = self.is_confirmed(index);
-			let is_selected = self.selected == index;
+			let is_selected: bool = self.selected == index;
 			let line: Line = Line::styled(
 				format!(
 					"{} {} {item}",

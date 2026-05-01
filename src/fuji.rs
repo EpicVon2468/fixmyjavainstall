@@ -64,7 +64,6 @@
 	derive_const,
 	const_clone,
 	const_cmp,
-	const_convert,
 	associated_type_defaults,
 	likely_unlikely
 )]
