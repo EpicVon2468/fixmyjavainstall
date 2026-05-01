@@ -1042,7 +1042,7 @@ dependencies = [
 [[package]]
 name = "ring"
 version = "0.17.16000"
-source = "git+https://github.com/briansmith/ring#e6833be3a8b7832f997cea35171ccd8fca2c1b52"
+source = "git+https://github.com/briansmith/ring#6ad242a25814784c9406fa431201041ff0fb945b"
 dependencies = [
  "cc",
  "cfg-if",
