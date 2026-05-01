@@ -13,7 +13,7 @@ pub enum InstallMethod {
 	/// PATH environment variable modification.
 	Path,
 	/// Symbolic linking.
-	#[value(hide = cfg!(all(not(unix), not(feature = "multi-os"))))]
+	#[value(hide = cfg!(all(not(unix), not(feature = "multi-os"))), alias = "symbolic-link")]
 	Symlink,
 	/// <https://man7.org/linux/man-pages/man1/update-alternatives.1.html>.
 	#[value(hide = cfg!(all(not(target_os = "linux"), not(feature = "multi-os"))))]

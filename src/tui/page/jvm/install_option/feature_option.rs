@@ -17,17 +17,33 @@ impl const ListEntry for Feature {
 			Self::Minimal => "Minimal",
 			Self::DCEVM => "Dynamic Code Evolution Virtual Machine",
 			Self::JEP519 => "Compact Object Headers",
+
+			#[cfg(any(target_os = "linux", feature = "multi-os"))]
 			Self::Wayland => "Wayland support for AWT/Swing",
+
 			Self::OpenGL => "OpenGL for AWT/Swing",
+
+			#[cfg(any(target_os = "macos", feature = "multi-os"))]
 			Self::Metal => "Metal for AWT/Swing",
+
 			Self::Vulkan => "Vulkan for AWT/Swing",
 			Self::JCEF => "Java Chromium Embedded Framework",
+
+			#[cfg(feature = "openjdk-deprecated")]
 			Self::Native => "Native access",
+			#[cfg(feature = "openjdk-deprecated")]
 			Self::Unsafe => "Unsafe access",
+			#[cfg(feature = "openjdk-deprecated")]
 			Self::Mutate => "Mutate access",
+
 			Self::FontFix => "Font rendering fixes",
+
+			#[cfg(any(target_os = "linux", feature = "multi-os"))]
 			Self::NVIDIA => "NVIDIA rendering fixes",
+
+			#[cfg(any(target_env = "musl", feature = "multi-os"))]
 			Self::MUSL => "MUSL support",
+
 			Self::Kotlin => "Kotlin",
 		}
 	}
