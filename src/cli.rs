@@ -8,7 +8,7 @@ use crate::{LINK_DIR, LONG_VERSION};
 /// Fix Ur Java Install – A JVM & Kotlin management utility.
 ///
 /// (Re)writing this in Rust was simpler than debugging and 'fixing' the bash script(s).  I am serious.
-#[derive(Parser)]
+#[derive_const(Parser)]
 #[command(
 	version,
 	long_version = LONG_VERSION,
@@ -19,7 +19,7 @@ pub struct FujiArgs {
 	pub command: Option<FujiCmd>,
 }
 
-#[derive(Subcommand)]
+#[derive_const(Subcommand)]
 #[command(author)]
 pub enum FujiCmd {
 	#[cfg(any(not(windows), feature = "multi-os"))]
@@ -58,7 +58,7 @@ pub enum FujiCmd {
 }
 
 #[non_exhaustive]
-#[derive(Subcommand)]
+#[derive_const(Subcommand)]
 #[command(author, subcommand_value_name = "SOFTWARE")]
 pub enum Software {
 	/// Manages the Java Virtual Machine – <https://www.java.com/>.

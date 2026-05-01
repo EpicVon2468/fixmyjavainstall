@@ -18,7 +18,8 @@ pub trait FujiValueEnum: FromStr<Err = String> + 'static {
 	fn variants() -> &'static [Self];
 }
 
-#[derive(Default, Clone)]
+#[derive(Clone)]
+#[derive_const(Default)]
 pub struct FujiValueEnumParser<T: FujiValueEnum>(PhantomData<T>);
 
 impl<T: FujiValueEnum> FujiValueEnumParser<T> {

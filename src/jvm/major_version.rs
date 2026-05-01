@@ -9,7 +9,7 @@ use crate::{display, fuji_value_enum_parser};
 
 /// The major version of a JVM.
 #[non_exhaustive]
-#[derive(Clone, PartialEq, Eq, Default)]
+#[derive_const(Clone, PartialEq, Eq, Default)]
 pub enum MajorVersion {
 	/// Some arbitrary numeric version.
 	Number(u32),

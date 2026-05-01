@@ -10,7 +10,7 @@ use crate::tui::component::Component;
 use crate::tui::component::list::{List, ListEntry};
 use crate::tui::page::jvm::install_option::InstallOption;
 
-impl ListEntry for Arch {
+impl const ListEntry for Arch {
 	fn name(&self) -> &'static str {
 		match *self {
 			Self::X64 => "x86-64",
@@ -32,7 +32,7 @@ impl Default for ArchOption {
 	}
 }
 
-impl InstallOption for ArchOption {
+impl const InstallOption for ArchOption {
 	fn tab_name(&self) -> &'static str {
 		"Architecture"
 	}

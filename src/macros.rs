@@ -117,7 +117,7 @@ macro_rules! value_enum_extensions {
 	};
 	($name:ty, $default:expr, match *self { $($variant:pat => $string:expr),* $(,)? } $(,)?) => {
 		#[automatically_derived]
-		impl Default for $name {
+		impl const Default for $name {
 			fn default() -> Self {
 				$default
 			}

@@ -58,6 +58,7 @@
 	reason = "Shush"
 )]
 #![allow(clippy::borrowed_box)]
+#![feature(const_default, const_trait_impl, derive_const, const_clone, const_cmp)]
 #![doc = include_str!("../README.md")]
 pub mod arch;
 pub mod cli;

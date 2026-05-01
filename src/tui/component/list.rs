@@ -24,7 +24,7 @@ pub struct List<'a> {
 	multi_confirm: bool,
 }
 
-pub trait ListEntry {
+pub const trait ListEntry {
 	fn name(&self) -> &'static str;
 
 	fn description(&self) -> Option<&'static str> {

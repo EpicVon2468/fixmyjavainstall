@@ -94,7 +94,7 @@ pub fn get_liberica_endpoint(
 	clippy::struct_excessive_bools,
 	reason = "Serialisation representation."
 )]
-#[derive(Serialise, Deserialise)]
+#[derive_const(Serialise, Deserialise)]
 pub struct LibericaReleaseInfo {
 	pub bitness: u8,
 	pub latestLTS: bool,

@@ -10,7 +10,7 @@ use crate::tui::component::Component;
 use crate::tui::component::list::{List, ListEntry};
 use crate::tui::page::jvm::install_option::InstallOption;
 
-impl ListEntry for OS {
+impl const ListEntry for OS {
 	fn name(&self) -> &'static str {
 		match *self {
 			// I'd like to interject—  NO!  YOU CAN COMPILE THE KERNEL WITH CLANG AND NOT GCC!  THERE ARE RUST VERSIONS OF THE COREUTILS!
@@ -33,7 +33,7 @@ impl Default for OSOption {
 	}
 }
 
-impl InstallOption for OSOption {
+impl const InstallOption for OSOption {
 	fn tab_name(&self) -> &'static str {
 		"Operating System"
 	}

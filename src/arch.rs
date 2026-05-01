@@ -9,7 +9,7 @@ use crate::value_enum_extensions;
 ///
 /// A note on 32-bit (x86) architectures: <https://openjdk.org/jeps/503>.
 #[non_exhaustive]
-#[derive(ValueEnum, Clone)]
+#[derive_const(ValueEnum, Clone)]
 pub enum Arch {
 	/// 64-bit extensions for x86 – <https://docs.amd.com/v/u/en-US/40332_4.09_APM_PUB>.
 	///

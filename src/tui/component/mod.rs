@@ -8,7 +8,7 @@ use ratatui::layout::Rect;
 
 use crate::tui::app::FujiApp;
 
-pub trait Component {
+pub const trait Component {
 	type Return;
 
 	/// Pre-[`render`][`Component::render`] input/logic checks.

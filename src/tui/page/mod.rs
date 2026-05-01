@@ -5,7 +5,7 @@ pub mod jvm;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 
-pub trait Page: Component<Return = ()> {
+pub const trait Page: Component<Return = ()> {
 	fn title(&self) -> Option<&'static str> {
 		None
 	}

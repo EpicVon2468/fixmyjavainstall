@@ -12,7 +12,7 @@ use crate::cli::Software;
 use crate::os::OS;
 use crate::wrong_cmd;
 
-#[derive(Subcommand)]
+#[derive_const(Subcommand)]
 #[command(author)]
 pub enum Op {
 	/// Installs Kotlin.
@@ -48,7 +48,7 @@ pub fn manage_kotlin(software: Software) -> Result<()> {
 	}
 }
 
-#[derive(Serialise, Deserialise)]
+#[derive_const(Serialise, Deserialise)]
 pub struct KtVersion {
 	pub version: String,
 }

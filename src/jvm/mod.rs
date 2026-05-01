@@ -45,7 +45,7 @@ use crate::os::OS;
 use crate::{compiler_unreachable, wrong_cmd};
 
 #[non_exhaustive]
-#[derive(Subcommand)]
+#[derive_const(Subcommand)]
 #[command(author)]
 pub enum Op {
 	// TODO: L&F?
@@ -102,7 +102,7 @@ pub enum Op {
 }
 
 #[non_exhaustive]
-#[derive(Subcommand)]
+#[derive_const(Subcommand)]
 #[command(subcommand_value_name = "PRESET")]
 pub enum Preset {
 	/// All the recommended defaults + optimisations for your system – Java Runtime Environment edition.
@@ -132,7 +132,7 @@ pub fn manage_jvm(software: Software) -> Result<()> {
 	}
 }
 
-#[derive(Serialise, Deserialise)]
+#[derive_const(Serialise, Deserialise)]
 pub struct JavaVersion {
 	pub major: String,
 	pub specific: String,

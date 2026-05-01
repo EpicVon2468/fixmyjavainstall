@@ -23,12 +23,12 @@ pub struct DownloadJVMArgs<'a> {
 
 impl DownloadJVMArgs<'_> {
 	#[must_use]
-	pub fn is_win(&self) -> bool {
+	pub const fn is_win(&self) -> bool {
 		self.os == OS::Windows
 	}
 
 	#[must_use]
-	pub fn is_mac(&self) -> bool {
+	pub const fn is_mac(&self) -> bool {
 		self.os == OS::OSX
 	}
 }

@@ -9,7 +9,7 @@ use crate::value_enum_extensions;
 
 /// An enumeration of operating systems.
 #[non_exhaustive]
-#[derive(ValueEnum, Clone, PartialEq, Eq)]
+#[derive_const(ValueEnum, Clone, PartialEq, Eq)]
 pub enum OS {
 	/// Anything running the Linux kernel – <https://kernel.org/>.
 	Linux,

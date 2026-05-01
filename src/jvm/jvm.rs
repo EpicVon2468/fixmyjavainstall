@@ -17,7 +17,7 @@ macro_rules! clap_doc {
 
 /// An enumeration of JVM builds/vendors.
 #[non_exhaustive]
-#[derive(ValueEnum, Clone, PartialEq, Eq, Default)]
+#[derive_const(ValueEnum, Clone, PartialEq, Eq, Default)]
 pub enum JVM {
 	/// Automagically pick the best JVM based on the requested version and features.
 	Auto,

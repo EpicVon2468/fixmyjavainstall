@@ -10,7 +10,7 @@ use crate::tui::component::Component;
 use crate::tui::component::list::{List, ListEntry};
 use crate::tui::page::jvm::install_option::InstallOption;
 
-impl ListEntry for JVM {
+impl const ListEntry for JVM {
 	fn name(&self) -> &'static str {
 		match *self {
 			Self::Auto => "Automatic",
@@ -34,7 +34,7 @@ impl Default for JVMOption {
 	}
 }
 
-impl InstallOption for JVMOption {
+impl const InstallOption for JVMOption {
 	fn tab_name(&self) -> &'static str {
 		"Build/Vendor"
 	}
