@@ -4,7 +4,7 @@
 
 DEVELOPER NOTICE: Expect regular breaking changes; Do not depend on `libfuji` as a stable API!
 
-MSRV: `1.97.0`.
+MSRV: N/A (see: `rust-toolchain.toml`).
 
 ## Status:
 
