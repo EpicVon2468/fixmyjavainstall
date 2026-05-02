@@ -15,6 +15,7 @@ use crate::tui::page::jvm::install_option::arch_option::ArchOption;
 use crate::tui::page::jvm::install_option::feature_option::FeatureOption;
 use crate::tui::page::jvm::install_option::jvm_option::JVMOption;
 use crate::tui::page::jvm::install_option::method_option::MethodOption;
+#[cfg(feature = "multi-os")]
 use crate::tui::page::jvm::install_option::os_option::OSOption;
 
 pub struct JVMPage {
@@ -29,6 +30,7 @@ impl Default for JVMPage {
 			tabs: vec![
 				Box::new(JVMOption::default()),
 				Box::new(ArchOption::default()),
+				#[cfg(feature = "multi-os")]
 				Box::new(OSOption::default()),
 				Box::new(MethodOption::default()),
 				Box::new(FeatureOption::default()),

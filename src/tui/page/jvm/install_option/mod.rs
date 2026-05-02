@@ -3,6 +3,7 @@ pub mod arch_option;
 pub mod feature_option;
 pub mod jvm_option;
 pub mod method_option;
+#[cfg(feature = "multi-os")]
 pub mod os_option;
 
 use crate::tui::component::Component;

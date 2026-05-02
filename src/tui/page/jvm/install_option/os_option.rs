@@ -1,4 +1,5 @@
 #![cfg(feature = "tui")]
+#![cfg(feature = "multi-os")]
 use clap::ValueEnum as _;
 
 use ratatui::Frame;
