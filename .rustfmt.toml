@@ -7,3 +7,5 @@ match_block_trailing_comma = true
 single_line_let_else_max_width = 0
 trailing_semicolon = true
 brace_style = "PreferSameLine"
+imports_layout = "HorizontalVertical"
+use_field_init_shorthand = true
