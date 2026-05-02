@@ -48,9 +48,7 @@ pub fn get_liberica_endpoint(
 	arch: &Arch,
 	version: &MajorVersion,
 ) -> Result<String> {
-	let mut url: String = String::with_capacity(175);
-	let _ = write!(
-		url,
+	let mut url: String = format!(
 		"https://api.bell-sw.com/v1/liberica/releases?bundle-type={}&bitness=64&version-modifier=latest&os=",
 		if features.contains(&Feature::Minimal) {
 			"jre"

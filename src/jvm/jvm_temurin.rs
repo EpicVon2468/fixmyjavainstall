@@ -8,9 +8,7 @@ use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};
 
 // https://github.com/adoptium/api.adoptium.net/blob/main/docs/cookbook.adoc
 pub fn download_temurin(args: DownloadJVMArgs) -> Result<()> {
-	let mut url: String = String::with_capacity(100);
-	let _ = write!(
-		url,
+	let mut url: String = format!(
 		"https://api.adoptium.net/v3/binary/latest/{}/ga/",
 		args.version.major,
 	);

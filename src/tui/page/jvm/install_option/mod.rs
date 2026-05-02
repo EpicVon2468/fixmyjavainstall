@@ -1,9 +1,9 @@
 #![cfg(feature = "tui")]
 pub mod arch_option;
+pub mod feature_option;
 pub mod jvm_option;
 pub mod method_option;
 pub mod os_option;
-pub mod feature_option;
 
 use crate::tui::component::Component;
 
