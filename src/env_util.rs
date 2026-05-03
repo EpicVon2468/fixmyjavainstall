@@ -8,7 +8,7 @@ use crate::{exists, lock, unlock};
 
 #[cfg(windows)]
 pub fn add_to_path<P: AsRef<str>>(dir: P) -> Result<()> {
-	crate::win_link::win_link(dir)
+	crate::win_link::win_link(dir).context("Couldn't mutate PATH (insufficient permissions?)!")
 }
 
 #[cfg(unix)]
