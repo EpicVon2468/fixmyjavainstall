@@ -13,5 +13,5 @@ MimeType=application/java-archive
 X-KDE-SubstituteUID=false
 X-KDE-Username=
 Categories=Utility;Development;Java;
-Keywords=Java;JVM;JDK;JRE;JAR;AWT;Swing;JavaFX;Applet;.class;.java;.jar;fixmyjavainstall;
+Keywords=Java;JVM;JDK;JRE;JAR;AWT;Swing;JavaFX;Applet;.class;.java;.jar;fixmyjavainstall;fixurjavainstall;
 SingleMainWindow=true

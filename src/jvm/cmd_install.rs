@@ -53,7 +53,7 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		}
 	} else {
 		let uri: String = format!(
-			"https://raw.githubusercontent.com/EpicVon2468/fixmyjavainstall/refs/heads/master/listing/jvm/{jvm}/{version}.json"
+			"https://raw.githubusercontent.com/EpicVon2468/fixurjavainstall/refs/heads/master/listing/jvm/{jvm}/{version}.json"
 		);
 		ureq::get(uri)
 			.call()

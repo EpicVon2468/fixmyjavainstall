@@ -21,4 +21,4 @@ MSRV: N/A (see: `rust-toolchain.toml`).
 
 ## Installation:
 
-See [INSTALLATION.md](https://github.com/EpicVon2468/fixmyjavainstall/blob/master/INSTALLATION.md#installation)
+See [INSTALLATION.md](https://github.com/EpicVon2468/fixurjavainstall/blob/master/INSTALLATION.md#installation)

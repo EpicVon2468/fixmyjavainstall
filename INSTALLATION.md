@@ -2,19 +2,19 @@
 
 Latest version: `v0.5.0: "GitHub Actions my behated"`
 
-You can [download the latest release](https://github.com/EpicVon2468/fixmyjavainstall/releases/latest/) if there is one for your system and architecture.
+You can [download the latest release](https://github.com/EpicVon2468/fixurjavainstall/releases/latest/) if there is one for your system and architecture.
 
 You can also install using cargo with:
 
 ```shell
-RUSTFLAGS="-C target-cpu=native -O" cargo install --git https://github.com/EpicVon2468/fixmyjavainstall --tag v0.5.0
+RUSTFLAGS="-C target-cpu=native -O" cargo install --git https://github.com/EpicVon2468/fixurjavainstall --tag v0.5.0
 ```
 
 Or by running:
 
 ```shell
-git clone https://github.com/EpicVon2468/fixmyjavainstall
-cd fixmyjavainstall
+git clone https://github.com/EpicVon2468/fixurjavainstall
+cd fixurjavainstall
 RUSTFLAGS="-C target-cpu=native -O" cargo build --release --path .
 ```
 

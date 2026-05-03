@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>io.github.epicvon2468.fixmyjavainstall</string>
+	<string>io.github.epicvon2468.fixurjavainstall</string>
 	<key>ProgramArguments</key>
 	<array>
 		<string>sh</string>
