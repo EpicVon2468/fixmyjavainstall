@@ -49,6 +49,7 @@ impl JVMPage {
 	}
 
 	// TODO: can this be cached?
+	#[must_use]
 	pub fn tab_names(&self) -> Vec<&str> {
 		self.tabs
 			.iter()

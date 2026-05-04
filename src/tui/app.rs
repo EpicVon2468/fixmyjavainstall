@@ -182,10 +182,12 @@ impl FujiApp {
 		matches!(self.get_event(prev), Some(event_key) if *event_key == key)
 	}
 
+	#[must_use]
 	pub fn is_key_down(&self, key: KeyCode) -> bool {
 		self.key_down(false, key)
 	}
 
+	#[must_use]
 	pub fn was_key_down(&self, key: KeyCode) -> bool {
 		self.key_down(true, key)
 	}
@@ -193,6 +195,7 @@ impl FujiApp {
 	/// Whether the [`FujiApp`] should exit.
 	///
 	/// Returns: if the sequence `:q` was pressed.
+	#[must_use]
 	pub fn should_exit(&self) -> bool {
 		self.was_key_down(KeyCode::Char(':')) && self.is_key_down(KeyCode::Char('q'))
 	}

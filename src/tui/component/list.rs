@@ -28,6 +28,7 @@ pub struct List<'a> {
 pub const trait ListEntry {
 	fn name(&self) -> &str;
 
+	// FIXME: clippy isn't detecting/warning that this is unused anymore??? (even if you downgrade)
 	fn description(&self) -> Option<&str> {
 		None
 	}
@@ -86,10 +87,12 @@ impl<'a> List<'a> {
 		self
 	}
 
+	#[must_use]
 	pub const fn selected(&self) -> usize {
 		self.selected
 	}
 
+	#[must_use]
 	pub const fn last_index(&self) -> usize {
 		self.items.len().saturating_sub(1)
 	}
@@ -114,6 +117,7 @@ impl<'a> List<'a> {
 		self
 	}
 
+	#[must_use]
 	pub fn is_confirmed(&self, value: usize) -> bool {
 		self.confirmed.contains(&value)
 	}
