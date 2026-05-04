@@ -1,5 +1,6 @@
 #![cfg(feature = "tui")]
 use std::cell::UnsafeCell;
+use std::sync::LazyLock;
 
 use anyhow::{Context as _, Result};
 
@@ -19,9 +20,16 @@ pub struct FujiApp {
 	page: UnsafeCell<Box<dyn Page>>,
 	event: Option<KeyCode>,
 	prev_event: Option<KeyCode>,
-	layout: Layout,
 	help_section: HelpSection,
 }
+
+static LAYOUT: LazyLock<Layout> = LazyLock::new(|| {
+	Layout::vertical([
+		Constraint::Length(1),
+		Constraint::Fill(1),
+		Constraint::Length(2),
+	])
+});
 
 impl Default for FujiApp {
 	fn default() -> Self {
@@ -29,11 +37,6 @@ impl Default for FujiApp {
 			page: UnsafeCell::new(Box::new(HomePage::default())),
 			event: None,
 			prev_event: None,
-			layout: Layout::vertical([
-				Constraint::Length(1),
-				Constraint::Fill(1),
-				Constraint::Length(2),
-			]),
 			help_section: Default::default(),
 		}
 	}
@@ -121,7 +124,7 @@ impl FujiApp {
 /// Rendering.
 impl FujiApp {
 	fn render(&mut self, frame: &mut Frame) {
-		let [title, body, help] = frame.area().layout(&self.layout);
+		let [title, body, help] = frame.area().layout(&LAYOUT);
 		self.render_title(frame, title);
 		self.render_body(frame, body);
 		self.help_section.render(frame, help, self);

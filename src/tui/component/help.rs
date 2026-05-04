@@ -1,4 +1,6 @@
 #![cfg(feature = "tui")]
+use std::sync::LazyLock;
+
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::{Line, Span};
@@ -7,33 +9,28 @@ use crate::tui::INVERTED;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 
-pub struct HelpSection {
-	layout: Layout,
-	top_row_layout: Layout,
-}
+#[derive_const(Default)]
+pub struct HelpSection;
 
-impl Default for HelpSection {
-	fn default() -> Self {
-		Self {
-			layout: Layout::vertical([Constraint::Fill(1), Constraint::Fill(1)]),
-			top_row_layout: Layout::horizontal([
-				Constraint::Fill(1),
-				Constraint::Fill(1),
-				Constraint::Fill(1),
-			]),
-		}
-	}
-}
+static LAYOUT: LazyLock<Layout> =
+	LazyLock::new(|| Layout::vertical([Constraint::Fill(1), Constraint::Fill(1)]));
+static TOP_ROW_LAYOUT: LazyLock<Layout> = LazyLock::new(|| {
+	Layout::horizontal([
+		Constraint::Fill(1),
+		Constraint::Fill(1),
+		Constraint::Fill(1),
+	])
+});
 
 impl HelpSection {
-	fn render_help(&self, frame: &mut Frame, area: Rect) {
-		let [top, bottom] = area.layout(&self.layout);
-		self.render_help_top_row(frame, top);
+	fn render_help(frame: &mut Frame, area: Rect) {
+		let [top, bottom] = area.layout(&LAYOUT);
+		Self::render_help_top_row(frame, top);
 		Self::render_help_bottom_row(frame, bottom);
 	}
 
-	fn render_help_top_row(&self, frame: &mut Frame, area: Rect) {
-		let [quit, back, select] = area.layout(&self.top_row_layout);
+	fn render_help_top_row(frame: &mut Frame, area: Rect) {
+		let [quit, back, select] = area.layout(&TOP_ROW_LAYOUT);
 		Self::help_entry(frame, quit, ":q", "Quit");
 		Self::help_entry(frame, back, "Backspace", "Back");
 		Self::help_entry(frame, select, "Enter", "Select");
@@ -58,6 +55,6 @@ impl HelpSection {
 
 impl Component for HelpSection {
 	fn render(&self, frame: &mut Frame, area: Rect, _app: &FujiApp) -> Self::Return {
-		self.render_help(frame, area);
+		Self::render_help(frame, area);
 	}
 }

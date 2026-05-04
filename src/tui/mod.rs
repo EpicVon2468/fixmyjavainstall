@@ -15,6 +15,9 @@ use crate::tui::app::FujiApp;
 // https://github.com/ratatui/ratatui/blob/main/ratatui-widgets/examples/block.rs
 // https://github.com/ratatui/ratatui/blob/main/ratatui-widgets/examples/tabs.rs
 pub fn main() -> Result<()> {
+	dbg!(size_of::<*mut Box<dyn page::Page>>());
+	dbg!(size_of::<std::cell::UnsafeCell<Box<dyn page::Page>>>());
+	dbg!(size_of::<FujiApp>());
 	let result: Result<()> = FujiApp::run();
 	let _ = try_restore();
 	result

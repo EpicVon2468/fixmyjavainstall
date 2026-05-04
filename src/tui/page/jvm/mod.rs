@@ -81,8 +81,7 @@ impl Page for JVMPage {
 	}
 
 	fn propagate_page_events(&mut self, app: &FujiApp) -> (bool, Option<Box<dyn Page>>) {
-		let consumed: bool = self.propagate_events(app);
-		if consumed {
+		if self.propagate_events(app) {
 			return (true, None);
 		};
 		if app.is_key_down(KeyCode::Backspace) {
