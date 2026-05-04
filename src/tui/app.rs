@@ -1,7 +1,4 @@
 #![cfg(feature = "tui")]
-use std::cell::UnsafeCell;
-use std::sync::LazyLock;
-
 use anyhow::{Context as _, Result};
 
 use ratatui::crossterm::event::{Event, KeyCode, read};
@@ -11,30 +8,29 @@ use ratatui::style::Stylize as _;
 use ratatui::widgets::{Block, BorderType, Padding};
 use ratatui::{DefaultTerminal, Frame, try_init};
 
+use crate::static_layout;
 use crate::tui::component::Component as _;
 use crate::tui::component::help::HelpSection;
 use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
 
 pub struct FujiApp {
-	page: UnsafeCell<Box<dyn Page>>,
+	page: *mut Box<dyn Page>,
 	event: Option<KeyCode>,
 	prev_event: Option<KeyCode>,
 	help_section: HelpSection,
 }
 
-static LAYOUT: LazyLock<Layout> = LazyLock::new(|| {
-	Layout::vertical([
-		Constraint::Length(1),
-		Constraint::Fill(1),
-		Constraint::Length(2),
-	])
-});
+static_layout!(Layout::vertical([
+	Constraint::Length(1),
+	Constraint::Fill(1),
+	Constraint::Length(2),
+]));
 
 impl Default for FujiApp {
 	fn default() -> Self {
 		Self {
-			page: UnsafeCell::new(Box::new(HomePage::default())),
+			page: Box::into_raw(Box::new(Box::new(HomePage::default()))),
 			event: None,
 			prev_event: None,
 			help_section: Default::default(),
@@ -49,7 +45,7 @@ impl FujiApp {
 	}
 
 	fn page(&self) -> *mut Box<dyn Page> {
-		self.page.get()
+		self.page
 	}
 
 	/// # Safety
@@ -77,6 +73,7 @@ impl FujiApp {
 		unsafe { self.page().read() }
 	}
 
+	// &mut isn't actually needed, but it's a good sanity check to avoid 'unexpected' mutation
 	fn set_page(&mut self, value: Box<dyn Page>) {
 		// SAFETY:
 		// Problem(s):

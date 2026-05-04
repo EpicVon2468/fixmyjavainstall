@@ -1,10 +1,9 @@
 #![cfg(feature = "tui")]
-use std::sync::LazyLock;
-
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::{Line, Span};
 
+use crate::static_layout;
 use crate::tui::INVERTED;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
@@ -12,15 +11,15 @@ use crate::tui::component::Component;
 #[derive_const(Default)]
 pub struct HelpSection;
 
-static LAYOUT: LazyLock<Layout> =
-	LazyLock::new(|| Layout::vertical([Constraint::Fill(1), Constraint::Fill(1)]));
-static TOP_ROW_LAYOUT: LazyLock<Layout> = LazyLock::new(|| {
+static_layout!(Layout::vertical([Constraint::Fill(1), Constraint::Fill(1)]));
+static_layout!(
+	TOP_ROW_LAYOUT,
 	Layout::horizontal([
 		Constraint::Fill(1),
 		Constraint::Fill(1),
 		Constraint::Fill(1),
 	])
-});
+);
 
 impl HelpSection {
 	fn render_help(frame: &mut Frame, area: Rect) {
