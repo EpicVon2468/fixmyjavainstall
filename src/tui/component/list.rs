@@ -10,6 +10,7 @@ use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 
 // Based on ratatui-widget's Widget of the same name, except remade for my needs + Component trait
+// size 192... although the Ratatui List Widget is 336
 #[derive(Default)]
 pub struct List<'a> {
 	items: Vec<Span<'a>>,

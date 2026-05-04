@@ -6,7 +6,7 @@ use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::Line;
 use ratatui::style::Stylize as _;
 use ratatui::widgets::{Block, BorderType, Padding};
-use ratatui::{DefaultTerminal, Frame, try_init};
+use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
 
 use crate::static_layout;
 use crate::tui::component::Component as _;
@@ -15,6 +15,8 @@ use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
 
 pub struct FujiApp {
+	// TODO: mark this field as unsafe via https://github.com/rust-lang/rust/issues/132922
+	//  RustRover currently throws errors around parsing since it doesn't know about the feature, so can't use it yet...
 	page: *mut Box<dyn Page>,
 	event: Option<KeyCode>,
 	prev_event: Option<KeyCode>,
@@ -41,7 +43,10 @@ impl Default for FujiApp {
 /// Encapsulation (Rust is the only language where doing this can be for a good reason).
 impl FujiApp {
 	pub fn run() -> Result<()> {
-		Self::default().main(try_init().context("Couldn't initialise ratatui!")?)
+		let terminal: DefaultTerminal = try_init().context("Couldn't initialise ratatui!")?;
+		let result: Result<()> = Self::default().main(terminal);
+		let _ = try_restore();
+		result
 	}
 
 	fn page(&self) -> *mut Box<dyn Page> {

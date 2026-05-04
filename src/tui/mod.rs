@@ -6,7 +6,6 @@ mod page;
 use anyhow::Result;
 
 use ratatui::style::Style;
-use ratatui::try_restore;
 
 use crate::tui::app::FujiApp;
 
@@ -16,11 +15,14 @@ use crate::tui::app::FujiApp;
 // https://github.com/ratatui/ratatui/blob/main/ratatui-widgets/examples/tabs.rs
 pub fn main() -> Result<()> {
 	dbg!(size_of::<FujiApp>());
-	dbg!(size_of::<page::home::HomePage>());
 	dbg!(size_of::<page::jvm::JVMPage>());
-	let result: Result<()> = FujiApp::run();
-	let _ = try_restore();
-	result
+	dbg!(size_of::<component::list::List>());
+	dbg!(size_of::<ratatui::text::Span>());
+	dbg!(size_of::<Style>());
+	dbg!(size_of::<Option<ratatui::style::Color>>());
+	dbg!(size_of::<String>());
+	dbg!(size_of::<ratatui::widgets::List>());
+	FujiApp::run()
 }
 
 #[macro_export]
