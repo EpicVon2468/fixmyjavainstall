@@ -1,7 +1,7 @@
 ---
 name: Feature Request
 about: Request a feature for Fuji
-title: "[FEATURE REQUEST] <short description>"
+title: "[FEATURE REQUEST] Short Description Here"
 labels: enhancement
 assignees: EpicVon2468
 
