@@ -64,7 +64,6 @@
 	derive_const,
 	const_clone,
 	const_cmp,
-	associated_type_defaults,
 	likely_unlikely
 )]
 #![doc = include_str!("../README.md")]

@@ -12,7 +12,7 @@ use crate::tui::component::list::{List, ListEntry};
 use crate::tui::page::jvm::install_option::InstallOption;
 
 impl const ListEntry for Feature {
-	fn name(&self) -> &str {
+	fn name(&self) -> &'static str {
 		match *self {
 			Self::Minimal => "Minimal",
 			Self::DCEVM => "Dynamic Code Evolution Virtual Machine",

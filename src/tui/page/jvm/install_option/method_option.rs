@@ -12,7 +12,7 @@ use crate::tui::component::list::{List, ListEntry};
 use crate::tui::page::jvm::install_option::InstallOption;
 
 impl const ListEntry for InstallMethod {
-	fn name(&self) -> &str {
+	fn name(&self) -> &'static str {
 		match *self {
 			Self::Path => cfg_select! {
 				windows => "%PATH%",

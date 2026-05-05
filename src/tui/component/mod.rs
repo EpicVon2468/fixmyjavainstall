@@ -1,4 +1,5 @@
 #![cfg(feature = "tui")]
+pub mod exit_dialogue;
 pub mod help;
 pub mod list;
 pub mod logo;
@@ -9,8 +10,6 @@ use ratatui::layout::Rect;
 use crate::tui::app::FujiApp;
 
 pub const trait Component {
-	type Return = ();
-
 	/// Pre-[`render`][`Component::render`] input/logic checks.
 	///
 	/// Returns whether the [`Component`] has 'consumed' the input event (and thusly, whether any parent components should be allowed to process input).
@@ -21,5 +20,5 @@ pub const trait Component {
 		false
 	}
 
-	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) -> Self::Return;
+	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp);
 }

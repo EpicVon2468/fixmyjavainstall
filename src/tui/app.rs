@@ -8,11 +8,11 @@ use ratatui::style::Stylize as _;
 use ratatui::widgets::{Block, BorderType, Padding};
 use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
 
-use crate::static_layout;
 use crate::tui::component::Component as _;
 use crate::tui::component::help::HelpSection;
 use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
+use crate::{static_anything, static_layout};
 
 pub struct FujiApp {
 	// TODO: mark this field as unsafe via https://github.com/rust-lang/rust/issues/132922
@@ -116,9 +116,12 @@ impl FujiApp {
 		// - Before the end of scope, a call to [`Self::set_page`] is made, meaning that the contract of [`Self::get_page`] is never violated.
 		let mut page: Box<dyn Page> = unsafe { self.get_page() };
 		let (consumed, new_page): (bool, Option<Box<dyn Page>>) = page.propagate_page_events(self);
+		// FIXME: because of ExitDialogue's greedy propagation, this always triggers while ExitDialogue is shown
+		//  this means it isn't possible to use `:q` to exit
+		//  nothing is _strictly_ broken if we comment it out, but I'd like to keep the old behaviour if possible
 		if consumed {
-			self.event.take();
-			self.prev_event.take();
+			// self.event.take();
+			// self.prev_event.take();
 		};
 		self.set_page(new_page.unwrap_or(page));
 	}
@@ -196,6 +199,16 @@ impl FujiApp {
 	#[must_use]
 	pub fn should_exit(&self) -> bool {
 		self.was_key_down(KeyCode::Char(':')) && self.is_key_down(KeyCode::Char('q'))
+	}
+
+	#[must_use]
+	pub fn should_shl(&self) -> bool {
+		self.is_key_down(KeyCode::Left) || self.is_key_down(KeyCode::BackTab)
+	}
+
+	#[must_use]
+	pub fn should_shr(&self) -> bool {
+		self.is_key_down(KeyCode::Right) || self.is_key_down(KeyCode::Tab)
 	}
 
 	pub fn update() -> Result<Option<KeyCode>> {

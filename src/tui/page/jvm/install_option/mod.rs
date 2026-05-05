@@ -8,7 +8,7 @@ pub mod os_option;
 
 use crate::tui::component::Component;
 
-pub const trait InstallOption: Component<Return = ()> {
+pub const trait InstallOption: Component {
 	// FIXME: clippy stopped marking this as unused?
 	fn is_completed(&self) -> bool {
 		true
@@ -38,7 +38,7 @@ macro_rules! install_option {
 				self.list.propagate_events(app)
 			}
 
-			fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) -> Self::Return {
+			fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) {
 				self.list.render(frame, area, app);
 			}
 		}

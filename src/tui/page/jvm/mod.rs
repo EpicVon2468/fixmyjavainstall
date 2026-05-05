@@ -8,6 +8,7 @@ use ratatui::widgets::Tabs;
 
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
+use crate::tui::component::exit_dialogue::ExitDialogue;
 use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
 use crate::tui::page::jvm::install_option::InstallOption;
@@ -21,6 +22,7 @@ use crate::tui::page::jvm::install_option::os_option::OSOption;
 pub struct JVMPage {
 	selected: usize,
 	tabs: Vec<Box<dyn InstallOption>>,
+	exit_dialogue: ExitDialogue,
 }
 
 impl Default for JVMPage {
@@ -35,6 +37,7 @@ impl Default for JVMPage {
 				Box::new(MethodOption::default()),
 				Box::new(FeatureOption::default()),
 			],
+			exit_dialogue: Default::default(),
 		}
 	}
 }
@@ -56,22 +59,30 @@ impl JVMPage {
 			.map(|tab: &Box<dyn InstallOption>| tab.tab_name())
 			.collect()
 	}
+}
+
+impl JVMPage {
+	fn last_index(&self) -> usize {
+		self.tabs.len().saturating_sub(1)
+	}
 
 	fn shift_left(&mut self) -> &mut Self {
-		let mut new: isize = self.selected.cast_signed().saturating_sub(1);
-		if new < 0 {
-			new = self.tabs.len().saturating_sub(1).cast_signed();
+		let old: usize = self.selected;
+		self.selected = if old == 0 {
+			self.last_index()
+		} else {
+			old.saturating_sub(1)
 		};
-		self.selected = new.cast_unsigned();
 		self
 	}
 
 	fn shift_right(&mut self) -> &mut Self {
-		let mut new: usize = self.selected.saturating_add(1);
-		if new >= self.tabs.len() {
-			new = 0;
+		let old: usize = self.selected;
+		self.selected = if old == self.last_index() {
+			0
+		} else {
+			old.saturating_add(1)
 		};
-		self.selected = new;
 		self
 	}
 }
@@ -83,35 +94,42 @@ impl Page for JVMPage {
 
 	fn propagate_page_events(&mut self, app: &FujiApp) -> (bool, Option<Box<dyn Page>>) {
 		if self.propagate_events(app) {
+			if self.exit_dialogue.should_exit() {
+				return (true, Some(Box::new(HomePage::default())));
+			};
 			return (true, None);
 		};
-		if app.is_key_down(KeyCode::Backspace) {
-			(true, Some(Box::new(HomePage::default())))
-		} else {
-			(false, None)
-		}
+		(false, None)
 	}
 }
 
 impl Component for JVMPage {
 	fn propagate_events(&mut self, app: &FujiApp) -> bool {
+		if self.exit_dialogue.propagate_events(app) {
+			return true;
+		};
 		if self.selected_mut().propagate_events(app) {
 			return true;
 		};
-		if app.is_key_down(KeyCode::Left) || app.is_key_down(KeyCode::BackTab) {
+		if app.is_key_down(KeyCode::Backspace) {
+			self.exit_dialogue.show();
+			return true;
+		};
+		if app.should_shl() {
 			self.shift_left();
 			return true;
 		};
-		if app.is_key_down(KeyCode::Right) || app.is_key_down(KeyCode::Tab) {
+		if app.should_shr() {
 			self.shift_right();
 			return true;
 		};
 		false
 	}
 
-	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) -> Self::Return {
+	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) {
 		self.selected().render(frame, area, app);
 		let tabs: Tabs = Tabs::new(self.tab_names()).select(self.selected);
 		frame.render_widget(tabs, area - Offset::new(1, 2));
+		self.exit_dialogue.render(frame, area, app);
 	}
 }

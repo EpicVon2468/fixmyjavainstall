@@ -7,7 +7,7 @@ use ratatui::text::Text;
 
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
-use crate::{LONG_VERSION, static_layout};
+use crate::{LONG_VERSION, static_anything, static_layout};
 
 // requires at least a vertical Constraint::Length(6) (preferably 7 for the one line of space)
 #[derive_const(Default)]
@@ -29,7 +29,7 @@ impl FujiLogo {
 }
 
 impl Component for FujiLogo {
-	fn render(&self, frame: &mut Frame, area: Rect, _app: &FujiApp) -> Self::Return {
+	fn render(&self, frame: &mut Frame, area: Rect, _app: &FujiApp) {
 		let [top, bottom] = area.layout(&LAYOUT);
 		frame.render_widget(Text::from(Self::LOGO).centered().bold().light_blue(), top);
 		frame.render_widget(Line::from(LONG_VERSION).centered(), bottom);

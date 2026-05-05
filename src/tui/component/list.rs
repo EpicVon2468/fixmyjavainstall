@@ -167,7 +167,7 @@ impl Component for List<'_> {
 	}
 
 	// TODO: handle scroll if items is longer than area's height
-	fn render(&self, frame: &mut Frame, area: Rect, _app: &FujiApp) -> Self::Return {
+	fn render(&self, frame: &mut Frame, area: Rect, _app: &FujiApp) {
 		let mut area: Rect = area;
 		for (index, item) in self.items.iter().enumerate() {
 			let is_confirmed: bool = self.is_confirmed(index);

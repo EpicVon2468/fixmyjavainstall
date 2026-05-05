@@ -5,7 +5,7 @@ pub mod jvm;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 
-pub const trait Page: Component<Return = ()> {
+pub const trait Page: Component {
 	fn title(&self) -> &'static str {
 		"A JVM & Kotlin Management Utility"
 	}
