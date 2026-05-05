@@ -6,8 +6,8 @@ use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 
 pub const trait Page: Component<Return = ()> {
-	fn title(&self) -> Option<&'static str> {
-		None
+	fn title(&self) -> &'static str {
+		"A JVM & Kotlin Management Utility"
 	}
 
 	fn propagate_page_events(&mut self, app: &FujiApp) -> (bool, Option<Box<dyn Page>>);

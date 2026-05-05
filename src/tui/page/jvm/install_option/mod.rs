@@ -9,6 +9,7 @@ pub mod os_option;
 use crate::tui::component::Component;
 
 pub const trait InstallOption: Component<Return = ()> {
+	// FIXME: clippy stopped marking this as unused?
 	fn is_completed(&self) -> bool {
 		true
 	}

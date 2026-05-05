@@ -77,8 +77,8 @@ impl JVMPage {
 }
 
 impl Page for JVMPage {
-	fn title(&self) -> Option<&'static str> {
-		"Installation Configuration".into()
+	fn title(&self) -> &'static str {
+		"Installation Configuration"
 	}
 
 	fn propagate_page_events(&mut self, app: &FujiApp) -> (bool, Option<Box<dyn Page>>) {
@@ -98,11 +98,11 @@ impl Component for JVMPage {
 		if self.selected_mut().propagate_events(app) {
 			return true;
 		};
-		if app.is_key_down(KeyCode::Left) {
+		if app.is_key_down(KeyCode::Left) || app.is_key_down(KeyCode::BackTab) {
 			self.shift_left();
 			return true;
 		};
-		if app.is_key_down(KeyCode::Right) {
+		if app.is_key_down(KeyCode::Right) || app.is_key_down(KeyCode::Tab) {
 			self.shift_right();
 			return true;
 		};

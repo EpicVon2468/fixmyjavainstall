@@ -68,6 +68,7 @@ impl FujiApp {
 	/// - Segmentation faults.
 	/// - Memory leaks.
 	/// - Double `free()`s.
+	#[must_use = "Dropping this value can cause undefined behaviour!"]
 	unsafe fn get_page(&self) -> Box<dyn Page> {
 		// SAFETY:
 		// Problem(s):
@@ -144,10 +145,7 @@ impl FujiApp {
 		// Excuse(s):
 		// - Before the end of scope, a call to [`Self::set_page`] is made, meaning that the contract of [`Self::get_page`] is never violated.
 		let page: Box<dyn Page> = unsafe { self.get_page() };
-		let title: String = format!(
-			"Fix Ur Java Install – {}",
-			page.title().unwrap_or("A JVM & Kotlin Management Utility"),
-		);
+		let title: String = format!("Fix Ur Java Install – {}", page.title());
 		self.set_page(page);
 		title
 	}
