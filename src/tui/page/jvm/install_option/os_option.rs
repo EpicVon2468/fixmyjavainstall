@@ -1,5 +1,4 @@
-#![cfg(feature = "tui")]
-#![cfg(feature = "multi-os")]
+#![cfg(all(feature = "tui", feature = "multi-os"))]
 use clap::ValueEnum as _;
 
 use ratatui::Frame;

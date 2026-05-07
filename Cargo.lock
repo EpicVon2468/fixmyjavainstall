@@ -466,6 +466,7 @@ dependencies = [
  "serde",
  "shell-words",
  "tar",
+ "unicode-width",
  "ureq",
  "which",
  "windows-registry",

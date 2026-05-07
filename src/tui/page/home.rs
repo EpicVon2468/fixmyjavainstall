@@ -3,12 +3,12 @@ use ratatui::Frame;
 use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::{Constraint, Layout, Rect};
 
+use crate::static_layout;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
 use crate::tui::component::logo::FujiLogo;
 use crate::tui::page::Page;
 use crate::tui::page::jvm::JVMPage;
-use crate::{static_anything, static_layout};
 
 #[derive_const(Default)]
 pub struct HomePage {

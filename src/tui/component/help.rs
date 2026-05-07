@@ -3,10 +3,10 @@ use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::{Line, Span};
 
+use crate::static_layout;
 use crate::tui::INVERTED;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
-use crate::{static_anything, static_layout};
 
 #[derive_const(Default)]
 pub struct HelpSection;

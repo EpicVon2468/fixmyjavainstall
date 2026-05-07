@@ -3,19 +3,23 @@ use ratatui::Frame;
 use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::{Constraint, Layout, Margin, Offset, Rect};
 use ratatui::style::Style;
-use ratatui::text::{Line, Span};
+use ratatui::text::Span;
 use ratatui::widgets::{Block, Clear};
+
+use unicode_width::UnicodeWidthStr as _;
 
 use crate::tui::INVERTED;
 use crate::tui::app::FujiApp;
 use crate::tui::component::Component;
-use crate::{static_anything, static_layout};
+use crate::{centred_horizontally, static_layout, to_u16};
 
 pub struct ExitDialogue {
 	state: DialogueState,
 	// closest to 'u1' type (only values are 0 or 1)
 	selected: bool,
-	label: String,
+	text: String,
+	confirm_text: String,
+	deny_text: String,
 }
 
 impl Default for ExitDialogue {
@@ -23,7 +27,9 @@ impl Default for ExitDialogue {
 		Self {
 			state: Default::default(),
 			selected: false,
-			label: "Go back?".into(),
+			text: "Go back?".into(),
+			confirm_text: "[PROCEED]".into(),
+			deny_text: "[CANCEL]".into(),
 		}
 	}
 }
@@ -50,8 +56,18 @@ impl const Default for DialogueState {
 }
 
 impl ExitDialogue {
-	pub fn label(&mut self, label: String) -> &mut Self {
-		self.label = label;
+	pub fn text<T: Into<String>>(&mut self, text: T) -> &mut Self {
+		self.text = text.into();
+		self
+	}
+
+	pub fn confirm_text<T: Into<String>>(&mut self, confirm_text: T) -> &mut Self {
+		self.confirm_text = confirm_text.into();
+		self
+	}
+
+	pub fn deny_text<T: Into<String>>(&mut self, deny_text: T) -> &mut Self {
+		self.deny_text = deny_text.into();
 		self
 	}
 
@@ -80,31 +96,29 @@ impl ExitDialogue {
 
 	fn render_confirm(&self, frame: &mut Frame, area: Rect) {
 		frame.render_widget(
-			Line::from(Span::styled(
-				"[Yes]",
+			Span::styled(
+				&self.confirm_text,
 				if self.selected {
 					Style::reset()
 				} else {
 					INVERTED
 				},
-			))
-			.centered(),
-			area,
+			),
+			centred_horizontally!(area, self.confirm_text.width()),
 		);
 	}
 
 	fn render_deny(&self, frame: &mut Frame, area: Rect) {
 		frame.render_widget(
-			Line::from(Span::styled(
-				"[No]",
+			Span::styled(
+				&self.deny_text,
 				if self.selected {
 					INVERTED
 				} else {
 					Style::reset()
 				},
-			))
-			.centered(),
-			area,
+			),
+			centred_horizontally!(area, self.deny_text.width()),
 		);
 	}
 }
@@ -132,24 +146,20 @@ impl Component for ExitDialogue {
 			return;
 		};
 
-		let label: Line = Line::from(self.label.as_str()).centered();
-
-		let area: Rect = area
-			.centered(
-				Constraint::Length(label.width().try_into().unwrap()),
-				Constraint::Length(3),
-			)
+		let width: u16 = to_u16!(self.text.width());
+		let area: Rect = centred_horizontally!(area, width)
+			.centered_vertically(Constraint::Length(3))
 			.outer(Margin::new(8, 1))
 			.offset(Offset::new(-4, 0));
+
 		frame.render_widget(Clear, area);
 
 		let block: Block = Block::bordered().style(INVERTED);
 		frame.render_widget(&block, area);
 		let area: Rect = block.inner(area);
 
-		let [text, select] = area.layout(&LAYOUT_VERT);
-		frame.render_widget(label, text);
-		self.render_selection_raw(frame, select);
-		//.centered_horizontally(Constraint::Fill(1))
+		let [top, bottom] = area.layout(&LAYOUT_VERT);
+		frame.render_widget(&*self.text, centred_horizontally!(top, width));
+		self.render_selection_raw(frame, bottom);
 	}
 }

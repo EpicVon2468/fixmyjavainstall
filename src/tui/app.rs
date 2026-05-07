@@ -8,11 +8,11 @@ use ratatui::style::Stylize as _;
 use ratatui::widgets::{Block, BorderType, Padding};
 use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
 
+use crate::static_layout;
 use crate::tui::component::Component as _;
 use crate::tui::component::help::HelpSection;
 use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
-use crate::{static_anything, static_layout};
 
 pub struct FujiApp {
 	// TODO: mark this field as unsafe via https://github.com/rust-lang/rust/issues/132922
@@ -49,7 +49,7 @@ impl FujiApp {
 		result
 	}
 
-	fn page(&self) -> *mut Box<dyn Page> {
+	const fn page(&self) -> *mut Box<dyn Page> {
 		self.page
 	}
 
@@ -69,7 +69,7 @@ impl FujiApp {
 	/// - Memory leaks.
 	/// - Double `free()`s.
 	#[must_use = "Dropping this value can cause undefined behaviour!"]
-	unsafe fn get_page(&self) -> Box<dyn Page> {
+	const unsafe fn get_page(&self) -> Box<dyn Page> {
 		// SAFETY:
 		// Problem(s):
 		// - Pointers are unsafe.
@@ -80,7 +80,7 @@ impl FujiApp {
 	}
 
 	// &mut isn't actually needed, but it's a good sanity check to avoid 'unexpected' mutation
-	fn set_page(&mut self, value: Box<dyn Page>) {
+	const fn set_page(&mut self, value: Box<dyn Page>) {
 		// SAFETY:
 		// Problem(s):
 		// - Pointers are unsafe.

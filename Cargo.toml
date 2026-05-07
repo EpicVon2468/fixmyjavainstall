@@ -82,6 +82,7 @@ anyhow = "1"
 zip = { version = "8", features = ["deflate-flate2"], default-features = false }
 console = "0"
 shell-words = "1"
+unicode-width = "0"
 
 [dependencies.clap]
 version = "4"
