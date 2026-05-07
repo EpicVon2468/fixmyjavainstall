@@ -154,7 +154,9 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 pub const LONG_VERSION: &str = concat!(
 	'v',
 	env!("CARGO_PKG_VERSION"),
-	" – \"GitHub Actions my behated\"",
+	" – \"",
+	env!("FUJI_RELEASE_NAME"),
+	'"',
 );
 
 /// Wrapper for [`entrypoint`], which takes in additional arguments for a shorthand / alias.

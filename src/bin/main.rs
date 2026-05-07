@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use clap::Parser;
+use clap::Parser as _;
 
 use fuji::cli::FujiArgs;
 use fuji::entrypoint;

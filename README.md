@@ -29,6 +29,9 @@ MSRV: N/A (see: `rust-toolchain.toml`).
 
 See [INSTALLATION.md](https://github.com/EpicVon2468/fixurjavainstall/blob/master/INSTALLATION.md#installation)
 
+[Release]: https://img.shields.io/github/v/release/EpicVon2468/fixurjavainstall?logo=github
+[Release-1]: https://github.com/EpicVon2468/fixurjavainstall/releases/latest/
+
 [Repository]: https://img.shields.io/badge/git-EpicVon2468/fixurjavainstall-blue?logo=github
 [Repository-1]: https://github.com/EpicVon2468/fixurjavainstall/
 
@@ -37,9 +40,6 @@ See [INSTALLATION.md](https://github.com/EpicVon2468/fixurjavainstall/blob/maste
 
 [Dependencies]: https://img.shields.io/deps-rs/repo/github/EpicVon2468/fixurjavainstall
 [Dependencies-1]: https://deps.rs/repo/github/EpicVon2468/fixurjavainstall/
-
-[Release]: https://img.shields.io/github/v/release/EpicVon2468/fixurjavainstall?logo=github
-[Release-1]: https://github.com/EpicVon2468/fixurjavainstall/releases/latest/
 
 [Ratatui]: https://img.shields.io/badge/Built_With_Ratatui-000?logo=ratatui&logoColor=fff
 [Ratatui-1]: https://ratatui.rs/

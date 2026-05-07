@@ -1,5 +1,5 @@
 [package]
-name = "fuji"
+name = "fixurjavainstall"
 version = "0.5.0"
 authors = ["Mavity The Madity"]
 edition = "2024"
@@ -9,10 +9,9 @@ readme = "README.md"
 homepage = "https://github.com/EpicVon2468/fixurjavainstall/"
 repository = "https://github.com/EpicVon2468/fixurjavainstall/"
 license = "MIT OR Apache-2.0"
-keywords = ["utility", "config", "cli"]
+keywords = ["utility", "config", "cli", "java", "jvm"]
 categories = ["command-line-utilities", "config"]
-exclude = [".github/", "doc/", "listing/", "*.desktop"]
-publish = false
+exclude = [".github/", "listing/", "apple/", "man/"]
 default-run = "fuji"
 autolib = false
 autobins = false

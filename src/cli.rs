@@ -12,7 +12,9 @@ use crate::{LINK_DIR, LONG_VERSION};
 #[command(
 	version,
 	long_version = LONG_VERSION,
-	author
+	author,
+	name = "fuji",
+	display_name = "fuji",
 )]
 pub struct FujiArgs {
 	#[command(subcommand)]
