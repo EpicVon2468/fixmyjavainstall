@@ -1,6 +1,6 @@
 [package]
 name = "fixurjavainstall"
-version = "0.6.0"
+version = "0.6.1"
 authors = ["Mavity The Madity"]
 edition = "2024"
 rust-version = "1.97.0"
@@ -73,7 +73,8 @@ doctest = false
 bench = false
 doc = false
 harness = false
-required-features = ["tui"]
+# FIXME: this crashes cargo-dist
+#required-features = ["tui"]
 
 [dependencies]
 clap_mangen = "0"

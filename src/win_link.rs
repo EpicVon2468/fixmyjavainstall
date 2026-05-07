@@ -1,6 +1,6 @@
 #![cfg(windows)]
 #![doc = include_str!("../.ihatewindows")]
-use anyhow::{Context, Result};
+use anyhow::{Context as _, Result};
 
 macro_rules! open_env {
 	($holder:ident) => {
@@ -14,10 +14,9 @@ macro_rules! open_env {
 
 macro_rules! env_or_fallback {
 	() => {
-		open_env!(LOCAL_MACHINE).unwrap_or_else(|_| {
-			open_env!(CURRENT_USER)
-				.context("Couldn't get Environment for HKEY_LOCAL_MACHINE or HKEY_CURRENT_USER")
-		});
+		open_env!(LOCAL_MACHINE)
+			.or_else(|error| open_env!(CURRENT_USER).context(error))
+			.context("Couldn't get Environment for HKEY_LOCAL_MACHINE or HKEY_CURRENT_USER");
 	};
 }
 
@@ -30,7 +29,7 @@ pub fn win_link<P: AsRef<str>>(bin_dir: P) -> Result<()> {
 	println!("Updating PATH environment variable with bin_dir {bin_dir}");
 	// "To programmatically add or modify system environment variables, add them to the HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment registry key"
 	// https://learn.microsoft.com/en-gb/windows/win32/procthread/environment-variables
-	let environment = env_or_fallback!();
+	let environment = env_or_fallback!()?;
 	let prev_path: String = environment
 		.get_string("PATH")
 		.context("Couldn't get PATH environment variable!")?;
@@ -49,7 +48,7 @@ pub fn win_link<P: AsRef<str>>(bin_dir: P) -> Result<()> {
 }
 
 pub fn set_java_home<S: Into<String>>(value: S) -> Result<()> {
-	let environment = env_or_fallback!();
+	let environment = env_or_fallback!()?;
 	environment
 		.set_string("JAVA_HOME", value.into())
 		.context("Couldn't modify environment variable!")

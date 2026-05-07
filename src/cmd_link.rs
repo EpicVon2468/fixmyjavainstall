@@ -27,8 +27,6 @@ pub fn cmd_link(command: FujiCmd) -> Result<()> {
 	};
 	#[cfg(all(windows, not(feature = "multi-os")))]
 	let link_dir: String = String::new();
-	#[cfg(all(not(target_os = "linux"), not(feature = "multi-os")))]
-	let use_update_alternatives: bool = false;
 	for path in paths {
 		println!("Linking {}...", path.display());
 		link_impl(&path, &link_dir, &install_method)
