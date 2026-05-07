@@ -10,7 +10,13 @@ ci = "github"
 # The installers to generate for each app
 installers = ["shell", "powershell"]
 # Target platforms to build apps for (Rust target-triple syntax)
-targets = ["aarch64-apple-darwin", "aarch64-pc-windows-msvc", "x86_64-apple-darwin", "x86_64-pc-windows-msvc"]
+targets = [
+	"aarch64-apple-darwin",
+	"aarch64-pc-windows-msvc",
+	"x86_64-apple-darwin",
+	# see also: https://github.com/EpicVon2468/fixurjavainstall/actions/runs/25491986901/job/74802202068
+#	"x86_64-pc-windows-msvc",
+]
 # Path that installers should place binaries in
 install-path = "CARGO_HOME"
 # Whether to install an updater program

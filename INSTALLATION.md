@@ -7,7 +7,7 @@ You can [download the latest release][Release-1] if there is one for your system
 You can also install using cargo with:
 
 ```shell
-RUSTFLAGS="-C target-cpu=native -O" cargo install --git https://github.com/EpicVon2468/fixurjavainstall --tag v0.6.2
+RUSTFLAGS="-C target-cpu=native -O" cargo install --git https://github.com/EpicVon2468/fixurjavainstall --tag v0.6.3
 ```
 
 Or by running:
