@@ -16,7 +16,7 @@ pub struct FujiLogo;
 
 static_layout!(Layout::vertical([
 	Constraint::Fill(1),
-	Constraint::Length(1)
+	Constraint::Length(1),
 ]));
 
 static_anything!(WIDTH, usize, LONG_VERSION.width());

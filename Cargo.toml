@@ -74,7 +74,8 @@ harness = false
 clap_mangen = "0"
 serde = { version = "1", features = ["derive"] }
 which = "8"
-tar = { version = "0", default-features = false }
+# Explicit specification because lower versions have potential vulns
+tar = { version = ">=0.4.45, <1", default-features = false }
 flate2 = "1"
 ureq = { version = "3", features = ["json", "rustls"], default-features = false }
 indicatif = { version = "0", features = ["improved_unicode"], default-features = false }

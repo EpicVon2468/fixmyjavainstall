@@ -18,7 +18,7 @@ static_layout!(
 		Constraint::Fill(1),
 		Constraint::Fill(1),
 		Constraint::Fill(1),
-	])
+	]),
 );
 
 impl HelpSection {
