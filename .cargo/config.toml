@@ -1,2 +1,2 @@
 [env]
-FUJI_RELEASE_NAME = "GitHub Actions my behated"
+FUJI_RELEASE_NAME = "Why does Cargo store credentials in unprotected files?"

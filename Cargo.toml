@@ -1,6 +1,6 @@
 [package]
 name = "fixurjavainstall"
-version = "0.5.0"
+version = "0.6.0"
 authors = ["Mavity The Madity"]
 edition = "2024"
 rust-version = "1.97.0"
