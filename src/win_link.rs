@@ -16,7 +16,7 @@ macro_rules! env_or_fallback {
 	() => {
 		open_env!(LOCAL_MACHINE)
 			.or_else(|error| open_env!(CURRENT_USER).context(error))
-			.context("Couldn't get Environment for HKEY_LOCAL_MACHINE or HKEY_CURRENT_USER");
+			.context("Couldn't get Environment for HKEY_LOCAL_MACHINE or HKEY_CURRENT_USER")
 	};
 }
 
