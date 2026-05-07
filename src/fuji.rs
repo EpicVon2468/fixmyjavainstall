@@ -87,7 +87,6 @@ pub mod win_link;
 use std::env::args_os;
 use std::ffi::OsString;
 use std::fs::{File, remove_file};
-use std::hint::{likely, unlikely};
 use std::io::Write as _;
 use std::process::{abort, id};
 
@@ -275,6 +274,7 @@ fn unsafe_checks() -> Result<()> {
 	// - The new value is trusted input and known to be safe at compile-time.
 	unsafe {
 		use std::env::{set_var, var};
+		use std::hint::likely;
 
 		if likely(var("RUST_BACKTRACE").is_err()) {
 			set_var("RUST_BACKTRACE", "1");
@@ -322,7 +322,7 @@ fn unsafe_checks() -> Result<()> {
 			fn geteuid() -> u32;
 		}
 
-		if unlikely(geteuid() != 0) {
+		if std::hint::unlikely(geteuid() != 0) {
 			log_err!(
 				"Fuji ran by non-root user!  If you are not using a permissions manager (i.e. `apparmor`), then this is likely a mistake!"
 			);
