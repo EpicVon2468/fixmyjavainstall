@@ -76,9 +76,9 @@ pub enum Feature {
 	/// See also:
 	///
 	/// - <https://inside.java/2024/12/09/quality-heads-up/>.
-	/// - <https://docs.oracle.com/en/java/javase/25/core/restricted-methods.html>.
+	/// - <https://docs.oracle.com/en/java/javase/26/core/restricted-methods.html>.
 	/// - <https://openjdk.org/projects/panama/>.
-	#[cfg(feature = "openjdk-deprecated")]
+	#[cfg(feature = "openjdk-restricted")]
 	#[value(alias = "allow-native")]
 	Native,
 	/// Allows use of the (soon to be) restricted sun.misc.Unsafe API access – <https://openjdk.org/jeps/471>.
@@ -92,7 +92,7 @@ pub enum Feature {
 	/// See also:
 	///
 	/// - <https://openjdk.org/projects/panama/>.
-	#[cfg(feature = "openjdk-deprecated")]
+	#[cfg(feature = "openjdk-restricted")]
 	#[value(alias = "allow-unsafe")]
 	Unsafe,
 	/// Allows final to *not* mean final – <https://openjdk.org/jeps/500>.
@@ -104,7 +104,7 @@ pub enum Feature {
 	/// See also:
 	///
 	/// - <https://www.youtube.com/watch?v=KoOrPzGC_7w>.
-	#[cfg(feature = "openjdk-deprecated")]
+	#[cfg(feature = "openjdk-restricted")]
 	#[value(alias = "no-final")]
 	Mutate,
 	/// Enables AWT/Swing font antialiasing.  This can improve readability and quality of text.

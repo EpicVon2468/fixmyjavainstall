@@ -29,11 +29,11 @@ impl const ListEntry for Feature {
 			Self::Vulkan => "Vulkan for AWT/Swing",
 			Self::JCEF => "Java Chromium Embedded Framework",
 
-			#[cfg(feature = "openjdk-deprecated")]
+			#[cfg(feature = "openjdk-restricted")]
 			Self::Native => "Native access",
-			#[cfg(feature = "openjdk-deprecated")]
+			#[cfg(feature = "openjdk-restricted")]
 			Self::Unsafe => "Unsafe access",
-			#[cfg(feature = "openjdk-deprecated")]
+			#[cfg(feature = "openjdk-restricted")]
 			Self::Mutate => "Mutate access",
 
 			Self::FontFix => "Font rendering fixes",

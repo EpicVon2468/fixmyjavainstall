@@ -145,7 +145,7 @@ fn gen_features<F: Fn(&str, &str) -> String>(
 			"-Dsun.java2d.vulkan=true -Dsun.java2d.vulkan.accelsd=false",
 		);
 	};
-	#[cfg(feature = "openjdk-deprecated")]
+	#[cfg(feature = "openjdk-restricted")]
 	{
 		if features.contains(&Feature::Native) {
 			fuji_jvm_arg(
