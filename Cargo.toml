@@ -8,6 +8,7 @@ description = "A JVM & Kotlin management utility"
 readme = "README.md"
 homepage = "https://github.com/EpicVon2468/fixurjavainstall/"
 repository = "https://github.com/EpicVon2468/fixurjavainstall/"
+documentation = "https://docs.rs/fixurjavainstall/latest/fuji/"
 license = "MIT OR Apache-2.0"
 keywords = ["utility", "config", "cli", "java", "jvm"]
 categories = ["command-line-utilities", "config"]
@@ -73,8 +74,7 @@ doctest = false
 bench = false
 doc = false
 harness = false
-# FIXME: this crashes cargo-dist
-#required-features = ["tui"]
+required-features = ["tui"]
 
 [dependencies]
 clap_mangen = "0"
@@ -121,6 +121,8 @@ ring = { git = "https://github.com/briansmith/ring" }
 
 [package.metadata.dist]
 dist = true
+# https://github.com/axodotdev/cargo-dist/issues/745
+features = ["openjdk-restricted", "tui"]
 
 # The profile that 'dist' will build with
 [profile.dist]
