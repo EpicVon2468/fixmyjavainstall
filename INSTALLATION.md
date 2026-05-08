@@ -45,6 +45,10 @@ cargo clean --doc
 RUSTDOCFLAGS="--default-theme=ayu" cargo doc --document-private-items --all-features --release --color=always --no-deps --open
 ```
 
+For online rustdoc pages:
+
+<https://docs.rs/crate/fixurjavainstall/latest>
+
 [Release-Crates]: https://img.shields.io/crates/v/fixurjavainstall?logo=rust
 [Release-Crates-1]: https://crates.io/crates/fixurjavainstall/
 

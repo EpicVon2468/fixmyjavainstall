@@ -9,7 +9,7 @@
 
 (Re)writing this in Rust was simpler than debugging and 'fixing' the bash script(s).  I am serious.
 
-MSRV: N/A (nightly, see: `rust-toolchain.toml`).
+MSRV: N/A (nightly, see: [`rust-toolchain.toml`](https://github.com/EpicVon2468/fixurjavainstall/blob/master/rust-toolchain.toml)).
 
 ## Status:
 
@@ -18,13 +18,16 @@ MSRV: N/A (nightly, see: `rust-toolchain.toml`).
 - macOS: `[WORKING?]-[UNTESTED]`
   - All core functionality _should_ be working.
   - Rootless breaks many things.
-- Windows: `[WORKING?]-[UNTESTED]`
+- Windows: `[BROKEN]-[TESTED]`
+  - Why is `x86-64-pc-windows-msvc` failing to build in actions?  I don't know!
+  - Why is `aarch64-pc-windows-msvc` working fine?  I don't know!
+  - Okay but seriously the actual reason is something to do with the `ring` crate & whatever `perl` is.
   - Symbolic links for `%JAVA_HOME%\bin\java.exe` & `%JAVA_HOME%\bin\javaw.exe` don't work and can't be fixed.
     - Feature has been disabled, so this should _not_ crash.  Support will be re-evaluated in future.
   - Despite being quoted, `"\Program Files\fuji\jvm\25"` isn't treated as one path, as batch fails to handle the space in `Program Files`.
     - No longer relevant because no batch scripts are used.  See above.
 
-## Stability/Versioning:
+## Stability & Versioning:
 
 Fuji's version number is *only* incremented based on changes to the executables' behaviour (particularly: the CLI arguments).<br>
 API changes (i.e. a breaking change in a function parameter) are not considered "breaking".<br>
