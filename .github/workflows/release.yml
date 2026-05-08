@@ -47,7 +47,9 @@ jobs:
   # Run 'dist plan' (or host) to determine what tasks we need to do
   plan:
     runs-on: "ubuntu-latest"
-    environment: cargo-publish
+    environment:
+      name: cargo-publish
+      deployment: false
     outputs:
       val: ${{ steps.plan.outputs.manifest }}
       tag: ${{ !github.event.pull_request && github.ref_name || '' }}
@@ -90,7 +92,9 @@ jobs:
   # Build and packages all the platform-specific things
   build-local-artifacts:
     name: build-local-artifacts (${{ join(matrix.targets, ', ') }})
-    environment: cargo-publish
+    environment:
+      name: cargo-publish
+      deployment: false
     # Let the initial task tell us to not run (currently very blunt)
     needs:
       - plan
@@ -169,7 +173,9 @@ jobs:
 
   # Build and package all the platform-agnostic(ish) things
   build-global-artifacts:
-    environment: cargo-publish
+    environment:
+      name: cargo-publish
+      deployment: false
     needs:
       - plan
       - build-local-artifacts
@@ -216,7 +222,9 @@ jobs:
             ${{ env.BUILD_MANIFEST_NAME }}
   # Determines if we should publish/announce
   host:
-    environment: cargo-publish
+    environment:
+      name: cargo-publish
+      deployment: false
     needs:
       - plan
       - build-local-artifacts
@@ -283,7 +291,9 @@ jobs:
           gh release create "${{ needs.plan.outputs.tag }}" --target "$RELEASE_COMMIT" $PRERELEASE_FLAG --title "$ANNOUNCEMENT_TITLE" --notes-file "$RUNNER_TEMP/notes.txt" artifacts/*
 
   announce:
-    environment: cargo-publish
+    environment:
+      name: cargo-publish
+      deployment: false
     needs:
       - plan
       - host
