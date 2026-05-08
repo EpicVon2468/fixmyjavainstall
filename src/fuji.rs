@@ -153,7 +153,7 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 pub const LONG_VERSION: &str = concat!(
 	'v',
 	env!("CARGO_PKG_VERSION"),
-	" – \"Why must automagic publishing be this hard?\"",
+	" – \"How many times do you think the word 'why' has been in my version names?\"",
 );
 
 /// Wrapper for [`entrypoint`], which takes in additional arguments for a shorthand / alias.
