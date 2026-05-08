@@ -1,13 +1,14 @@
 # Installation:
 
-[![Release]][Release-1]
+[![Release-Crates]][Release-Crates-1]
+[![Release-GitHub]][Release-GitHub-1]
 
-You can [download the latest release][Release-1] if there is one for your system and architecture.
+You can [download the latest GitHub release][Release-GitHub-1] if there is one for your system and architecture.
 
 You can also install using cargo with:
 
 ```shell
-RUSTFLAGS="-C target-cpu=native -O" cargo install --git https://github.com/EpicVon2468/fixurjavainstall --tag v0.6.3
+RUSTFLAGS="-C target-cpu=native -O" cargo install fixurjavainstall
 ```
 
 Or by running:
@@ -19,9 +20,6 @@ RUSTFLAGS="-C target-cpu=native -O" cargo build --release --path .
 ```
 
 If you would like to be able to install a JVM not made for your system, add `--features multi-os` to your installation command.
-
-Additionally, please note that **there is no [crates.io](https://crates.io/) listing for fuji!** ~~(yet)~~<br>
-That is to say, `cargo install fixurjavainstall` **WILL NOT INSTALL THIS PROJECT!** ~~(yet)~~
 
 ## Documentation:
 
@@ -47,5 +45,8 @@ cargo clean --doc
 RUSTDOCFLAGS="--default-theme=ayu" cargo doc --document-private-items --all-features --release --color=always --no-deps --open
 ```
 
-[Release]: https://img.shields.io/github/v/release/EpicVon2468/fixurjavainstall?logo=github&label=latest%20version
-[Release-1]: https://github.com/EpicVon2468/fixurjavainstall/releases/latest/
+[Release-Crates]: https://img.shields.io/crates/v/fixurjavainstall?logo=rust
+[Release-Crates-1]: https://crates.io/crates/fixurjavainstall/
+
+[Release-GitHub]: https://img.shields.io/github/v/release/EpicVon2468/fixurjavainstall?logo=github&label=github
+[Release-GitHub-1]: https://github.com/EpicVon2468/fixurjavainstall/releases/latest/

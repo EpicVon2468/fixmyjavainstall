@@ -1,2 +1,0 @@
-[env]
-FUJI_RELEASE_NAME = "Why does Cargo store credentials in unprotected files?"

@@ -153,9 +153,7 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 pub const LONG_VERSION: &str = concat!(
 	'v',
 	env!("CARGO_PKG_VERSION"),
-	" – \"",
-	env!("FUJI_RELEASE_NAME"),
-	'"',
+	" – \"Why must automagic publishing be this hard?\"",
 );
 
 /// Wrapper for [`entrypoint`], which takes in additional arguments for a shorthand / alias.

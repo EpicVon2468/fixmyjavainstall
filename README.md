@@ -1,6 +1,7 @@
 # Fix Ur Java Install – A JVM & Kotlin management utility.
 
-[![Release]][Release-1]
+[![Release-Crates]][Release-Crates-1]
+[![Release-GitHub]][Release-GitHub-1]
 [![Repository]][Repository-1]
 [![Licence]][Licence-1]
 [![Dependencies]][Dependencies-1]
@@ -8,9 +9,7 @@
 
 (Re)writing this in Rust was simpler than debugging and 'fixing' the bash script(s).  I am serious.
 
-DEVELOPER NOTICE: Expect regular breaking changes; Do not depend on `libfuji` as a stable API!
-
-MSRV: N/A (see: `rust-toolchain.toml`).
+MSRV: N/A (nightly, see: `rust-toolchain.toml`).
 
 ## Status:
 
@@ -25,12 +24,25 @@ MSRV: N/A (see: `rust-toolchain.toml`).
   - Despite being quoted, `"\Program Files\fuji\jvm\25"` isn't treated as one path, as batch fails to handle the space in `Program Files`.
     - No longer relevant because no batch scripts are used.  See above.
 
+## Stability/Versioning:
+
+Fuji's version number is *only* incremented based on changes to the executables' behaviour (particularly: the CLI arguments).<br>
+API changes (i.e. a breaking change in a function parameter) are not considered "breaking".<br>
+Updates to dependencies will only update the minor version (even after `1.0.0`).<br>
+
+Fuji has not yet reached `1.0.0`, and uses nightly Rust for builds.<br>
+Generally speaking, the CLI will be kept as compatible as possible, and hopefully only new features will be added.<br>
+Support is only given for the absolute latest version.
+
 ## Installation:
 
 See [INSTALLATION.md](https://github.com/EpicVon2468/fixurjavainstall/blob/master/INSTALLATION.md#installation)
 
-[Release]: https://img.shields.io/github/v/release/EpicVon2468/fixurjavainstall?logo=github
-[Release-1]: https://github.com/EpicVon2468/fixurjavainstall/releases/latest/
+[Release-Crates]: https://img.shields.io/crates/v/fixurjavainstall?logo=rust
+[Release-Crates-1]: https://crates.io/crates/fixurjavainstall/
+
+[Release-GitHub]: https://img.shields.io/github/v/release/EpicVon2468/fixurjavainstall?logo=github&label=github
+[Release-GitHub-1]: https://github.com/EpicVon2468/fixurjavainstall/releases/latest/
 
 [Repository]: https://img.shields.io/badge/git-EpicVon2468/fixurjavainstall-blue?logo=github
 [Repository-1]: https://github.com/EpicVon2468/fixurjavainstall/
