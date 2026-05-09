@@ -43,3 +43,6 @@
 - [ ] Install locally built JDK/JDK from disc
   - [ ] Allow automagically cloning + building from source by providing a git url?
 - [ ] JVM man pages
+  - <https://docs.oracle.com/en/java/javase/26/docs/specs/man/java.html>
+  - <https://github.com/openjdk/jdk/blob/master/src/java.base/share/man/java.md>
+  - Format only seems to be Markdown/HTML... is "transpiling" the docs possible?  Should it be done per-install, or only once, then hosted in a repository online?
