@@ -45,6 +45,10 @@
 - [ ] JVM man pages
   - <https://docs.oracle.com/en/java/javase/26/docs/specs/man/java.html>
   - <https://github.com/openjdk/jdk/blob/master/src/java.base/share/man/java.md>
+  - <https://github.com/openjdk/jdk/blob/jdk-17%2B35/src/java.base/share/man/java.1>
+  - `>= 24` the files are `.md`
+  - `>=12, < 24` the files are `.1` ((g)roff)
+  - `<= 11` no man pages exist
   - Format only seems to be Markdown/HTML... is "transpiling" the docs possible?  Should it be done per-install, or only once, then hosted in a repository online?
   - <https://pandoc.org/>
   - the `.md` files from OpenJDK contain sequences "quoted" in `@@`.  This breaks YAML parsing of Markdown, and will need to be replaced if this is automated.
