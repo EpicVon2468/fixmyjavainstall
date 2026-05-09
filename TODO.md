@@ -46,3 +46,7 @@
   - <https://docs.oracle.com/en/java/javase/26/docs/specs/man/java.html>
   - <https://github.com/openjdk/jdk/blob/master/src/java.base/share/man/java.md>
   - Format only seems to be Markdown/HTML... is "transpiling" the docs possible?  Should it be done per-install, or only once, then hosted in a repository online?
+  - <https://pandoc.org/>
+  - the `.md` files from OpenJDK contain sequences "quoted" in `@@`.  This breaks YAML parsing of Markdown, and will need to be replaced if this is automated.
+  - `pandoc -s --from=markdown --to=man --output $EXECUTABLE_NAME.1 $EXECUTABLE_NAME.md`
+- [ ] Non-root, non-permission-manager use of Fuji (complete user-local installation)
