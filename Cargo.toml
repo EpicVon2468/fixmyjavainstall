@@ -1,7 +1,9 @@
 [package]
 name = "fixurjavainstall"
 version = "0.7.2"
-authors = ["Mavity The Madity"]
+authors = [
+	"Mavity The Madity",
+]
 edition = "2024"
 rust-version = "1.97.0"
 description = "A JVM & Kotlin management utility"
@@ -10,24 +12,45 @@ homepage = "https://github.com/EpicVon2468/fixurjavainstall/"
 repository = "https://github.com/EpicVon2468/fixurjavainstall/"
 documentation = "https://docs.rs/fixurjavainstall/latest/fuji/"
 license = "MIT OR Apache-2.0"
-keywords = ["utility", "config", "cli", "java", "jvm"]
-categories = ["command-line-utilities", "config"]
-exclude = [".github/", "listing/", "apple/", "man/"]
+keywords = [
+	"utility",
+	"config",
+	"cli",
+	"java",
+	"jvm",
+]
+categories = [
+	"command-line-utilities",
+	"config",
+]
+exclude = [
+	".github/",
+	"listing/",
+	"apple/",
+	"man/",
+	"doc/function_doc_template.txt",
+]
 default-run = "fuji"
 autolib = false
 autobins = false
 
 [features]
-default = ["openjdk-restricted"]
+default = [
+	"openjdk-restricted",
+]
 multi-os = []
 dev = []
-interactive = ["dep:dialoguer"]
+interactive = [
+	"dep:dialoguer",
+]
 # https://docs.oracle.com/en/java/javase/26/core/restricted-methods.html
 # https://openjdk.org/jeps/472
 # https://openjdk.org/jeps/471
 # https://openjdk.org/jeps/500
 openjdk-restricted = []
-tui = ["dep:ratatui"]
+tui = [
+	"dep:ratatui",
+]
 
 [lib]
 name = "fuji"
@@ -74,19 +97,15 @@ doctest = false
 bench = false
 doc = false
 harness = false
-required-features = ["tui"]
+required-features = [
+	"tui",
+]
 
 [dependencies]
 clap_mangen = "0"
-serde = { version = "1", features = ["derive"] }
 which = "8"
-# Explicit specification because lower versions have potential vulns
-tar = { version = ">=0.4.45, <1", default-features = false }
 flate2 = "1"
-ureq = { version = "3", features = ["json", "rustls"], default-features = false }
-indicatif = { version = "0", features = ["improved_unicode"], default-features = false }
 anyhow = "1"
-zip = { version = "8", features = ["deflate-flate2"], default-features = false }
 console = "0"
 shell-words = "1"
 unicode-width = "0"
@@ -104,25 +123,76 @@ features = [
 [dependencies.dialoguer]
 version = "0"
 optional = true
-features = ["editor"]
+features = [
+	"editor",
+]
 default-features = false
 
 [dependencies.ratatui]
 version = "0"
 optional = true
-features = ["std", "crossterm", "layout-cache"]
+features = [
+	"std",
+	"crossterm",
+	"layout-cache",
+]
+default-features = false
+
+[dependencies.serde]
+version = "1"
+features = [
+	"derive",
+]
+
+[dependencies.tar]
+# Explicit specification because lower versions have potential vulns
+version = ">=0.4.45, <1"
+default-features = false
+
+[dependencies.ureq]
+version = "3"
+features = [
+	"json",
+	"rustls",
+]
+default-features = false
+
+[dependencies.indicatif]
+version = "0"
+features = [
+	"improved_unicode",
+]
+default-features = false
+
+[dependencies.zip]
+version = "8"
+features = [
+	"deflate-flate2",
+]
 default-features = false
 
 [target.'cfg(windows)'.dependencies]
 windows-registry = "0"
 
 [patch.crates-io]
-ring = { git = "https://github.com/briansmith/ring" }
+ring = {
+	git = "https://github.com/briansmith/ring"
+}
+kasuari = {
+	git = "https://github.com/ratatui/kasuari",
+	rev = "8c75fa3",
+}
+#ratatui-core = {
+#	git = "https://github.com/ratatui/ratatui"
+#}
 
 [package.metadata.dist]
 dist = true
 # https://github.com/axodotdev/cargo-dist/issues/745
-features = ["openjdk-restricted", "tui"]
+features = [
+	"openjdk-restricted",
+	"tui",
+]
 
 # The profile that 'dist' will build with
 [profile.dist]
