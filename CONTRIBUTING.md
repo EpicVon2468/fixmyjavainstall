@@ -4,17 +4,17 @@ This document outlines the expectations for any contributions to Fuji.  It is re
 
 ## General
 
-### Use of "AI" / Large Language Models (LLMs)
+### Use of "Artificial Intelligence" ("AI") / Large Language Models (LLMs)
 
 > TL;DR: "AI" / LLMs are strictly prohibited from being used in contributions to Fuji.
 
-Contributions cannot be made with the use of "AI" / Large Language Models (LLMs).<br>
+Contributions cannot be made with the use of "Artificial Intelligence" ("AI") / Large Language Models (LLMs).<br>
 You may not use "AI" / LLMs for discussions, commits, reviewing or creating code, or any contributions whatsoever (even those not listed explicitly here).<br>
 This also extends to issues, comments on issues, comments on pull requests, etc.<br>
 If your IDE / editor uses "AI" / LLMs or has them enabled as optional functionality, either switch IDE / editor, or disable the features if possible.<br>
-If it is not possible for your IDE / editor to disable "AI" / LLM features, and you cannot switch IDE / editor, then **do not contribute**.<br>
+If it is not possible for your IDE / editor to disable "AI" / LLM features, and you cannot switch IDE / editor, then **you cannot contribute**.<br>
 If you have some objection to this policy: I don't care, you're not welcome here.<br>
-The above prohibitions also apply to translations.
+The above prohibitions also apply to translations, communications, etc.
 
 ## Style
 
@@ -27,4 +27,4 @@ The above prohibitions also apply to translations.
   - Proofread your documentation and comments!
   - Proofread your code!
   - Proofread everything!
-    - Seriously, just give what you've written a once-over before you commit or make a pull request, it takes very little time and can catch bugs, typos, errors, etc.
+  - Seriously, just give what you've written a once-over before you commit or make a pull request; It takes very little time, and can catch bugs, typos, errors, etc.
