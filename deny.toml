@@ -64,9 +64,6 @@ ignore = [
 allow = [
 	"MIT",
 	"Apache-2.0",
-	"ISC",
-	"BSD-3-Clause",
-	"Zlib"
 ]
 # The confidence threshold for detecting a licence from licence text.
 # The higher the value, the more closely the licence text must be to the
@@ -87,16 +84,46 @@ exceptions = [
 			"CDLA-Permissive-2.0"
 		],
 		crate = "webpki-roots"
-	}
+	},
+	{
+		allow = [
+			"Zlib"
+		],
+		crate = "foldhash"
+	},
+	{
+		allow = [
+			"BSD-3-Clause"
+		],
+		crate = "subtle"
+	},
+	{
+		allow = [
+			"ISC"
+		],
+		crate = "ring"
+	},
+	{
+		allow = [
+			"ISC"
+		],
+		crate = "rustls-webpki"
+	},
+	{
+		allow = [
+			"ISC"
+		],
+		crate = "untrusted"
+	},
 ]
 
 # More documentation about the 'bans' section can be found here:
 # https://embarkstudios.github.io/cargo-deny/checks/bans/cfg.html
 [bans]
 # Lint level for when multiple versions of the same crate are detected
-multiple-versions = "warn"
+multiple-versions = "deny"
 # Lint level for when a crate version requirement is `*`
-wildcards = "allow"
+wildcards = "deny"
 # The graph highlighting used when creating dotgraphs for crates
 # with multiple versions
 # * lowest-version - The path to the lowest versioned duplicate is highlighted
