@@ -153,7 +153,7 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 pub const LONG_VERSION: &str = concat!(
 	'v',
 	env!("CARGO_PKG_VERSION"),
-	" – \"Why did they do this?  Are they stupid?\"",
+	" – \"CI/CD PUBLISH ALREADY DAMN IT\"",
 );
 
 /// Wrapper for [`entrypoint`], which takes in additional arguments for a shorthand / alias.

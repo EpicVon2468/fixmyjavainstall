@@ -40,8 +40,7 @@ permissions:
 # will be marked as a prerelease.
 on:
   push:
-    tags:
-      - '**[0-9]+.[0-9]+.[0-9]+*'
+    tags: ['**[0-9]+.[0-9]+.[0-9]+*']
 
 jobs:
   # Run 'dist plan' (or host) to determine what tasks we need to do
@@ -313,13 +312,15 @@ jobs:
   # https://crates.io/docs/trusted-publishing
   crates-io-publish:
     runs-on: "ubuntu-latest"
-    environment: cargo-publish
+    environment:
+      name: cargo-publish
+      deployment: false
     permissions:
       id-token: "write"
     steps:
-        - uses: actions/checkout@v6
-        - uses: rust-lang/crates-io-auth-action@v1
-          id: auth
-        - run: cargo publish
-          env:
-            CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+      - uses: actions/checkout@v6
+      - uses: rust-lang/crates-io-auth-action@v1
+        id: auth
+      - run: cargo publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
