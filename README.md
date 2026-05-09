@@ -41,6 +41,12 @@ Support is only given for the absolute latest version.
 
 See [INSTALLATION.md](https://github.com/EpicVon2468/fixurjavainstall/blob/master/INSTALLATION.md#installation)
 
+## Use of "AI" / Large Language Models (LLMs)
+
+"AI" / LLMs are strictly prohibited from being used in contributions to Fuji.
+
+[Further details are available here.](https://github.com/EpicVon2468/fixurjavainstall/blob/master/CONTRIBUTING.md#use-of-ai--large-language-models-llms)
+
 [Release-Crates]: https://img.shields.io/crates/v/fixurjavainstall?logo=rust
 [Release-Crates-1]: https://crates.io/crates/fixurjavainstall/
 

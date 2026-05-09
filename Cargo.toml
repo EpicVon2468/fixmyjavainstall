@@ -182,9 +182,6 @@ kasuari = {
 	git = "https://github.com/ratatui/kasuari",
 	rev = "8c75fa3",
 }
-#ratatui-core = {
-#	git = "https://github.com/ratatui/ratatui"
-#}
 
 [package.metadata.dist]
 dist = true

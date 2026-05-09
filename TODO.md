@@ -42,3 +42,4 @@
 - [ ] Eclipse Java LSP installation
 - [ ] Install locally built JDK/JDK from disc
   - [ ] Allow automagically cloning + building from source by providing a git url?
+- [ ] JVM man pages
