@@ -131,8 +131,7 @@ skip = [
 		crate = "wit-bindgen@0.51.0",
 		reason = "WASI/WASM is the source of all my problems"
 	},
-	"hashbrown",
-	"redox_syscall"
+	"hashbrown"
 ]
 # Similarly to `skip` allows you to skip certain crates during duplicate
 # detection. Unlike skip, it also includes the entire tree of transitive
