@@ -798,9 +798,8 @@ dependencies = [
 [[package]]
 name = "mavity-tui-components"
 version = "0.0.0"
-source = "git+https://github.com/EpicVon2468/mavity-tui-components/#8f771f9dbfa846c9bb302bf39454fd5e13711892"
+source = "git+https://github.com/EpicVon2468/mavity-tui-components/#7f08a0cfd4a6c8e3e1437f4041125a2e6f89aff4"
 dependencies = [
- "anyhow",
  "crossterm",
  "ratatui-core",
  "ratatui-widgets",

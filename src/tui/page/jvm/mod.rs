@@ -1,8 +1,6 @@
 #![cfg(feature = "tui")]
 pub mod install_option;
 
-use anyhow::Result;
-
 use mtc::{App as _, Component, ExitDialogue, NewPage, Page};
 
 use ratatui::Frame;
@@ -93,38 +91,38 @@ impl Page<FujiApp> for JVMPage {
 		"Installation Configuration"
 	}
 
-	fn propagate_page_events(&mut self, app: &FujiApp) -> Result<(bool, NewPage<FujiApp>)> {
-		if self.propagate_events(app)? {
+	fn propagate_page_events(&mut self, app: &FujiApp) -> (bool, NewPage<FujiApp>) {
+		if self.propagate_events(app) {
 			if self.exit_dialogue.should_exit() {
-				return Ok((true, Some(Box::new(HomePage::default()))));
+				return (true, Some(Box::new(HomePage::default())));
 			};
-			return Ok((true, None));
+			return (true, None);
 		};
-		Ok((false, None))
+		(false, None)
 	}
 }
 
 impl Component<FujiApp> for JVMPage {
-	fn propagate_events(&mut self, app: &FujiApp) -> anyhow::Result<bool> {
-		if self.exit_dialogue.propagate_events(app)? {
-			return Ok(true);
+	fn propagate_events(&mut self, app: &FujiApp) -> bool {
+		if self.exit_dialogue.propagate_events(app) {
+			return true;
 		};
-		if self.selected_mut().propagate_events(app)? {
-			return Ok(true);
+		if self.selected_mut().propagate_events(app) {
+			return true;
 		};
 		if app.is_key_down(KeyCode::Backspace) {
 			self.exit_dialogue.show();
-			return Ok(true);
+			return true;
 		};
 		if app.should_shl() {
 			self.shift_left();
-			return Ok(true);
+			return true;
 		};
 		if app.should_shr() {
 			self.shift_right();
-			return Ok(true);
+			return true;
 		};
-		Ok(false)
+		false
 	}
 
 	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) {

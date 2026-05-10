@@ -1,6 +1,4 @@
 #![cfg(feature = "tui")]
-use anyhow::Result;
-
 use mtc::{App as _, Component, NewPage, Page, static_layout};
 
 use ratatui::Frame;
@@ -26,20 +24,20 @@ impl Page<FujiApp> for HomePage {
 		"A JVM & Kotlin Management Utility"
 	}
 
-	fn propagate_page_events(&mut self, app: &FujiApp) -> Result<(bool, NewPage<FujiApp>)> {
-		if self.propagate_events(app)? {
-			return Ok((true, None));
+	fn propagate_page_events(&mut self, app: &FujiApp) -> (bool, NewPage<FujiApp>) {
+		if self.propagate_events(app) {
+			return (true, None);
 		};
 		if app.is_key_down(KeyCode::Enter) {
-			Ok((true, Some(Box::new(JVMPage::default()))))
+			(true, Some(Box::new(JVMPage::default())))
 		} else {
-			Ok((false, None))
+			(false, None)
 		}
 	}
 }
 
 impl Component<FujiApp> for HomePage {
-	fn propagate_events(&mut self, app: &FujiApp) -> Result<bool> {
+	fn propagate_events(&mut self, app: &FujiApp) -> bool {
 		self.logo.propagate_events(app)
 	}
 

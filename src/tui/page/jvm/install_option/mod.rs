@@ -36,7 +36,7 @@ macro_rules! install_option {
 
 		#[automatically_derived]
 		impl Component<$crate::tui::app::FujiApp> for $name<'_> {
-			fn propagate_events(&mut self, app: &FujiApp) -> anyhow::Result<bool> {
+			fn propagate_events(&mut self, app: &FujiApp) -> bool {
 				self.list.propagate_events(app)
 			}
 
