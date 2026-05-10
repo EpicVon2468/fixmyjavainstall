@@ -1,4 +1,6 @@
 #![cfg(feature = "tui")]
+use mtc::{App as _, Component};
+
 use ratatui::Frame;
 use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::{Offset, Rect};
@@ -7,7 +9,6 @@ use ratatui::text::{Line, Span};
 
 use crate::tui::INVERTED;
 use crate::tui::app::FujiApp;
-use crate::tui::component::Component;
 
 // Based on ratatui-widget's Widget of the same name, except remade for my needs + Component trait
 // size 192... although the Ratatui List Widget is 336
@@ -149,7 +150,7 @@ impl<'a> List<'a> {
 	}
 }
 
-impl Component for List<'_> {
+impl Component<FujiApp> for List<'_> {
 	fn propagate_events(&mut self, app: &FujiApp) -> anyhow::Result<bool> {
 		if app.is_key_down(KeyCode::Up) {
 			self.select_prev();

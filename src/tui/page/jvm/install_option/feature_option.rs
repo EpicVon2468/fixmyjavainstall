@@ -1,13 +1,14 @@
 #![cfg(feature = "tui")]
 use clap::ValueEnum as _;
 
+use mtc::Component;
+
 use ratatui::Frame;
 use ratatui::layout::Rect;
 
 use crate::install_option;
 use crate::jvm::feature::Feature;
 use crate::tui::app::FujiApp;
-use crate::tui::component::Component;
 use crate::tui::component::list::{List, ListEntry};
 use crate::tui::page::jvm::install_option::InstallOption;
 

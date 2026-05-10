@@ -1,4 +1,6 @@
 #![cfg(feature = "tui")]
+use mtc::Component;
+
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::{Line, Span};
@@ -6,7 +8,6 @@ use ratatui::prelude::{Line, Span};
 use crate::static_layout;
 use crate::tui::INVERTED;
 use crate::tui::app::FujiApp;
-use crate::tui::component::Component;
 
 #[derive_const(Default)]
 pub struct HelpSection;
@@ -52,7 +53,7 @@ impl HelpSection {
 	}
 }
 
-impl Component for HelpSection {
+impl Component<FujiApp> for HelpSection {
 	fn render(&self, frame: &mut Frame, area: Rect, _app: &FujiApp) {
 		Self::render_help(frame, area);
 	}

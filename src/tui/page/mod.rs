@@ -2,10 +2,11 @@
 pub mod home;
 pub mod jvm;
 
-use crate::tui::app::FujiApp;
-use crate::tui::component::Component;
+use mtc::Component;
 
-pub const trait Page: Component {
+use crate::tui::app::FujiApp;
+
+pub const trait Page: Component<FujiApp> {
 	fn title(&self) -> &'static str {
 		"A JVM & Kotlin Management Utility"
 	}

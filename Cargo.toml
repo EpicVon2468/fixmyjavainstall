@@ -110,6 +110,10 @@ console = ">=0.16.3, <1"
 shell-words = ">=1.1.1, <2"
 unicode-width = ">=0.2.2, <1"
 
+[dependencies.mavity-tui-components]
+git = "https://github.com/EpicVon2468/mavity-tui-components/"
+version = "0.0.0"
+
 [dependencies.clap]
 version = ">=4.6.1, <5"
 features = [

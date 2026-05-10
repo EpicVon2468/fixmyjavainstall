@@ -6,9 +6,11 @@ pub mod method_option;
 #[cfg(feature = "multi-os")]
 pub mod os_option;
 
-use crate::tui::component::Component;
+use mtc::Component;
 
-pub const trait InstallOption: Component {
+use crate::tui::app::FujiApp;
+
+pub const trait InstallOption: Component<FujiApp> {
 	// FIXME: clippy stopped marking this as unused?
 	fn is_completed(&self) -> bool {
 		true
@@ -33,7 +35,7 @@ macro_rules! install_option {
 		}
 
 		#[automatically_derived]
-		impl Component for $name<'_> {
+		impl Component<$crate::tui::app::FujiApp> for $name<'_> {
 			fn propagate_events(&mut self, app: &FujiApp) -> anyhow::Result<bool> {
 				self.list.propagate_events(app)
 			}

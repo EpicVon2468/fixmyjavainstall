@@ -1,11 +1,12 @@
 #![cfg(feature = "tui")]
+use mtc::{App as _, Component};
+
 use ratatui::Frame;
 use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::{Constraint, Layout, Rect};
 
 use crate::static_layout;
 use crate::tui::app::FujiApp;
-use crate::tui::component::Component;
 use crate::tui::component::logo::FujiLogo;
 use crate::tui::page::Page;
 use crate::tui::page::jvm::JVMPage;
@@ -36,7 +37,7 @@ impl Page for HomePage {
 	}
 }
 
-impl Component for HomePage {
+impl Component<FujiApp> for HomePage {
 	fn propagate_events(&mut self, app: &FujiApp) -> anyhow::Result<bool> {
 		self.logo.propagate_events(app)
 	}

@@ -1,6 +1,8 @@
 #![cfg(feature = "tui")]
 use anyhow::{Context as _, Result};
 
+use mtc::{App, Component as _};
+
 use ratatui::crossterm::event::{Event, KeyCode, read};
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::Line;
@@ -9,7 +11,6 @@ use ratatui::widgets::{Block, BorderType, Padding};
 use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
 
 use crate::static_layout;
-use crate::tui::component::Component as _;
 use crate::tui::component::help::HelpSection;
 use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
@@ -185,39 +186,36 @@ impl FujiApp {
 		matches!(self.get_event(prev), Some(event_key) if *event_key == key)
 	}
 
-	#[must_use]
-	pub fn is_key_down(&self, key: KeyCode) -> bool {
-		self.key_down(false, key)
-	}
-
-	#[must_use]
-	pub fn was_key_down(&self, key: KeyCode) -> bool {
-		self.key_down(true, key)
-	}
-
-	/// Whether the [`FujiApp`] should exit.
-	///
-	/// Returns: if the sequence `:q` was pressed.
-	#[must_use]
-	pub fn should_exit(&self) -> bool {
-		self.was_key_down(KeyCode::Char(':')) && self.is_key_down(KeyCode::Char('q'))
-	}
-
-	#[must_use]
-	pub fn should_shl(&self) -> bool {
-		self.is_key_down(KeyCode::Left) || self.is_key_down(KeyCode::BackTab)
-	}
-
-	#[must_use]
-	pub fn should_shr(&self) -> bool {
-		self.is_key_down(KeyCode::Right) || self.is_key_down(KeyCode::Tab)
-	}
-
 	pub fn update() -> Result<Option<KeyCode>> {
 		if let Event::Key(key_event) = read()? {
 			Ok(Some(key_event.code))
 		} else {
 			Ok(None)
 		}
+	}
+}
+
+impl App for FujiApp {
+	fn is_key_down(&self, key: KeyCode) -> bool {
+		self.key_down(false, key)
+	}
+
+	fn was_key_down(&self, key: KeyCode) -> bool {
+		self.key_down(true, key)
+	}
+
+	/// Whether the [`FujiApp`] should exit.
+	///
+	/// Returns: if the sequence `:q` was pressed.
+	fn should_exit(&self) -> bool {
+		self.was_key_down(KeyCode::Char(':')) && self.is_key_down(KeyCode::Char('q'))
+	}
+
+	fn should_shl(&self) -> bool {
+		self.is_key_down(KeyCode::Left) || self.is_key_down(KeyCode::BackTab)
+	}
+
+	fn should_shr(&self) -> bool {
+		self.is_key_down(KeyCode::Right) || self.is_key_down(KeyCode::Tab)
 	}
 }

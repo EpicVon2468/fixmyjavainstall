@@ -430,6 +430,7 @@ dependencies = [
  "dialoguer",
  "flate2",
  "indicatif",
+ "mavity-tui-components",
  "ratatui",
  "serde",
  "shell-words",
@@ -792,6 +793,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f66e8d5d03f609abc3a39e6f08e4164ebf1447a732906d39eb9b99b7919ef39"
 dependencies = [
  "hashbrown 0.16.1",
+]
+
+[[package]]
+name = "mavity-tui-components"
+version = "0.0.0"
+source = "git+https://github.com/EpicVon2468/mavity-tui-components/#39d7b60b9673f8ae14cde96f91ff86d963d70122"
+dependencies = [
+ "anyhow",
+ "crossterm",
+ "ratatui-core",
 ]
 
 [[package]]

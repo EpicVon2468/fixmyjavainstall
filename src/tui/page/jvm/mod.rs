@@ -1,13 +1,14 @@
 #![cfg(feature = "tui")]
 pub mod install_option;
 
+use mtc::{App as _, Component};
+
 use ratatui::Frame;
 use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::{Offset, Rect};
 use ratatui::widgets::Tabs;
 
 use crate::tui::app::FujiApp;
-use crate::tui::component::Component;
 use crate::tui::component::exit_dialogue::ExitDialogue;
 use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
@@ -106,7 +107,7 @@ impl Page for JVMPage {
 	}
 }
 
-impl Component for JVMPage {
+impl Component<FujiApp> for JVMPage {
 	fn propagate_events(&mut self, app: &FujiApp) -> anyhow::Result<bool> {
 		if self.exit_dialogue.propagate_events(app)? {
 			return Ok(true);

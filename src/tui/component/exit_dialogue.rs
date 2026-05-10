@@ -1,4 +1,6 @@
 #![cfg(feature = "tui")]
+use mtc::{App as _, Component};
+
 use ratatui::Frame;
 use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::{Constraint, Layout, Margin, Offset, Rect};
@@ -10,7 +12,6 @@ use unicode_width::UnicodeWidthStr as _;
 
 use crate::tui::INVERTED;
 use crate::tui::app::FujiApp;
-use crate::tui::component::Component;
 use crate::{centred_horizontally, static_layout, to_u16};
 
 pub struct ExitDialogue {
@@ -123,7 +124,7 @@ impl ExitDialogue {
 	}
 }
 
-impl Component for ExitDialogue {
+impl Component<FujiApp> for ExitDialogue {
 	fn propagate_events(&mut self, app: &FujiApp) -> anyhow::Result<bool> {
 		if self.state != DialogueState::Shown {
 			return Ok(false);
