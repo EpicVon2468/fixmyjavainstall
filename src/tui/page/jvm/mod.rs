@@ -1,7 +1,7 @@
 #![cfg(feature = "tui")]
 pub mod install_option;
 
-use mtc::{App as _, Component};
+use mtc::{App as _, Component, ExitDialogue};
 
 use ratatui::Frame;
 use ratatui::crossterm::event::KeyCode;
@@ -9,7 +9,6 @@ use ratatui::layout::{Offset, Rect};
 use ratatui::widgets::Tabs;
 
 use crate::tui::app::FujiApp;
-use crate::tui::component::exit_dialogue::ExitDialogue;
 use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
 use crate::tui::page::jvm::install_option::InstallOption;
