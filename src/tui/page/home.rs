@@ -1,5 +1,7 @@
 #![cfg(feature = "tui")]
-use mtc::{App as _, Component, static_layout};
+use anyhow::Result;
+
+use mtc::{App as _, Component, NewPage, Page, static_layout};
 
 use ratatui::Frame;
 use ratatui::crossterm::event::KeyCode;
@@ -7,7 +9,6 @@ use ratatui::layout::{Constraint, Layout, Rect};
 
 use crate::tui::app::FujiApp;
 use crate::tui::component::logo::FujiLogo;
-use crate::tui::page::Page;
 use crate::tui::page::jvm::JVMPage;
 
 #[derive_const(Default)]
@@ -20,11 +21,12 @@ static_layout!(Layout::vertical([
 	Constraint::Fill(1)
 ]));
 
-impl Page for HomePage {
-	fn propagate_page_events(
-		&mut self,
-		app: &FujiApp,
-	) -> anyhow::Result<(bool, Option<Box<dyn Page>>)> {
+impl Page<FujiApp> for HomePage {
+	fn title(&self) -> &'static str {
+		"A JVM & Kotlin Management Utility"
+	}
+
+	fn propagate_page_events(&mut self, app: &FujiApp) -> Result<(bool, NewPage<FujiApp>)> {
 		if self.propagate_events(app)? {
 			return Ok((true, None));
 		};
@@ -37,7 +39,7 @@ impl Page for HomePage {
 }
 
 impl Component<FujiApp> for HomePage {
-	fn propagate_events(&mut self, app: &FujiApp) -> anyhow::Result<bool> {
+	fn propagate_events(&mut self, app: &FujiApp) -> Result<bool> {
 		self.logo.propagate_events(app)
 	}
 

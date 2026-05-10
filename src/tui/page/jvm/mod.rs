@@ -1,7 +1,9 @@
 #![cfg(feature = "tui")]
 pub mod install_option;
 
-use mtc::{App as _, Component, ExitDialogue};
+use anyhow::Result;
+
+use mtc::{App as _, Component, ExitDialogue, NewPage, Page};
 
 use ratatui::Frame;
 use ratatui::crossterm::event::KeyCode;
@@ -9,7 +11,6 @@ use ratatui::layout::{Offset, Rect};
 use ratatui::widgets::Tabs;
 
 use crate::tui::app::FujiApp;
-use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
 use crate::tui::page::jvm::install_option::InstallOption;
 use crate::tui::page::jvm::install_option::arch_option::ArchOption;
@@ -87,15 +88,12 @@ impl JVMPage {
 	}
 }
 
-impl Page for JVMPage {
+impl Page<FujiApp> for JVMPage {
 	fn title(&self) -> &'static str {
 		"Installation Configuration"
 	}
 
-	fn propagate_page_events(
-		&mut self,
-		app: &FujiApp,
-	) -> anyhow::Result<(bool, Option<Box<dyn Page>>)> {
+	fn propagate_page_events(&mut self, app: &FujiApp) -> Result<(bool, NewPage<FujiApp>)> {
 		if self.propagate_events(app)? {
 			if self.exit_dialogue.should_exit() {
 				return Ok((true, Some(Box::new(HomePage::default()))));

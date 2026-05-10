@@ -1,7 +1,7 @@
 #![cfg(feature = "tui")]
 use anyhow::{Context as _, Result};
 
-use mtc::{App, Component as _, static_layout};
+use mtc::{App, BoxPage, Component as _, NewPage, static_layout};
 
 use ratatui::crossterm::event::{Event, KeyCode, read};
 use ratatui::layout::{Constraint, Layout, Rect};
@@ -11,13 +11,12 @@ use ratatui::widgets::{Block, BorderType, Padding};
 use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
 
 use crate::tui::component::help::HelpSection;
-use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;
 
 pub struct FujiApp {
 	// TODO: mark this field as unsafe via https://github.com/rust-lang/rust/issues/132922
 	//  RustRover currently throws errors around parsing since it doesn't know about the feature, so can't use it yet...
-	page: *mut Box<dyn Page>,
+	page: *mut BoxPage<Self>,
 	event: Option<KeyCode>,
 	prev_event: Option<KeyCode>,
 	help_section: HelpSection,
@@ -49,7 +48,7 @@ impl FujiApp {
 		result
 	}
 
-	const fn page(&self) -> *mut Box<dyn Page> {
+	const unsafe fn page(&self) -> *mut BoxPage<Self> {
 		self.page
 	}
 
@@ -69,18 +68,30 @@ impl FujiApp {
 	/// - Memory leaks.
 	/// - Double `free()`s.
 	#[must_use = "Dropping this value can cause undefined behaviour!"]
-	const unsafe fn get_page(&self) -> Box<dyn Page> {
+	const unsafe fn get_page(&self) -> BoxPage<Self> {
+		// SAFETY:
+		// Problem(s):
+		// - Pointers are unsafe.
+		// Excuse(s):
+		// - See below.
+		let ptr: *mut BoxPage<Self> = unsafe { self.page() };
 		// SAFETY:
 		// Problem(s):
 		// - Pointers are unsafe.
 		// Excuse(s):
 		// - This function is only invoked by trusted callers in a safe manner.
 		// - Both this function and the underlying struct field are private and cannot be unexpectedly mutated.
-		unsafe { self.page().read() }
+		unsafe { ptr.read() }
 	}
 
 	// &mut isn't actually needed, but it's a good sanity check to avoid 'unexpected' mutation
-	const fn set_page(&mut self, value: Box<dyn Page>) {
+	const fn set_page(&mut self, value: BoxPage<Self>) {
+		// SAFETY:
+		// Problem(s):
+		// - Pointers are unsafe.
+		// Excuse(s):
+		// - See below.
+		let ptr: *mut BoxPage<Self> = unsafe { self.page() };
 		// SAFETY:
 		// Problem(s):
 		// - Pointers are unsafe.
@@ -89,8 +100,8 @@ impl FujiApp {
 		// - Both this function and the underlying struct field are private and cannot be unexpectedly mutated.
 		// - Mutations of [`Self::page`] are not inherently unsafe, and may be performed without consequence.
 		unsafe {
-			self.page().write(value);
-		}
+			ptr.write(value);
+		};
 	}
 }
 
@@ -114,8 +125,8 @@ impl FujiApp {
 		// - If this value goes out of scope, undefined behaviour occurs (see [`Self::get_page`]).
 		// Excuse(s):
 		// - Before the end of scope, a call to [`Self::set_page`] is made, meaning that the contract of [`Self::get_page`] is never violated.
-		let mut page: Box<dyn Page> = unsafe { self.get_page() };
-		let (consumed, new_page): (bool, Option<Box<dyn Page>>) = page
+		let mut page: BoxPage<Self> = unsafe { self.get_page() };
+		let (consumed, new_page): (bool, NewPage<Self>) = page
 			.propagate_page_events(self)
 			.expect("Error occurred during event propagation!");
 		// FIXME: because of ExitDialogue's greedy propagation, this always triggers while ExitDialogue is shown
@@ -149,7 +160,7 @@ impl FujiApp {
 		// - If this value goes out of scope, undefined behaviour occurs (see [`Self::get_page`]).
 		// Excuse(s):
 		// - Before the end of scope, a call to [`Self::set_page`] is made, meaning that the contract of [`Self::get_page`] is never violated.
-		let page: Box<dyn Page> = unsafe { self.get_page() };
+		let page: BoxPage<Self> = unsafe { self.get_page() };
 		let title: String = format!("Fix Ur Java Install – {}", page.title());
 		self.set_page(page);
 		title
@@ -164,7 +175,7 @@ impl FujiApp {
 			// - If this value goes out of scope, undefined behaviour occurs (see [`Self::get_page`]).
 			// Excuse(s):
 			// - Before the end of scope, a call to [`Self::set_page`] is made, meaning that the contract of [`Self::get_page`] is never violated.
-			let page: Box<dyn Page> = unsafe { self.get_page() };
+			let page: BoxPage<Self> = unsafe { self.get_page() };
 			page.render(frame, Self::BORDER.inner(area), self);
 			self.set_page(page);
 		};
