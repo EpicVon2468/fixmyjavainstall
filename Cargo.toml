@@ -102,16 +102,16 @@ required-features = [
 ]
 
 [dependencies]
-clap_mangen = "0"
-which = "8"
-flate2 = "1"
-anyhow = "1"
-console = "0"
-shell-words = "1"
-unicode-width = "0"
+clap_mangen = ">=0.3.0, <1"
+which = ">=8.0.2, <9"
+flate2 = ">=1.1.9, <2"
+anyhow = ">=1.0.102, <2"
+console = ">=0.16.3, <1"
+shell-words = ">=1.1.1, <2"
+unicode-width = ">=0.2.2, <1"
 
 [dependencies.clap]
-version = "4"
+version = ">=4.6.1, <5"
 features = [
 	"derive",
 	"string",
@@ -121,7 +121,7 @@ features = [
 ]
 
 [dependencies.dialoguer]
-version = "0"
+version = ">=0.12.0, <1"
 optional = true
 features = [
 	"editor",
@@ -129,7 +129,7 @@ features = [
 default-features = false
 
 [dependencies.ratatui]
-version = "0"
+version = ">=0.30.0, <1"
 optional = true
 features = [
 	"std",
@@ -139,7 +139,7 @@ features = [
 default-features = false
 
 [dependencies.serde]
-version = "1"
+version = ">=1.0.228, <2"
 features = [
 	"derive",
 ]
@@ -150,7 +150,7 @@ version = ">=0.4.45, <1"
 default-features = false
 
 [dependencies.ureq]
-version = "3"
+version = ">=3.3.0, <4"
 features = [
 	"json",
 	"rustls",
@@ -158,21 +158,21 @@ features = [
 default-features = false
 
 [dependencies.indicatif]
-version = "0"
+version = ">=0.18.4, <1"
 features = [
 	"improved_unicode",
 ]
 default-features = false
 
 [dependencies.zip]
-version = "8"
+version = ">=8.6.0, <9"
 features = [
 	"deflate-flate2",
 ]
 default-features = false
 
 [target.'cfg(windows)'.dependencies]
-windows-registry = "0"
+windows-registry = ">=0.6.1, <1"
 
 [patch.crates-io]
 ring = {

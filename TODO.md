@@ -52,7 +52,7 @@
   - Format only seems to be Markdown/HTML... is "transpiling" the docs possible?  Should it be done per-install, or only once, then hosted in a repository online?
   - <https://pandoc.org/>
   - the `.md` files from OpenJDK contain sequences "quoted" in `@@`.  This breaks YAML parsing of Markdown, and will need to be replaced if this is automated.
-  - `pandoc -s --from=markdown --to=man --output $EXECUTABLE_NAME.1 $EXECUTABLE_NAME.md`
+  - `pandoc -s --from=markdown --to=man --output "$EXECUTABLE_NAME.1" "$EXECUTABLE_NAME.md"`
   - How does licensing work if Fuji distributes the OpenJDK man pages into `/usr/share/man/man1`?
   - If Fuji converts `.md` man pages into (g)roff man pages, how does licensing work?
   - Either way, make sure to manually restore the licence header to the converted files, as `pandoc` seems to trim it...
