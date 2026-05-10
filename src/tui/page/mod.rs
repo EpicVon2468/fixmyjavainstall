@@ -10,5 +10,8 @@ pub const trait Page: Component {
 		"A JVM & Kotlin Management Utility"
 	}
 
-	fn propagate_page_events(&mut self, app: &FujiApp) -> (bool, Option<Box<dyn Page>>);
+	fn propagate_page_events(
+		&mut self,
+		app: &FujiApp,
+	) -> anyhow::Result<(bool, Option<Box<dyn Page>>)>;
 }

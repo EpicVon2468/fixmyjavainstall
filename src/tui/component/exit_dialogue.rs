@@ -124,21 +124,21 @@ impl ExitDialogue {
 }
 
 impl Component for ExitDialogue {
-	fn propagate_events(&mut self, app: &FujiApp) -> bool {
+	fn propagate_events(&mut self, app: &FujiApp) -> anyhow::Result<bool> {
 		if self.state != DialogueState::Shown {
-			return false;
+			return Ok(false);
 		};
 
 		if app.should_shl() || app.should_shr() {
 			self.selected = !self.selected;
-			return true;
+			return Ok(true);
 		};
 		if app.is_key_down(KeyCode::Enter) {
 			self.state = DialogueState::Hidden(self.selected);
-			return true;
+			return Ok(true);
 		};
 		// ExitDialogue consumes all input events as it is the primary focus Component if it is shown
-		true
+		Ok(true)
 	}
 
 	fn render(&self, frame: &mut Frame, area: Rect, _app: &FujiApp) {

@@ -92,38 +92,41 @@ impl Page for JVMPage {
 		"Installation Configuration"
 	}
 
-	fn propagate_page_events(&mut self, app: &FujiApp) -> (bool, Option<Box<dyn Page>>) {
-		if self.propagate_events(app) {
+	fn propagate_page_events(
+		&mut self,
+		app: &FujiApp,
+	) -> anyhow::Result<(bool, Option<Box<dyn Page>>)> {
+		if self.propagate_events(app)? {
 			if self.exit_dialogue.should_exit() {
-				return (true, Some(Box::new(HomePage::default())));
+				return Ok((true, Some(Box::new(HomePage::default()))));
 			};
-			return (true, None);
+			return Ok((true, None));
 		};
-		(false, None)
+		Ok((false, None))
 	}
 }
 
 impl Component for JVMPage {
-	fn propagate_events(&mut self, app: &FujiApp) -> bool {
-		if self.exit_dialogue.propagate_events(app) {
-			return true;
+	fn propagate_events(&mut self, app: &FujiApp) -> anyhow::Result<bool> {
+		if self.exit_dialogue.propagate_events(app)? {
+			return Ok(true);
 		};
-		if self.selected_mut().propagate_events(app) {
-			return true;
+		if self.selected_mut().propagate_events(app)? {
+			return Ok(true);
 		};
 		if app.is_key_down(KeyCode::Backspace) {
 			self.exit_dialogue.show();
-			return true;
+			return Ok(true);
 		};
 		if app.should_shl() {
 			self.shift_left();
-			return true;
+			return Ok(true);
 		};
 		if app.should_shr() {
 			self.shift_right();
-			return true;
+			return Ok(true);
 		};
-		false
+		Ok(false)
 	}
 
 	fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) {

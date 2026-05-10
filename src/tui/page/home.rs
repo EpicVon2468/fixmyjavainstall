@@ -21,20 +21,23 @@ static_layout!(Layout::vertical([
 ]));
 
 impl Page for HomePage {
-	fn propagate_page_events(&mut self, app: &FujiApp) -> (bool, Option<Box<dyn Page>>) {
-		if self.propagate_events(app) {
-			return (true, None);
+	fn propagate_page_events(
+		&mut self,
+		app: &FujiApp,
+	) -> anyhow::Result<(bool, Option<Box<dyn Page>>)> {
+		if self.propagate_events(app)? {
+			return Ok((true, None));
 		};
 		if app.is_key_down(KeyCode::Enter) {
-			(true, Some(Box::new(JVMPage::default())))
+			Ok((true, Some(Box::new(JVMPage::default()))))
 		} else {
-			(false, None)
+			Ok((false, None))
 		}
 	}
 }
 
 impl Component for HomePage {
-	fn propagate_events(&mut self, app: &FujiApp) -> bool {
+	fn propagate_events(&mut self, app: &FujiApp) -> anyhow::Result<bool> {
 		self.logo.propagate_events(app)
 	}
 
