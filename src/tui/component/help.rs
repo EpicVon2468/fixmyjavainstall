@@ -1,12 +1,10 @@
 #![cfg(feature = "tui")]
-use mtc::Component;
+use mtc::{Component, INVERTED, static_layout};
 
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::{Line, Span};
 
-use crate::static_layout;
-use crate::tui::INVERTED;
 use crate::tui::app::FujiApp;
 
 #[derive_const(Default)]

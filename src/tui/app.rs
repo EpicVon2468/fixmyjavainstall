@@ -1,7 +1,7 @@
 #![cfg(feature = "tui")]
 use anyhow::{Context as _, Result};
 
-use mtc::{App, Component as _};
+use mtc::{App, Component as _, static_layout};
 
 use ratatui::crossterm::event::{Event, KeyCode, read};
 use ratatui::layout::{Constraint, Layout, Rect};
@@ -10,7 +10,6 @@ use ratatui::style::Stylize as _;
 use ratatui::widgets::{Block, BorderType, Padding};
 use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
 
-use crate::static_layout;
 use crate::tui::component::help::HelpSection;
 use crate::tui::page::Page;
 use crate::tui::page::home::HomePage;

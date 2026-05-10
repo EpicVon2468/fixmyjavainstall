@@ -1,5 +1,5 @@
 #![cfg(feature = "tui")]
-use mtc::Component;
+use mtc::{Component, centred_horizontally, static_anything, static_layout};
 
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout, Rect};
@@ -8,8 +8,8 @@ use ratatui::text::Text;
 
 use unicode_width::UnicodeWidthStr as _;
 
+use crate::LONG_VERSION;
 use crate::tui::app::FujiApp;
-use crate::{LONG_VERSION, centred_horizontally, static_anything, static_layout};
 
 // requires at least a vertical Constraint::Length(6) (preferably 7 for the one line of space)
 #[derive_const(Default)]

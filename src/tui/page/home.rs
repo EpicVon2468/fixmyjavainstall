@@ -1,11 +1,10 @@
 #![cfg(feature = "tui")]
-use mtc::{App as _, Component};
+use mtc::{App as _, Component, static_layout};
 
 use ratatui::Frame;
 use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::{Constraint, Layout, Rect};
 
-use crate::static_layout;
 use crate::tui::app::FujiApp;
 use crate::tui::component::logo::FujiLogo;
 use crate::tui::page::Page;
