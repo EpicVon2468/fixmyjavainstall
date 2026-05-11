@@ -215,21 +215,6 @@ impl App for FujiApp {
 		self.key_down(true, key)
 	}
 
-	/// Whether the [`FujiApp`] should exit.
-	///
-	/// Returns: if the sequence `:q` was pressed.
-	fn should_exit(&self) -> bool {
-		self.was_key_down(KeyCode::Char(':')) && self.is_key_down(KeyCode::Char('q'))
-	}
-
-	fn should_shl(&self) -> bool {
-		self.is_key_down(KeyCode::Left) || self.is_key_down(KeyCode::BackTab)
-	}
-
-	fn should_shr(&self) -> bool {
-		self.is_key_down(KeyCode::Right) || self.is_key_down(KeyCode::Tab)
-	}
-
 	fn submit(&mut self, _event: Self::Event, _closure: fn()) -> bool {
 		log_err!("Unsupported operation!");
 		false
