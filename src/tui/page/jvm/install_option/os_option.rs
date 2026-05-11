@@ -1,14 +1,8 @@
 #![cfg(all(feature = "tui", feature = "multi-os"))]
-use clap::ValueEnum as _;
-
 use mtc::{Component, List, ListEntry};
-
-use ratatui::Frame;
-use ratatui::layout::Rect;
 
 use crate::install_option;
 use crate::os::OS;
-use crate::tui::app::FujiApp;
 use crate::tui::page::jvm::install_option::InstallOption;
 
 impl const ListEntry for OS {

@@ -21,26 +21,34 @@ pub const trait InstallOption: Component<FujiApp> {
 
 #[macro_export]
 macro_rules! install_option {
-	($name:ident, $underlying_type:ty) => {
+	($name:ident, $underlying_type:ty $(,)?) => {
 		install_option!($name, $underlying_type, false);
 	};
-	($name:ident, $underlying_type:ty, $multi_select:literal) => {
+	($name:ident, $underlying_type:ty, $multi_select:literal $(,)?) => {
 		#[automatically_derived]
 		impl Default for $name<'_> {
 			fn default() -> Self {
 				Self {
-					list: List::from(<$underlying_type>::value_variants(), $multi_select),
+					list: mtc::List::from(
+						<$underlying_type as clap::ValueEnum>::value_variants(),
+						$multi_select,
+					),
 				}
 			}
 		}
 
 		#[automatically_derived]
 		impl Component<$crate::tui::app::FujiApp> for $name<'_> {
-			fn propagate_events(&mut self, app: &mut FujiApp) -> bool {
+			fn propagate_events(&mut self, app: &mut $crate::tui::app::FujiApp) -> bool {
 				self.list.propagate_events(app)
 			}
 
-			fn render(&self, frame: &mut Frame, area: Rect, app: &FujiApp) {
+			fn render(
+				&self,
+				frame: &mut ratatui::Frame,
+				area: ratatui::layout::Rect,
+				app: &$crate::tui::app::FujiApp,
+			) {
 				self.list.render(frame, area, app);
 			}
 		}
