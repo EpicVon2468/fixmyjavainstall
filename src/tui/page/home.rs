@@ -16,7 +16,7 @@ pub struct HomePage {
 
 static_layout!(Layout::vertical([
 	Constraint::Length(7),
-	Constraint::Fill(1)
+	Constraint::Fill(1),
 ]));
 
 impl Page<FujiApp> for HomePage {
@@ -24,7 +24,7 @@ impl Page<FujiApp> for HomePage {
 		"A JVM & Kotlin Management Utility"
 	}
 
-	fn propagate_page_events(&mut self, app: &FujiApp) -> (bool, NewPage<FujiApp>) {
+	fn propagate_page_events(&mut self, app: &mut FujiApp) -> (bool, NewPage<FujiApp>) {
 		if self.propagate_events(app) {
 			return (true, None);
 		};
@@ -37,7 +37,7 @@ impl Page<FujiApp> for HomePage {
 }
 
 impl Component<FujiApp> for HomePage {
-	fn propagate_events(&mut self, app: &FujiApp) -> bool {
+	fn propagate_events(&mut self, app: &mut FujiApp) -> bool {
 		self.logo.propagate_events(app)
 	}
 

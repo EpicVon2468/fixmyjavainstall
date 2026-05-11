@@ -10,6 +10,7 @@ use ratatui::style::Stylize as _;
 use ratatui::widgets::{Block, BorderType, Padding};
 use ratatui::{DefaultTerminal, Frame, try_init, try_restore};
 
+use crate::log_err;
 use crate::tui::component::help::HelpSection;
 use crate::tui::page::home::HomePage;
 
@@ -204,6 +205,8 @@ impl FujiApp {
 }
 
 impl App for FujiApp {
+	type Event = ();
+
 	fn is_key_down(&self, key: KeyCode) -> bool {
 		self.key_down(false, key)
 	}
@@ -225,5 +228,10 @@ impl App for FujiApp {
 
 	fn should_shr(&self) -> bool {
 		self.is_key_down(KeyCode::Right) || self.is_key_down(KeyCode::Tab)
+	}
+
+	fn submit(&mut self, _event: Self::Event, _closure: fn()) -> bool {
+		log_err!("Unsupported operation!");
+		false
 	}
 }

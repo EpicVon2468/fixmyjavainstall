@@ -91,7 +91,7 @@ impl Page<FujiApp> for JVMPage {
 		"Installation Configuration"
 	}
 
-	fn propagate_page_events(&mut self, app: &FujiApp) -> (bool, NewPage<FujiApp>) {
+	fn propagate_page_events(&mut self, app: &mut FujiApp) -> (bool, NewPage<FujiApp>) {
 		if self.propagate_events(app) {
 			if self.exit_dialogue.should_exit() {
 				return (true, Some(Box::new(HomePage::default())));
@@ -103,7 +103,7 @@ impl Page<FujiApp> for JVMPage {
 }
 
 impl Component<FujiApp> for JVMPage {
-	fn propagate_events(&mut self, app: &FujiApp) -> bool {
+	fn propagate_events(&mut self, app: &mut FujiApp) -> bool {
 		if self.exit_dialogue.propagate_events(app) {
 			return true;
 		};
