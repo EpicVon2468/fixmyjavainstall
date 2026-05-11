@@ -43,7 +43,7 @@ See [INSTALLATION.md](https://github.com/EpicVon2468/fixurjavainstall/blob/maste
 
 ## Use of "Artificial Intelligence" ("AI") / Large Language Models (LLMs)
 
-"Artificial Intelligence" ("AI") / LLMs are strictly prohibited from being used in contributions to Fuji.
+"Artificial Intelligence" ("AI") / Large Language Models (LLMs) are strictly prohibited from being used in contributions to Fuji.
 
 [Further details are available here.](https://github.com/EpicVon2468/fixurjavainstall/blob/master/CONTRIBUTING.md#use-of-artificial-intelligence-ai--large-language-models-llms)
 

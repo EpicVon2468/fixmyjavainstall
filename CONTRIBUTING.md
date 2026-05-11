@@ -6,7 +6,7 @@ This document outlines the expectations for any contributions to Fuji.  It is re
 
 ### Use of "Artificial Intelligence" ("AI") / Large Language Models (LLMs)
 
-> TL;DR: "AI" / LLMs are strictly prohibited from being used in contributions to Fuji.
+> TL;DR: "Artificial Intelligence" ("AI") / Large Language Models (LLMs) are strictly prohibited from being used in contributions to Fuji.
 
 Contributions cannot be made with the use of "Artificial Intelligence" ("AI") / Large Language Models (LLMs).<br>
 You may not use "AI" / LLMs for discussions, commits, reviewing or creating code, or any contributions whatsoever (even those not listed explicitly here).<br>
