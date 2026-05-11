@@ -1,7 +1,7 @@
 #![cfg(feature = "tui")]
 pub mod install_option;
 
-use mtc::{App as _, Component, ExitDialogue, NewPage, Page};
+use mtc::{App as _, Component, ExitDialogue, NewPage, Page, shift_horizontal};
 
 use ratatui::Frame;
 use ratatui::crossterm::event::KeyCode;
@@ -64,27 +64,9 @@ impl JVMPage {
 	fn last_index(&self) -> usize {
 		self.tabs.len().saturating_sub(1)
 	}
-
-	fn shift_left(&mut self) -> &mut Self {
-		let old: usize = self.selected;
-		self.selected = if old == 0 {
-			self.last_index()
-		} else {
-			old.saturating_sub(1)
-		};
-		self
-	}
-
-	fn shift_right(&mut self) -> &mut Self {
-		let old: usize = self.selected;
-		self.selected = if old == self.last_index() {
-			0
-		} else {
-			old.saturating_add(1)
-		};
-		self
-	}
 }
+
+shift_horizontal!(JVMPage, usize);
 
 impl Page<FujiApp> for JVMPage {
 	fn title(&self) -> &'static str {
