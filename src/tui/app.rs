@@ -49,6 +49,9 @@ impl FujiApp {
 		result
 	}
 
+	/// # Safety
+	///
+	/// Callers ensure the safe use of this pointer.
 	const unsafe fn page(&self) -> *mut BoxPage<Self> {
 		self.page
 	}
