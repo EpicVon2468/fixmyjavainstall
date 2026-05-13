@@ -38,7 +38,6 @@ pub fn has_program(name: &str) -> bool {
 /// * `archive`: The path to a `.zip` or `.tar.gz` file containing the JVM.
 /// * `dest`: The destination folder to extract into.
 /// * `is_zip`: Whether `archive` is a `.zip` file.
-/// * `is_mac`: Whether `archive` is a macOS JVM.
 ///
 /// # Errors
 ///
@@ -85,27 +84,26 @@ pub fn has_program(name: &str) -> bool {
 /// ```
 /// use fuji::commands::extract_jvm;
 ///
-/// assert_eq!(extract_jvm("java-25-linux.tar.gz", "./java-25-linux", false, false), Ok(()));
+/// assert_eq!(extract_jvm("java-25-linux.tar.gz", "./java-25-linux", false), Ok(()));
 /// ```
 ///
 /// Extracting a macOS JVM:
 /// ```
 /// use fuji::commands::extract_jvm;
 ///
-/// assert_eq!(extract_jvm("java-25-osx.tar.gz", "./java-25-osx", false, true), Ok(()));
+/// assert_eq!(extract_jvm("java-25-osx.tar.gz", "./java-25-osx", false), Ok(()));
 /// ```
 ///
 /// Extracting a Windows JVM:
 /// ```
 /// use fuji::commands::extract_jvm;
 ///
-/// assert_eq!(extract_jvm("java-25-win.zip", "./java-25-win", true, false), Ok(()));
+/// assert_eq!(extract_jvm("java-25-win.zip", "./java-25-win", true), Ok(()));
 /// ```
 pub fn extract_jvm<S: AsRef<Path>, P: AsRef<Path>>(
 	archive: S,
 	dest: P,
 	is_zip: bool,
-	is_mac: bool,
 ) -> Result<()> {
 	let dest: &Path = &dest
 		.as_ref()
@@ -114,16 +112,16 @@ pub fn extract_jvm<S: AsRef<Path>, P: AsRef<Path>>(
 	let input: File = File::open(archive.as_ref()).context("Couldn't open JVM archive!")?;
 	lock!(input);
 	let result: Result<()> = if is_zip {
-		extract_jvm_zip(dest, &input, is_mac)
+		extract_jvm_zip(dest, &input)
 	} else {
-		extract_jvm_tar_gz(dest, &input, is_mac)
+		extract_jvm_tar_gz(dest, &input)
 	};
 	println!("Done.\n");
 	unlock!(input);
 	result
 }
 
-pub fn extract_jvm_tar_gz(dest: &Path, input: &File, is_mac: bool) -> Result<()> {
+pub fn extract_jvm_tar_gz(dest: &Path, input: &File) -> Result<()> {
 	let multi: MultiProgress = MultiProgress::new();
 	let max_len: u64 = input.metadata()?.len();
 	let pb: ProgressBar = multi.add(progress_bar(max_len));
@@ -151,7 +149,6 @@ pub fn extract_jvm_tar_gz(dest: &Path, input: &File, is_mac: bool) -> Result<()>
 				.context("Couldn't get path for entry in JVM archive!")?
 				.to_path_buf()
 				.as_path(),
-			is_mac,
 			|resolved: &Path| {
 				e_pb.clone().with_message(resolved.display().to_string());
 				entry.unpack(resolved)?;
@@ -173,7 +170,7 @@ pub fn extract_jvm_tar_gz(dest: &Path, input: &File, is_mac: bool) -> Result<()>
 	Ok(())
 }
 
-pub fn extract_jvm_zip(dest: &Path, input: &File, is_mac: bool) -> Result<()> {
+pub fn extract_jvm_zip(dest: &Path, input: &File) -> Result<()> {
 	let mut archive: ZipArchive<&File> =
 		ZipArchive::new(input).context("Couldn't open JVM archive!")?;
 	let multi: MultiProgress = MultiProgress::new();
@@ -204,7 +201,6 @@ pub fn extract_jvm_zip(dest: &Path, input: &File, is_mac: bool) -> Result<()> {
 				.enclosed_name()
 				.context("Couldn't get path for entry in JVM archive (ZIP)!")?
 				.as_path(),
-			is_mac,
 			|resolved: &Path| {
 				#[cfg(unix)]
 				let mode: Option<u32> = entry.unix_mode();
@@ -266,7 +262,7 @@ pub const fn is_executable(mode: u32) -> bool {
 }
 
 #[inline]
-pub fn extract_jvm_entry<F>(dest: &Path, path: &Path, is_mac: bool, mut unpack: F) -> Result<()>
+pub fn extract_jvm_entry<F>(dest: &Path, path: &Path, mut unpack: F) -> Result<()>
 where
 	F: FnMut(&Path) -> Result<()>, {
 	let mut components: Components = path.components();
@@ -278,7 +274,7 @@ where
 		bail!("Component::ParentDir found!");
 	};
 	// macOS .tar.gz is laid out differently.  it's a '.app'...
-	if is_mac {
+	if cfg!(target_os = "macos") {
 		// skip "Contents"
 		components.next();
 		// only allow paths under "Home"

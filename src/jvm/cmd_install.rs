@@ -16,7 +16,6 @@ use crate::jvm::jvm_temurin::download_temurin;
 use crate::jvm::major_version::MajorVersion;
 use crate::jvm::wrapper::{gen_wrapper, install_wrapper};
 use crate::jvm::{JavaVersion, Op};
-use crate::os::OS;
 use crate::{FUJI_DIR, LINK_DIR, compiler_unreachable, exists, wrong_cmd};
 
 pub fn cmd_install(op: Op) -> Result<()> {
@@ -24,8 +23,6 @@ pub fn cmd_install(op: Op) -> Result<()> {
 	let Op::Install {
 		jvm,
 		arch,
-		#[cfg(feature = "multi-os")]
-		operating_system: os,
 		install_method,
 		features,
 		dry_run,
@@ -33,10 +30,8 @@ pub fn cmd_install(op: Op) -> Result<()> {
 	}: Op = op else {
 		wrong_cmd!(cmd_install);
 	};
-	#[cfg(not(feature = "multi-os"))]
-	let os: OS = Default::default();
 	let java_version: JavaVersion = if jvm == JVM::Liberica {
-		let download_uri: String = get_liberica_download(&features, &os, &arch, &version)?;
+		let download_uri: String = get_liberica_download(&features, &arch, &version)?;
 		JavaVersion {
 			major: download_uri,
 			specific: String::new(),
@@ -81,18 +76,16 @@ pub fn cmd_install(op: Op) -> Result<()> {
 		arch,
 		version: java_version,
 		features: &features,
-		os: os.clone(),
 		java_home,
 		dry_run,
 	}).context("Couldn't download JVM!")?;
-	// https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
-	let is_win: bool = os == OS::Windows;
-	let mut executable_suffixes: Vec<&str> = vec![""];
-	if is_win {
-		executable_suffixes.pop();
-		// executable_suffixes.push("w");
+	let executable_suffixes: Vec<&str> = cfg_select! {
+		// https://stackoverflow.com/questions/1997718/difference-between-java-exe-and-javaw-exe
+		// FIXME: this should be vec!["", "w"]
+		windows => vec![],
+		_ => vec![""],
 	};
-	wrap_executables(&features, dry_run, java_home, is_win, executable_suffixes)?;
+	wrap_executables(&features, dry_run, java_home, executable_suffixes)?;
 	if dry_run {
 		return Ok(());
 	};
@@ -114,11 +107,10 @@ fn wrap_executables(
 	features: &[Feature],
 	dry_run: bool,
 	java_home: &Path,
-	is_win: bool,
 	executable_suffixes: Vec<&str>,
 ) -> Result<()> {
 	for suffix in executable_suffixes {
-		let suffix: &str = if is_win {
+		let suffix: &str = if cfg!(windows) {
 			// `java.exe` & `javaw.exe`
 			&format!("{suffix}.exe")
 		} else {
@@ -136,10 +128,9 @@ fn wrap_executables(
 			.context("Couldn't backup java executable!")?;
 		#[rustfmt::skip]
 		let script_file: PathBuf = install_wrapper(
-			gen_wrapper(java_home, features, is_win, suffix).as_str(),
+			gen_wrapper(java_home, features, suffix).as_str(),
 			java_home,
 			suffix,
-			is_win,
 		).context("Couldn't install JVM wrapper script!")?;
 		// link JAVA_HOME/bin/java(w)(.exe) to JAVA_HOME/bin/fuji_jvm_wrapper
 		symlink_link(script_file, java_executable).context(

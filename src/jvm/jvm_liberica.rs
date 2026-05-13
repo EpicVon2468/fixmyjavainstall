@@ -10,8 +10,7 @@ use crate::commands::require_intentional;
 use crate::jvm::feature::Feature;
 use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};
 use crate::jvm::major_version::MajorVersion;
-use crate::log_err;
-use crate::os::OS;
+use crate::{log_err, os_archive, os_name};
 
 pub fn download_liberica(args: DownloadJVMArgs) -> Result<()> {
 	jvm_download_impl(args.version.major.clone(), args)
@@ -19,11 +18,10 @@ pub fn download_liberica(args: DownloadJVMArgs) -> Result<()> {
 
 pub fn get_liberica_download(
 	features: &[Feature],
-	os: &OS,
 	arch: &Arch,
 	version: &MajorVersion,
 ) -> Result<String> {
-	let uri: String = get_liberica_endpoint(features, os, arch, version)?;
+	let uri: String = get_liberica_endpoint(features, arch, version)?;
 	let values: Vec<LibericaReleaseInfo> = ureq::get(uri)
 		.call()
 		.context("No Liberica JVM was available for the provided request!")?
@@ -44,24 +42,19 @@ pub fn get_liberica_download(
 
 pub fn get_liberica_endpoint(
 	features: &[Feature],
-	os: &OS,
 	arch: &Arch,
 	version: &MajorVersion,
 ) -> Result<String> {
 	let mut url: String = format!(
-		"https://api.bell-sw.com/v1/liberica/releases?bundle-type={}&bitness=64&version-modifier=latest&os=",
+		"https://api.bell-sw.com/v1/liberica/releases?bundle-type={}&bitness=64&version-modifier=latest&os={}",
 		if features.contains(&Feature::Minimal) {
 			"jre"
 		} else {
 			"jdk"
 		},
+		os_name!(),
 	);
-	let os_name: &str = &os.to_string();
-	url.push_str(match os_name {
-		"osx" => "macos",
-		_ => os_name,
-	});
-	#[cfg(any(target_env = "musl", feature = "multi-os"))]
+	#[cfg(target_env = "musl")]
 	if features.contains(&Feature::MUSL) {
 		url.push_str("-musl");
 	};
@@ -83,7 +76,7 @@ pub fn get_liberica_endpoint(
 	let _ = write!(
 		url,
 		"&package-type={}&installation-type=archive",
-		if os == &OS::Windows { "zip" } else { "tar.gz" },
+		os_archive!(),
 	);
 	Ok(url)
 }

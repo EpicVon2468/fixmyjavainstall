@@ -45,6 +45,31 @@ macro_rules! check_status {
 	}};
 }
 
+#[macro_export]
+macro_rules! os_name {
+	() => {
+		$crate::os_name!(macOS = "osx")
+	};
+	(macOS = $mac_os:expr) => {
+		cfg_select! {
+			windows => "windows",
+			target_os = "linux" => "linux",
+			target_os = "macos" => $mac_os,
+			_ => unimplemented!(),
+		}
+	};
+}
+
+#[macro_export]
+macro_rules! os_archive {
+	() => {
+		cfg_select! {
+			windows => "zip",
+			_ => "tar.gz",
+		}
+	};
+}
+
 /// [`Locks`][`std::fs::File::try_lock`] a file.
 #[macro_export]
 macro_rules! lock {

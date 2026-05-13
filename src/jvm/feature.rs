@@ -33,7 +33,7 @@ pub enum Feature {
 	/// See also:
 	///
 	/// - <https://openjdk.org/projects/wakefield/>.
-	#[cfg(any(target_os = "linux", feature = "multi-os"))]
+	#[cfg(target_os = "linux")]
 	#[value(aliases = vec!["wakefield", "wltoolkit", "wl"])]
 	Wayland,
 	/// OpenGL for AWT/Swing.
@@ -53,7 +53,7 @@ pub enum Feature {
 	///
 	/// - <https://openjdk.org/jeps/382>.
 	/// - <https://openjdk.org/projects/lanai/>.
-	#[cfg(any(target_os = "macos", feature = "multi-os"))]
+	#[cfg(target_os = "macos")]
 	#[value(alias = "lanai")]
 	Metal,
 	/// Vulkan for AWT/Swing.
@@ -112,12 +112,12 @@ pub enum Feature {
 	/// General fixes for NVIDIA GPUs on Linux.
 	///
 	/// Rendering may not work correctly or even at all without these.
-	#[cfg(any(target_os = "linux", feature = "multi-os"))]
+	#[cfg(target_os = "linux")]
 	NVIDIA,
 	/// MUSL libc support – <https://musl.libc.org/>.
 	///
 	/// It is unlikely that a glibc JVM will work on MUSL.  Additionally, MUSL support is few and far between amongst JVM vendors.
-	#[cfg(any(target_env = "musl", feature = "multi-os"))]
+	#[cfg(target_env = "musl")]
 	MUSL,
 	/// Bundles Kotlin with the JVM – <https://kotlinlang.org/>.
 	Kotlin,

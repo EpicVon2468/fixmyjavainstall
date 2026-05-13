@@ -37,7 +37,7 @@
   - [ ] Clojure
   - [ ] Scala (?)
   - [ ] Groovy -- never
-- [ ] Clean-up or remove `multi-os` -- before 1.0.0
+- [X] Clean-up or remove `multi-os` -- before 1.0.0
 - [ ] Use & implement `InstallMethod` -- before 1.0.0
 - [ ] Eclipse Java LSP installation
 - [ ] Install locally built JDK/JDK from disc

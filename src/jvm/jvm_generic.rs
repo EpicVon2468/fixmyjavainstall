@@ -5,10 +5,9 @@ use anyhow::{Context as _, Result};
 
 use crate::arch::Arch;
 use crate::commands::{download, extract_jvm};
-use crate::exists;
 use crate::jvm::JavaVersion;
 use crate::jvm::feature::Feature;
-use crate::os::OS;
+use crate::{exists, os_archive};
 
 pub type DownloadJVMFn = fn(args: DownloadJVMArgs) -> Result<()>;
 
@@ -16,21 +15,8 @@ pub struct DownloadJVMArgs<'a> {
 	pub arch: Arch,
 	pub version: JavaVersion,
 	pub features: &'a [Feature],
-	pub os: OS,
 	pub java_home: &'a Path,
 	pub dry_run: bool,
-}
-
-impl DownloadJVMArgs<'_> {
-	#[must_use]
-	pub const fn is_win(&self) -> bool {
-		self.os == OS::Windows
-	}
-
-	#[must_use]
-	pub const fn is_mac(&self) -> bool {
-		self.os == OS::OSX
-	}
 }
 
 #[expect(
@@ -40,8 +26,7 @@ impl DownloadJVMArgs<'_> {
 pub fn jvm_download_impl<S: AsRef<str>>(url: S, args: DownloadJVMArgs) -> Result<()> {
 	let url: &str = url.as_ref();
 	let java_home: &Path = args.java_home;
-	let is_win: bool = args.is_win();
-	let archive: &Path = &java_home.with_added_extension(if is_win { "zip" } else { "tar.gz" });
+	let archive: &Path = &java_home.with_added_extension(os_archive!());
 
 	println!("Downloading JVM: {url}...");
 	if args.dry_run {
@@ -59,7 +44,7 @@ pub fn jvm_download_impl<S: AsRef<str>>(url: S, args: DownloadJVMArgs) -> Result
 	download(url, archive).context("Couldn't download JVM archive!")?;
 
 	println!("Extracting JVM...");
-	extract_jvm(archive, java_home, is_win, args.is_mac()).context("Couldn't extract JVM!")?;
+	extract_jvm(archive, java_home, cfg!(windows)).context("Couldn't extract JVM!")?;
 
 	println!("Removing JVM archive...");
 	remove_file(archive).context("Couldn't delete JVM archive!")?;

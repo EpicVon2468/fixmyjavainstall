@@ -10,11 +10,10 @@ use crate::jvm::feature::Feature;
 
 #[inline]
 #[must_use]
-pub fn gen_wrapper(java_home: &Path, features: &[Feature], is_win: bool, suffix: &str) -> String {
-	if is_win {
-		gen_wrapper_win(java_home, features, suffix)
-	} else {
-		gen_wrapper_unix(java_home, features, suffix)
+pub fn gen_wrapper(java_home: &Path, features: &[Feature], suffix: &str) -> String {
+	cfg_select! {
+		windows => gen_wrapper_win(java_home, features, suffix),
+		_ => gen_wrapper_unix(java_home, features, suffix),
 	}
 }
 
@@ -32,6 +31,7 @@ pub fn gen_wrapper(java_home: &Path, features: &[Feature], is_win: bool, suffix:
 // )
 //
 // start /b /wait "" "%JAVA_HOME%\bin\java.exe" %*
+#[cfg(windows)]
 fn gen_wrapper_win(java_home: &Path, features: &[Feature], bin_suffix: &str) -> String {
 	let mut result: String = String::with_capacity(500);
 
@@ -71,7 +71,7 @@ fn gen_wrapper_unix(java_home: &Path, features: &[Feature], bin_suffix: &str) ->
 		format!("# {comment}\nset -- {args} \"$@\"\n\n")
 	});
 
-	#[cfg(any(target_os = "linux", feature = "multi-os"))]
+	#[cfg(target_os = "linux")]
 	if features.contains(&Feature::NVIDIA) {
 		result.push_str("# General fixes for NVIDIA GPUs on Linux\n");
 		result.push_str("export __GL_THREADED_OPTIMIZATIONS=0\n\n");
@@ -108,7 +108,7 @@ fn gen_features<F: Fn(&str, &str) -> String>(
 	};
 	#[allow(unused_mut)]
 	let mut requires_vulkan: bool = false;
-	#[cfg(any(target_os = "linux", feature = "multi-os"))]
+	#[cfg(target_os = "linux")]
 	if features.contains(&Feature::Wayland) {
 		fuji_jvm_arg(
 			"Wayland support (requires Vulkan) – https://wiki.openjdk.org/spaces/wakefield/pages/77693134/Pure+Wayland+toolkit+prototype",
@@ -128,7 +128,7 @@ fn gen_features<F: Fn(&str, &str) -> String>(
 			"-Dsun.java2d.opengl=true",
 		);
 	};
-	#[cfg(any(target_os = "macos", feature = "multi-os"))]
+	#[cfg(target_os = "macos")]
 	if features.contains(&Feature::Metal) {
 		assert!(
 			!requires_vulkan,
@@ -174,17 +174,15 @@ fn gen_features<F: Fn(&str, &str) -> String>(
 	};
 }
 
-pub fn install_wrapper(
-	script: &str,
-	java_home: &Path,
-	bin_suffix: &str,
-	is_win: bool,
-) -> Result<PathBuf> {
+pub fn install_wrapper(script: &str, java_home: &Path, bin_suffix: &str) -> Result<PathBuf> {
 	let script_file: PathBuf = java_home.join("bin").join(
 		// fuji_java_wrapper instead of fuji_jvm_wrapper so anything grepping through `ps aux` will still definitely find it
 		format!(
 			"fuji_java_wrapper{bin_suffix}{}",
-			if is_win { ".bat" } else { "" }
+			cfg_select! {
+				windows => ".bat",
+				_ => "",
+			},
 		),
 	);
 	let mut result: File = OpenOptions::new()

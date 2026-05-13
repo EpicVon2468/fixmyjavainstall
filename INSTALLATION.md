@@ -19,8 +19,6 @@ cd fixurjavainstall
 RUSTFLAGS="-C target-cpu=native -O" cargo build --release --path .
 ```
 
-If you would like to be able to install a JVM not made for your system, add `--features multi-os` to your installation command.
-
 ## Documentation:
 
 For standalone in-memory documentation:

@@ -24,14 +24,13 @@ pub struct FujiArgs {
 #[derive_const(Subcommand)]
 #[command(author)]
 pub enum FujiCmd {
-	#[cfg(any(not(windows), feature = "multi-os"))]
+	#[cfg(not(windows))]
 	#[command(author)]
 	Link {
 		/// Input directories.  Note that on UNIX, the `/bin` suffix will be appended for each of these by the program.
 		paths: Vec<PathBuf>,
 
 		/// Directory to link files into.  Does nothing on Windows.
-		#[cfg(any(not(windows), feature = "multi-os"))]
 		#[arg(short, long, value_name = "DIR", default_value = LINK_DIR)]
 		link_dir: PathBuf,
 

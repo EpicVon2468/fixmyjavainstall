@@ -40,8 +40,6 @@ use crate::install_method::InstallMethod;
 use crate::jvm::feature::Feature;
 use crate::jvm::jvm::JVM;
 use crate::jvm::major_version::MajorVersion;
-#[cfg(feature = "multi-os")]
-use crate::os::OS;
 use crate::{compiler_unreachable, wrong_cmd};
 
 #[non_exhaustive]
@@ -66,11 +64,6 @@ pub enum Op {
 		/// Note that not every JVM may support every architecture, and some JVMs may not offer certain features for all architectures.  Generally speaking, x64 (amd64) has the highest level of support overall.
 		#[arg(short, long, default_value_t)]
 		arch: Arch,
-
-		/// The OS for the requested JVM.
-		#[cfg(feature = "multi-os")]
-		#[arg(short, long, visible_alias = "os", default_value_t)]
-		operating_system: OS,
 
 		/// The installation method for the requested JVM.
 		#[arg(short, long, default_value_t)]

@@ -99,8 +99,6 @@ fn do_preset(jvm: JVM, features: Vec<Feature>, version: MajorVersion) -> Result<
 			op: Op::Install {
 				jvm,
 				arch: Default::default(),
-				#[cfg(feature = "multi-os")]
-				operating_system: Default::default(),
 				install_method: Default::default(),
 				features,
 				dry_run: false,

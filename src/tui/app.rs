@@ -33,9 +33,9 @@ impl Default for FujiApp {
 	fn default() -> Self {
 		Self {
 			page: Box::into_raw(Box::new(Box::<HomePage>::default())),
-			event: Default::default(),
-			prev_event: Default::default(),
-			help_section: Default::default(),
+			event: const { Default::default() },
+			prev_event: const { Default::default() },
+			help_section: const { Default::default() },
 		}
 	}
 }

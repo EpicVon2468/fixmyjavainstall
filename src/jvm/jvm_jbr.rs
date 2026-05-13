@@ -6,6 +6,7 @@ use anyhow::Result;
 use crate::jvm::JavaVersion;
 use crate::jvm::feature::Feature;
 use crate::jvm::jvm_generic::{DownloadJVMArgs, jvm_download_impl};
+use crate::{os_archive, os_name};
 
 pub fn download_jbr(args: DownloadJVMArgs) -> Result<()> {
 	let features: &[Feature] = args.features;
@@ -18,17 +19,11 @@ pub fn download_jbr(args: DownloadJVMArgs) -> Result<()> {
 	if features.contains(&Feature::JCEF) {
 		url.push_str("_jcef");
 	};
-	let _ = write!(url, "-{}-{}-", version.specific, args.os);
-	#[cfg(any(target_env = "musl", feature = "multi-os"))]
+	let _ = write!(url, "-{}-{}-", version.specific, os_name!());
+	#[cfg(target_env = "musl")]
 	if features.contains(&Feature::MUSL) {
 		url.push_str("musl-");
 	};
-	let _ = write!(
-		url,
-		"{}-{}.{}",
-		args.arch,
-		version.revision,
-		if args.is_win() { "zip" } else { "tar.gz" },
-	);
+	let _ = write!(url, "{}-{}.{}", args.arch, version.revision, os_archive!());
 	jvm_download_impl(url, args)
 }

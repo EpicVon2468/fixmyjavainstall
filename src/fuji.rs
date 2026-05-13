@@ -79,7 +79,6 @@ pub mod install_method;
 pub mod jvm;
 pub mod kotlin;
 pub mod macros;
-pub mod os;
 #[cfg(feature = "tui")]
 pub mod tui;
 pub mod win_link;
@@ -95,7 +94,7 @@ use anyhow::{Context as _, Result};
 use clap::Parser as _;
 
 use crate::cli::{FujiArgs, FujiCmd};
-#[cfg(any(not(windows), feature = "multi-os"))]
+#[cfg(not(windows))]
 use crate::cmd_link::cmd_link;
 use crate::cmd_man::cmd_man;
 use crate::cmd_manage::cmd_manage;
@@ -251,7 +250,7 @@ pub fn entrypoint(args: FujiArgs) -> Result<()> {
 	let result: Result<()> = args.command.map_or_else(
 		|| Ok(()),
 		|command: FujiCmd| match command {
-			#[cfg(any(not(windows), feature = "multi-os"))]
+			#[cfg(not(windows))]
 			FujiCmd::Link { .. } => cmd_link(command),
 			FujiCmd::Manage { .. } => cmd_manage(command),
 			FujiCmd::Manual { .. } => cmd_man(command),

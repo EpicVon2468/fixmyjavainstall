@@ -14,19 +14,16 @@ use crate::env_util::add_to_path;
 use crate::install_method::InstallMethod;
 use crate::{compiler_unreachable, exists, wait_and_check_status, wrong_cmd};
 
-#[cfg(any(not(windows), feature = "multi-os"))]
+#[cfg(not(windows))]
 pub fn cmd_link(command: FujiCmd) -> Result<()> {
 	#[rustfmt::skip]
 	let FujiCmd::Link {
 		paths,
-		#[cfg(any(not(windows), feature = "multi-os"))]
 		link_dir,
 		install_method,
 	}: FujiCmd = command else {
 		wrong_cmd!(cmd_link);
 	};
-	#[cfg(all(windows, not(feature = "multi-os")))]
-	let link_dir: String = String::new();
 	for path in paths {
 		println!("Linking {}...", path.display());
 		link_impl(&path, &link_dir, &install_method)

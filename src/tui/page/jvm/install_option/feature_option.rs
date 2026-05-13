@@ -12,12 +12,12 @@ impl const ListEntry for Feature {
 			Self::DCEVM => "Dynamic Code Evolution Virtual Machine",
 			Self::JEP519 => "Compact Object Headers",
 
-			#[cfg(any(target_os = "linux", feature = "multi-os"))]
+			#[cfg(target_os = "linux")]
 			Self::Wayland => "Wayland support for AWT/Swing",
 
 			Self::OpenGL => "OpenGL for AWT/Swing",
 
-			#[cfg(any(target_os = "macos", feature = "multi-os"))]
+			#[cfg(target_os = "macos")]
 			Self::Metal => "Metal for AWT/Swing",
 
 			Self::Vulkan => "Vulkan for AWT/Swing",
@@ -32,10 +32,10 @@ impl const ListEntry for Feature {
 
 			Self::FontFix => "Font rendering fixes",
 
-			#[cfg(any(target_os = "linux", feature = "multi-os"))]
+			#[cfg(target_os = "linux")]
 			Self::NVIDIA => "NVIDIA rendering fixes",
 
-			#[cfg(any(target_env = "musl", feature = "multi-os"))]
+			#[cfg(target_env = "musl")]
 			Self::MUSL => "MUSL support",
 
 			Self::Kotlin => "Kotlin",
