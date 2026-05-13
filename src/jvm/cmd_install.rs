@@ -110,13 +110,9 @@ fn wrap_executables(
 	executable_suffixes: Vec<&str>,
 ) -> Result<()> {
 	for suffix in executable_suffixes {
-		let suffix: &str = if cfg!(windows) {
-			// `java.exe` & `javaw.exe`
-			&format!("{suffix}.exe")
-		} else {
-			// `java`
-			suffix
-		};
+		#[cfg(windows)]
+		// `java.exe` & `javaw.exe`
+		let suffix: &str = &format!("{suffix}.exe");
 		// $JAVA_HOME/bin/java(w)(.exe)
 		let java_executable: &Path = &java_home.join("bin").join(format!("java{suffix}"));
 		println!("Writing script to {}...", java_executable.display());

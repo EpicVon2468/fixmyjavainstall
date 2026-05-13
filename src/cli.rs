@@ -48,10 +48,9 @@ pub enum FujiCmd {
 	Manual {
 		#[arg(
 			value_name = "DIR",
-			default_value = if cfg!(feature = "dev") {
-				"./man"
-			} else {
-				"/usr/share/man"
+			default_value = cfg_select! {
+				feature = "dev" => "./man",
+				_ => "/usr/share/man",
 			},
 		)]
 		man_dir: PathBuf,

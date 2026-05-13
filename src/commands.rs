@@ -273,8 +273,9 @@ where
 	if components.clone().any(|comp: Component| comp == Component::ParentDir) {
 		bail!("Component::ParentDir found!");
 	};
+	#[cfg(target_os = "macos")]
 	// macOS .tar.gz is laid out differently.  it's a '.app'...
-	if cfg!(target_os = "macos") {
+	{
 		// skip "Contents"
 		components.next();
 		// only allow paths under "Home"

@@ -1,10 +1,9 @@
 //! The `fuji-tui` binary.
 use anyhow::Result;
 
+use fuji::tui::app::FujiApp;
+
 /// `fuji-tui`
 pub fn main() -> Result<()> {
-	cfg_select! {
-		feature = "tui" => fuji::tui::app::FujiApp::run(),
-		_ => Ok(()),
-	}
+	FujiApp::run()
 }
