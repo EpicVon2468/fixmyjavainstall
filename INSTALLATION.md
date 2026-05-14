@@ -1,4 +1,4 @@
-# Installation:
+# Installation
 
 [![Release-Crates]][Release-Crates-1]
 [![Release-GitHub]][Release-GitHub-1]
@@ -19,7 +19,7 @@ cd fixurjavainstall
 RUSTFLAGS="-C target-cpu=native -O" cargo build --release --path .
 ```
 
-## Documentation:
+## Documentation
 
 For standalone in-memory documentation:
 

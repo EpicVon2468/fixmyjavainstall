@@ -1,4 +1,4 @@
-# TODO:
+# TODO
 
 - [X] Look into why macOS `/usr/bin/*` is stubborn
     - [Oh dear...](https://apple.stackexchange.com/questions/193368/what-is-the-rootless-feature-in-el-capitan-really/)

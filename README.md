@@ -11,7 +11,7 @@
 
 MSRV: N/A (nightly, see: [`rust-toolchain.toml`](https://github.com/EpicVon2468/fixurjavainstall/blob/master/rust-toolchain.toml)).
 
-## Status:
+## Status
 
 - Linux: `[WORKING]-[TESTED]`
   - All core functionality is working, tested regularly.
@@ -28,7 +28,7 @@ MSRV: N/A (nightly, see: [`rust-toolchain.toml`](https://github.com/EpicVon2468/
     - No longer relevant because no batch scripts are used.  See above.
   - Even if installation works, `Feature`s will mostly be broken as we cannot use the wrapper script...
 
-## Stability & Versioning:
+## Stability & Versioning
 
 Fuji's version number is *only* incremented based on changes to the executables' behaviour (particularly: the CLI arguments).<br>
 API changes (i.e. a breaking change in a function parameter) are not considered "breaking".<br>
@@ -38,9 +38,67 @@ Fuji has not yet reached `1.0.0`, and uses nightly Rust for builds.<br>
 Generally speaking, the CLI will be kept as compatible as possible, and hopefully only new features will be added.<br>
 Support is only given for the absolute latest version.
 
-## Installation:
+## Installation
 
 See [INSTALLATION.md](https://github.com/EpicVon2468/fixurjavainstall/blob/master/INSTALLATION.md#installation)
+
+## Crate Feature Flags
+
+### `default`
+
+---
+
+Transitive Feature Flags: `openjdk-restricted`<br>
+Transitive dependencies: N/A
+
+Default features.
+
+---
+
+### `dev`
+
+---
+
+Transitive Feature Flags: N/A<br>
+Transitive dependencies: N/A
+
+Development-only code.  This should not be enabled unless you are contributing to Fuji.
+
+---
+
+### `interactive`
+
+---
+
+Transitive Feature Flags: N/A<br>
+Transitive dependencies: `dialoguer`
+
+Allows for interactive prompting of the user to configure some installation details without the CLI.
+
+---
+
+### `openjdk-restricted`
+
+---
+
+Transitive Feature Flags: N/A<br>
+Transitive dependencies: N/A
+
+Adds CLI flags which can allow use of [restricted methods](https://docs.oracle.com/en/java/javase/26/core/restricted-methods.html) in installed JVMs.
+
+---
+
+### `tui`
+
+---
+
+Transitive Feature Flags: N/A<br>
+Transitive dependencies: `ratatui`, `mavity-tui-components`
+
+Enables a TUI (Terminal User Interface) frontend for Fuji.<br>
+You can access this frontend with the `fuji-tui` executable.
+
+---
 
 ## Use of "Artificial Intelligence" ("AI") / Large Language Models (LLMs)
 
