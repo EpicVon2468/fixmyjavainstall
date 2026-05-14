@@ -26,12 +26,13 @@ MSRV: N/A (nightly, see: [`rust-toolchain.toml`](https://github.com/EpicVon2468/
     - Feature has been disabled, so this should _not_ crash.  Support will be re-evaluated in future.
   - Despite being quoted, `"\Program Files\fuji\jvm\25"` isn't treated as one path, as batch fails to handle the space in `Program Files`.
     - No longer relevant because no batch scripts are used.  See above.
+  - Even if installation works, `Feature`s will mostly be broken as we cannot use the wrapper script...
 
 ## Stability & Versioning:
 
 Fuji's version number is *only* incremented based on changes to the executables' behaviour (particularly: the CLI arguments).<br>
 API changes (i.e. a breaking change in a function parameter) are not considered "breaking".<br>
-Updates to dependencies will only update the minor version (even after `1.0.0`).<br>
+Updates to dependencies (including breaking version changes) will only update the minor version (even after `1.0.0`).
 
 Fuji has not yet reached `1.0.0`, and uses nightly Rust for builds.<br>
 Generally speaking, the CLI will be kept as compatible as possible, and hopefully only new features will be added.<br>

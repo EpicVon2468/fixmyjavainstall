@@ -45,7 +45,7 @@ RUSTDOCFLAGS="--default-theme=ayu" cargo doc --document-private-items --all-feat
 
 For online rustdoc pages:
 
-<https://docs.rs/crate/fixurjavainstall/latest>
+<https://docs.rs/fixurjavainstall/latest/fuji/>
 
 [Release-Crates]: https://img.shields.io/crates/v/fixurjavainstall?logo=rust
 [Release-Crates-1]: https://crates.io/crates/fixurjavainstall/

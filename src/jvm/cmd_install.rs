@@ -124,7 +124,7 @@ fn wrap_executables(
 			.context("Couldn't backup java executable!")?;
 		#[rustfmt::skip]
 		let script_file: PathBuf = install_wrapper(
-			gen_wrapper(java_home, features, suffix).as_str(),
+			&gen_wrapper(java_home, features, suffix),
 			java_home,
 			suffix,
 		).context("Couldn't install JVM wrapper script!")?;

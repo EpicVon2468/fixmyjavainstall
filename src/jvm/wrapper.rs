@@ -106,7 +106,7 @@ fn gen_features<F: Fn(&str, &str) -> String>(
 			"-XX:+UseCompactObjectHeaders",
 		);
 	};
-	#[allow(unused_mut)]
+	#[allow(unused_mut, reason = "Conditionally compiled code.")]
 	let mut requires_vulkan: bool = false;
 	#[cfg(target_os = "linux")]
 	if features.contains(&Feature::Wayland) {
