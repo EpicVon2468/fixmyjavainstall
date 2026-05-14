@@ -109,6 +109,10 @@ anyhow = ">=1.0.102, <2"
 console = ">=0.16.3, <1"
 shell-words = ">=1.1.1, <2"
 unicode-width = ">=0.2.2, <1"
+const_format = {
+	version = ">=0.2.36, <1",
+	default-features = false,
+}
 
 [dependencies.mavity-tui-components]
 git = "https://github.com/EpicVon2468/mavity-tui-components/"

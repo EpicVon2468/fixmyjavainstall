@@ -14,6 +14,7 @@
 - [ ] Optimise file locking to remove all potential for interception -- before 1.0.0
 - [ ] Allow adding `Feature`s to already-installed JVMs (including non-fuji) (`fuji-jvm patch <...>`)
 - [ ] List all modified/created folders & files in a log somewhere (?)
+- [ ] Investigate why the hell `apt` installs OpenJDK into `/usr/lib/jvm/java-(\d)+-openjdk-amd64`
 - [ ] [You have got to be kidding me](https://keith.github.io/xcode-man-pages/java_home.1.html).
   - `/usr/libexec/java_home`
   - `java_home` searches for `/Library/Java/JavaVirtualMachines/openjdk-(\d)+` (not literally, this is regex for demonstrative purposes)

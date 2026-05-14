@@ -1,4 +1,6 @@
 #![cfg(feature = "tui")]
+use const_format::concatcp;
+
 use mtc::{Component, centred_horizontally, static_anything, static_layout};
 
 use ratatui::Frame;
@@ -20,7 +22,12 @@ static_layout!(Layout::vertical([
 	Constraint::Length(1),
 ]));
 
-static_anything!(WIDTH, usize, LONG_VERSION.width());
+static_anything!(WIDTH, usize, FujiLogo::VERSION_TEXT.width());
+static_anything!(
+	LOGO_TEXT,
+	Text,
+	Text::from(FujiLogo::LOGO).centered().bold().light_blue(),
+);
 
 impl FujiLogo {
 	pub const LOGO: &'static str = "\
@@ -30,12 +37,14 @@ impl FujiLogo {
 		██      ██   ██  ██   ██    ▐█▌  \n\
 		██      ███████  ███████  ███████\
 	";
+
+	const VERSION_TEXT: &str = concatcp!('v', LONG_VERSION);
 }
 
 impl Component<FujiApp> for FujiLogo {
 	fn render(&self, frame: &mut Frame, area: Rect, _app: &FujiApp) {
 		let [top, bottom] = area.layout(&LAYOUT);
-		frame.render_widget(Text::from(Self::LOGO).centered().bold().light_blue(), top);
-		frame.render_widget(LONG_VERSION, centred_horizontally!(bottom, *WIDTH));
+		frame.render_widget(&*LOGO_TEXT, top);
+		frame.render_widget(Self::VERSION_TEXT, centred_horizontally!(bottom, *WIDTH));
 	}
 }

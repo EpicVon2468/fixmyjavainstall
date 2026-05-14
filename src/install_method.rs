@@ -37,7 +37,7 @@ value_enum_extensions!(
 		target_os = "linux" => Self::Symlink,
 		target_os = "macos" => Self::Path,
 		windows => Self::Path,
-		_ => panic!("Unsupported host!"),
+		_ => compile_error!("Unsupported host!"),
 	},
 	match *self {
 		Self::Path => "path",
