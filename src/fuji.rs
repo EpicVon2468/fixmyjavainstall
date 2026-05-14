@@ -151,10 +151,7 @@ pub const LINK_DIR: &str = cfg_select! {
 #[macro_export]
 macro_rules! fuji_version {
 	() => {
-		concat!(
-			env!("CARGO_PKG_VERSION"),
-			" – \"CI/CD PUBLISH ALREADY DAMN IT\"",
-		)
+		concat!(env!("CARGO_PKG_VERSION"), " – \"much refactor\"")
 	};
 }
 
