@@ -1,6 +1,7 @@
 #[macro_export]
 macro_rules! wrong_cmd {
-	($name:ident) => {
+	($name:ident $(,)?) => {
+		std::hint::cold_path();
 		#[rustfmt::skip]
 		return anyhow::Result::Err(
 			std::io::Error::new(
@@ -13,13 +14,13 @@ macro_rules! wrong_cmd {
 
 #[macro_export]
 macro_rules! wait_and_check_status {
-	($child:expr) => {
+	($child:expr $(,)?) => {
 		$crate::wait_and_check_status!($child, "command");
 	};
-	($child:expr, $name:literal) => {
+	($child:expr, $name:literal $(,)?) => {
 		$crate::wait_and_check_status!($child, $name, 1);
 	};
-	($child:expr, $name:literal, $substitute_code:expr) => {{
+	($child:expr, $name:literal, $substitute_code:expr $(,)?) => {{
 		use std::process::ExitStatus;
 
 		let status: ExitStatus = $child.wait().context(concat!($name, " never started?"))?;
@@ -29,13 +30,13 @@ macro_rules! wait_and_check_status {
 
 #[macro_export]
 macro_rules! check_status {
-	($status:ident) => {
+	($status:ident $(,)?) => {
 		$crate::check_status!($status, "command");
 	};
-	($status:ident, $name:literal) => {
+	($status:ident, $name:literal $(,)?) => {
 		$crate::check_status!($status, $name, 1);
 	};
-	($status:ident, $name:literal, $substitute_code:expr) => {{
+	($status:ident, $name:literal, $substitute_code:expr $(,)?) => {{
 		if (!$status.success()) {
 			return anyhow::Result::Err(anyhow::anyhow!(format!(
 				concat!($name, " failed with exit code: {}"),
@@ -73,7 +74,7 @@ macro_rules! os_archive {
 /// [`Locks`][`std::fs::File::try_lock`] a file.
 #[macro_export]
 macro_rules! lock {
-	($file:expr) => {
+	($file:expr $(,)?) => {
 		$file.try_lock().context("Couldn't acquire file lock!")?;
 	};
 }
@@ -81,7 +82,7 @@ macro_rules! lock {
 /// [`Unlocks`][`std::fs::File::unlock`] a file.
 #[macro_export]
 macro_rules! unlock {
-	($file:expr) => {
+	($file:expr $(,)?) => {
 		$file.unlock().context("Couldn't release file lock!")?;
 	};
 }
@@ -92,6 +93,8 @@ macro_rules! unlock {
 #[macro_export]
 macro_rules! flush_all {
 	() => {{
+		use std::io::Write as _;
+
 		let _ = std::io::stdout().flush();
 		let _ = std::io::stderr().flush();
 	}};
@@ -166,7 +169,7 @@ macro_rules! value_enum_extensions {
 
 #[macro_export]
 macro_rules! exists {
-	($path:expr) => {
+	($path:expr $(,)?) => {
 		std::fs::exists($path).unwrap_or(false)
 	};
 }

@@ -2,8 +2,11 @@ use std::cmp::min;
 use std::env::var;
 use std::fmt::Write;
 use std::fs::{File, create_dir_all};
+use std::hint::cold_path;
 use std::io::copy;
+use std::num::TryFromIntError;
 use std::path::{Component, Components, Path, PathBuf};
+use std::process::abort;
 use std::time::Duration;
 
 use anyhow::{Context as _, Result, bail};
@@ -22,7 +25,7 @@ use which::which;
 use zip::ZipArchive;
 use zip::read::ZipFile;
 
-use crate::{lock, unlock};
+use crate::{flush_all, lock, log_err, unlock};
 
 /// Checks if the program `name` exists.  This is equivalent to `which(name).is_ok()`.
 #[inline]
@@ -174,12 +177,20 @@ pub fn extract_jvm_zip(dest: &Path, input: &File) -> Result<()> {
 	let mut archive: ZipArchive<&File> =
 		ZipArchive::new(input).context("Couldn't open JVM archive!")?;
 	let multi: MultiProgress = MultiProgress::new();
-	#[expect(
-		clippy::cast_possible_truncation,
-		clippy::as_conversions,
-		reason = "A JVM `.zip` bigger than u64::MAX (16384 pebibytes) would be a zip bomb.  Bad clippy!"
-	)]
-	let max_len: u64 = archive.decompressed_size().unwrap() as u64;
+	let max_len: u64 = {
+		let decomp_size: u128 = archive.decompressed_size().unwrap_or(1);
+		let Ok(value): Result<u64, TryFromIntError> = u64::try_from(decomp_size) else {
+			cold_path();
+			log_err!("A `.zip` bigger than u64::MAX would be bigger than 16,384 pebibytes (PiB)!");
+			log_err!("At the time of writing, consumer-grade storage does not have such capacity!");
+			log_err!("Either integer underflow occurred, or Fuji somehow downloaded a zip bomb!");
+			log_err!("This is considered to be an extreme abnormality!");
+			log_err!("Fuji will now abort!");
+			flush_all!();
+			abort();
+		};
+		value
+	};
 	let pb: ProgressBar = multi.add(progress_bar(max_len));
 	let mut progress: u64 = 0;
 	let e_pb: ProgressBar = multi.add(progress_bar_template(
@@ -355,7 +366,7 @@ pub fn io_failure<P: AsRef<Path>, S: AsRef<str>>(dest: P, msg: S) -> String {
 	format!(
 		"Couldn't {} path '{}'!",
 		msg.as_ref(),
-		dest.as_ref().display()
+		dest.as_ref().display(),
 	)
 }
 
@@ -377,7 +388,7 @@ pub fn require_archlinux_java() -> Result<()> {
 			.arg("-S")
 			.arg("java-runtime-common")
 			.spawn()?,
-		"pacman"
+		"pacman",
 	);
 	Ok(())
 }
