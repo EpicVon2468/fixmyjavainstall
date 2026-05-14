@@ -44,9 +44,9 @@ See [INSTALLATION.md](https://github.com/EpicVon2468/fixurjavainstall/blob/maste
 
 ## Crate Feature Flags
 
-### `default`
-
 ---
+
+### `default`
 
 Transitive Feature Flags: `openjdk-restricted`<br>
 Transitive dependencies: N/A
@@ -57,8 +57,6 @@ Default features.
 
 ### `dev`
 
----
-
 Transitive Feature Flags: N/A<br>
 Transitive dependencies: N/A
 
@@ -67,8 +65,6 @@ Development-only code.  This should not be enabled unless you are contributing t
 ---
 
 ### `interactive`
-
----
 
 Transitive Feature Flags: N/A<br>
 Transitive dependencies: `dialoguer`
@@ -79,8 +75,6 @@ Allows for interactive prompting of the user to configure some installation deta
 
 ### `openjdk-restricted`
 
----
-
 Transitive Feature Flags: N/A<br>
 Transitive dependencies: N/A
 
@@ -89,8 +83,6 @@ Adds CLI flags which can allow use of [restricted methods](https://docs.oracle.c
 ---
 
 ### `tui`
-
----
 
 Transitive Feature Flags: N/A<br>
 Transitive dependencies: `ratatui`, `mavity-tui-components`
