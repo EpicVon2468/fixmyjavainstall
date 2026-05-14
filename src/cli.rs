@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use clap::{Parser, Subcommand};
 
 use crate::install_method::InstallMethod;
-use crate::{LINK_DIR, LONG_VERSION};
+use crate::{LINK_DIR, fuji_version};
 
 /// Fix Ur Java Install – A JVM & Kotlin management utility.
 ///
@@ -11,7 +11,7 @@ use crate::{LINK_DIR, LONG_VERSION};
 #[derive_const(Parser)]
 #[command(
 	version,
-	long_version = LONG_VERSION,
+	long_version = fuji_version!(),
 	author,
 	name = "fuji",
 	display_name = "fuji",

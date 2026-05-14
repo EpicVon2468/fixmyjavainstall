@@ -70,7 +70,7 @@ impl<T: FujiValueEnum> FujiValueEnumParser<T> {
 
 #[macro_export]
 macro_rules! fuji_value_enum_parser {
-	($name:ty) => {
+	($name:ty $(,)?) => {
 		#[rustfmt::skip]
 		#[automatically_derived]
 		impl clap::builder::TypedValueParser for $crate::fuji_value_enum::FujiValueEnumParser<$name> {

@@ -115,30 +115,6 @@ exceptions = [
 		],
 		crate = "untrusted"
 	},
-	{
-		allow = [
-			"Zlib"
-		],
-		crate = "const_format"
-	},
-	{
-		allow = [
-			"Zlib"
-		],
-		crate = "const_format_proc_macros"
-	},
-	{
-		allow = [
-			"Zlib"
-		],
-		crate = "konst"
-	},
-	{
-		allow = [
-			"Zlib"
-		],
-		crate = "konst_macro_rules"
-	},
 ]
 
 # More documentation about the 'bans' section can be found here:

@@ -148,11 +148,15 @@ pub const LINK_DIR: &str = cfg_select! {
 	_ => compile_error!("Unsupported host!"),
 };
 
-pub const VERSION: &str = env!("CARGO_PKG_VERSION");
-pub const LONG_VERSION: &str = concat!(
-	env!("CARGO_PKG_VERSION"),
-	" – \"CI/CD PUBLISH ALREADY DAMN IT\"",
-);
+#[macro_export]
+macro_rules! fuji_version {
+	() => {
+		concat!(
+			env!("CARGO_PKG_VERSION"),
+			" – \"CI/CD PUBLISH ALREADY DAMN IT\"",
+		)
+	};
+}
 
 /// Wrapper for [`entrypoint`], which takes in additional arguments for a shorthand / alias.
 ///
