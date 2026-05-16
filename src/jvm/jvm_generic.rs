@@ -23,8 +23,7 @@ pub struct DownloadJVMArgs<'a> {
 	clippy::needless_pass_by_value,
 	reason = "Literally nothing else is (or ever will be) using the args after I'm done with them.  Bad clippy!"
 )]
-pub fn jvm_download_impl<S: AsRef<str>>(url: S, args: DownloadJVMArgs) -> Result<()> {
-	let url: &str = url.as_ref();
+pub fn jvm_download_impl(url: String, args: DownloadJVMArgs) -> Result<()> {
 	let java_home: &Path = args.java_home;
 	let archive: &Path = &java_home.with_added_extension(os_archive!());
 

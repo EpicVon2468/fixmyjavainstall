@@ -3,11 +3,14 @@ use std::io::Write as _;
 
 use anyhow::{Context as _, Result};
 
-use crate::commands::io_failure;
-use crate::{exists, lock, unlock};
+use crate::{exists, lock, unlock, io_failure};
+
+pub fn add_to_path<P: AsRef<str>>(dir: P) -> Result<()> {
+	add_to_path_(dir.as_ref())
+}
 
 #[cfg(windows)]
-pub fn add_to_path<P: AsRef<str>>(dir: P) -> Result<()> {
+fn add_to_path_(dir: &str) -> Result<()> {
 	crate::win_link::win_link(dir).context("Couldn't mutate PATH (insufficient permissions?)!")
 }
 
@@ -21,7 +24,7 @@ pub const FUJI_ENV_FILE: &str = cfg_select! {
 
 #[cfg(unix)]
 fn fail(reason: &str) -> String {
-	io_failure(FUJI_ENV_FILE, reason)
+	io_failure!(FUJI_ENV_FILE, reason)
 }
 
 #[cfg(unix)]
@@ -54,8 +57,7 @@ pub fn append_or_create_env_file() -> Result<File> {
 }
 
 #[cfg(target_os = "macos")]
-pub fn add_to_path<P: AsRef<str>>(dir: P) -> Result<()> {
-	let dir: &str = dir.as_ref();
+fn add_to_path_(dir: &str) -> Result<()> {
 	if exists!(dir) && existing_env_file()?.contains(dir) {
 		println!("Path file already contained directory {dir}!  Continuing!");
 		return Ok(());
@@ -81,8 +83,7 @@ prepend_dir_to_path() {
 ";
 
 #[cfg(target_os = "linux")]
-pub fn add_to_path<P: AsRef<str>>(dir: P) -> Result<()> {
-	let dir: &str = dir.as_ref();
+fn add_to_path_(dir: &str) -> Result<()> {
 	let exists: bool = exists!(dir);
 	if exists && existing_env_file()?.contains(dir) {
 		println!("Path file already contained directory {dir}!  Continuing!");

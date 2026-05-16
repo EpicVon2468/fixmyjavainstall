@@ -9,10 +9,10 @@ use anyhow::{Context as _, Result, bail};
 use indicatif::ProgressBar;
 
 use crate::cli::FujiCmd;
-use crate::commands::{has_program, io_failure, progress_bar};
+use crate::commands::{has_program, progress_bar};
 use crate::env_util::add_to_path;
 use crate::install_method::InstallMethod;
-use crate::{compiler_unreachable, exists, wait_and_check_status, wrong_cmd};
+use crate::{compiler_unreachable, exists, wait_and_check_status, wrong_cmd, io_failure};
 
 #[cfg(not(windows))]
 pub fn cmd_link(command: FujiCmd) -> Result<()> {
@@ -38,7 +38,10 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	link_dir: S,
 	install_method: &InstallMethod,
 ) -> Result<()> {
-	let path: &Path = path.as_ref();
+	link_impl_(path.as_ref(), link_dir.as_ref(), install_method)
+}
+
+fn link_impl_(path: &Path, link_dir: &Path, install_method: &InstallMethod) -> Result<()> {
 	let bin: PathBuf = path.join("bin");
 	if install_method
 		.program_name()
@@ -55,7 +58,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 	let mut progress: u64 = 0;
 	let entries: ReadDir = bin
 		.read_dir()
-		.with_context(|| io_failure(bin, "list directory"))?;
+		.with_context(|| io_failure!(&bin, "list directory"))?;
 	for entry in entries {
 		let file: &Path = &entry?.path();
 		if file.is_dir() {
@@ -75,7 +78,7 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 		let filename: &OsStr = file
 			.file_name()
 			.context("Couldn't get filename for directory entry!")?;
-		let dest: PathBuf = link_dir.as_ref().join(filename);
+		let dest: PathBuf = link_dir.join(filename);
 		match *install_method {
 			InstallMethod::Symlink =>
 				symlink_link(file, dest).context("Couldn't link with symlink!"),
@@ -98,15 +101,17 @@ pub fn link_impl<P: AsRef<Path>, S: AsRef<Path>>(
 /// 	* If `dest` exists and is a directory, [`remove_dir_all`] is used.
 /// 	* If `dest` exists and is a file, [`remove_file`] is used.
 pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Result<()> {
-	let source: &Path = source.as_ref();
-	let dest: &Path = dest.as_ref();
+	symlink_link_(source.as_ref(), dest.as_ref())
+}
+
+fn symlink_link_(source: &Path, dest: &Path) -> Result<()> {
 	if exists!(dest) {
 		#[rustfmt::skip]
 		if dest.is_file() {
 			remove_file(dest)
 		} else {
 			remove_dir_all(dest)
-		}.with_context(|| io_failure(dest, "remove existing"))?;
+		}.with_context(|| io_failure!(dest, "remove existing"))?;
 	};
 	symlink_impl(source, dest).with_context(|| {
 		format!(
@@ -121,13 +126,17 @@ pub fn symlink_link<P: AsRef<Path>, S: AsRef<Path>>(source: P, dest: S) -> Resul
 ///
 /// Platform-specific behaviour:
 ///
-/// * UNIX-likes: Delegates to [`std::os::unix::fs::symlink`].
-/// * Windows: Checks if `original` is a directory.  If `true`, delegates to [`std::os::windows::fs::symlink_dir`], else [`std::os::windows::fs::symlink_file`].
+/// * UNIX-likes: Delegates to [symlink][`std::os::unix::fs::symlink`].
+/// * Windows: Checks if `original` is a directory.  If `true`, delegates to [symlink_dir][`std::os::windows::fs::symlink_dir`], else [symlink_file][`std::os::windows::fs::symlink_file`].
 #[allow(
 	rustdoc::broken_intra_doc_links,
 	reason = "Conditionally compiled code."
 )]
 pub fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Result<()> {
+	symlink_impl_(original.as_ref(), link.as_ref())
+}
+
+fn symlink_impl_(original: &Path, link: &Path) -> Result<()> {
 	#[cfg(unix)]
 	{
 		use std::os::unix::fs::symlink;
@@ -138,7 +147,7 @@ pub fn symlink_impl<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> Res
 	{
 		use std::os::windows::fs::{symlink_dir, symlink_file};
 
-		return if original.as_ref().is_dir() {
+		return if original.is_dir() {
 			// https://doc.rust-lang.org/std/os/windows/fs/fn.symlink_dir.html
 			symlink_dir(original, link).context("Windows directory symbolic linking failed!")
 		} else {
@@ -154,8 +163,10 @@ pub fn debian_link<P: AsRef<Path>, S: AsRef<OsStr>, S2: AsRef<OsStr>>(
 	filename: S,
 	dest: S2,
 ) -> Result<()> {
-	let file: &Path = file.as_ref();
-	let filename: &OsStr = filename.as_ref();
+	debian_link_(file.as_ref(), filename.as_ref(), dest.as_ref())
+}
+
+fn debian_link_(file: &Path, filename: &OsStr, dest: &OsStr) -> Result<()> {
 	let mut install_child: Child = Command::new("update-alternatives")
 		.arg("--install")
 		.arg(dest)

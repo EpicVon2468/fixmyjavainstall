@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 
 use anyhow::{Context as _, Result};
 
-use crate::commands::io_failure;
+use crate::io_failure;
 use crate::jvm::feature::Feature;
 
 #[inline]
@@ -189,10 +189,10 @@ pub fn install_wrapper(script: &str, java_home: &Path, bin_suffix: &str) -> Resu
 		.write(true)
 		.create_new(true)
 		.open(&script_file)
-		.with_context(|| io_failure(&script_file, "create"))?;
+		.with_context(|| io_failure!(&script_file, "create"))?;
 	result
 		.write_all(script.as_bytes())
-		.with_context(|| io_failure(&script_file, "write"))?;
+		.with_context(|| io_failure!(&script_file, "write"))?;
 	// rwxr-xr-x
 	#[cfg(unix)]
 	{
@@ -200,7 +200,7 @@ pub fn install_wrapper(script: &str, java_home: &Path, bin_suffix: &str) -> Resu
 
 		result
 			.set_permissions(Permissions::from_mode(0o755))
-			.with_context(|| io_failure(&script_file, "set permissions for"))?;
+			.with_context(|| io_failure!(&script_file, "set permissions for"))?;
 	};
 	Ok(script_file)
 }

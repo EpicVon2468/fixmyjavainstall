@@ -4,7 +4,6 @@ use std::path::{Path, PathBuf};
 use anyhow::{Context as _, Result};
 
 use crate::cmd_link::{link_impl, symlink_link};
-use crate::commands::io_failure;
 use crate::jvm::feature::Feature;
 use crate::jvm::java_home::set_java_home;
 use crate::jvm::jvm::JVM;
@@ -16,7 +15,7 @@ use crate::jvm::jvm_temurin::download_temurin;
 use crate::jvm::major_version::MajorVersion;
 use crate::jvm::wrapper::{gen_wrapper, install_wrapper};
 use crate::jvm::{JavaVersion, Op};
-use crate::{FUJI_DIR, LINK_DIR, compiler_unreachable, exists, wrong_cmd};
+use crate::{FUJI_DIR, LINK_DIR, compiler_unreachable, exists, wrong_cmd, io_failure};
 
 pub fn cmd_install(op: Op) -> Result<()> {
 	#[rustfmt::skip]
@@ -144,8 +143,8 @@ fn clean_java_home(java_home: &Path) -> Result<()> {
 			remove_dir_all(java_home)
 		} else {
 			remove_file(java_home)
-		}.with_context(|| io_failure(java_home, "remove"));
+		}.with_context(|| io_failure!(java_home, "remove"));
 		result.context("Couldn't remove entry which was occupying the new JAVA_HOME!")?;
 	};
-	create_dir_all(java_home).with_context(|| io_failure(java_home, "create directory"))
+	create_dir_all(java_home).with_context(|| io_failure!(java_home, "create directory"))
 }

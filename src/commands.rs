@@ -25,7 +25,7 @@ use which::which;
 use zip::ZipArchive;
 use zip::read::ZipFile;
 
-use crate::{flush_all, lock, log_err, unlock};
+use crate::{flush_all, io_failure, lock, log_err, unlock};
 
 /// Checks if the program `name` exists.  This is equivalent to `which(name).is_ok()`.
 #[inline]
@@ -108,11 +108,14 @@ pub fn extract_jvm<S: AsRef<Path>, P: AsRef<Path>>(
 	dest: P,
 	is_zip: bool,
 ) -> Result<()> {
+	extract_jvm_(archive.as_ref(), dest.as_ref(), is_zip)
+}
+
+fn extract_jvm_(archive: &Path, dest: &Path, is_zip: bool) -> Result<()> {
 	let dest: &Path = &dest
-		.as_ref()
 		.canonicalize()
 		.context("Couldn't canonicalise destination path!")?;
-	let input: File = File::open(archive.as_ref()).context("Couldn't open JVM archive!")?;
+	let input: File = File::open(archive).context("Couldn't open JVM archive!")?;
 	lock!(input);
 	let result: Result<()> = if is_zip {
 		extract_jvm_zip(dest, &input)
@@ -262,7 +265,7 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 		0o644
 	};
 	set_permissions(path, Permissions::from_mode(new_mode))
-		.with_context(|| io_failure(path, "set permissions for"))
+		.with_context(|| io_failure!(path, "set permissions for"))
 }
 
 #[inline]
@@ -300,11 +303,11 @@ where
 
 /// Downloads a resource from `url` to `dest`.
 pub fn download<S: AsRef<str>, P: AsRef<Path>>(url: S, dest: P) -> Result<()> {
-	let dest: &Path = dest.as_ref();
+	download_(url.as_ref(), dest.as_ref())
+}
 
-	let response: Response<Body> = get(url.as_ref())
-		.call()
-		.context("Couldn't download resource!")?;
+fn download_(url: &str, dest: &Path) -> Result<()> {
+	let response: Response<Body> = get(url).call().context("Couldn't download resource!")?;
 
 	let len: u64 = response
 		.headers()
@@ -362,12 +365,15 @@ pub fn progress_bar(len: u64) -> ProgressBar {
 	progress_bar_template(len, TEMPLATE)
 }
 
-pub fn io_failure<P: AsRef<Path>, S: AsRef<str>>(dest: P, msg: S) -> String {
-	format!(
-		"Couldn't {} path '{}'!",
-		msg.as_ref(),
-		dest.as_ref().display(),
-	)
+#[macro_export]
+macro_rules! io_failure {
+	($dest:expr, $msg:expr $(,)?) => {
+		format!(
+			"Couldn't {} path '{}'!",
+			$msg,
+			std::convert::AsRef::<std::path::Path>::as_ref($dest).display()
+		)
+	};
 }
 
 #[must_use]
