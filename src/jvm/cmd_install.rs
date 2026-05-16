@@ -15,7 +15,7 @@ use crate::jvm::jvm_temurin::download_temurin;
 use crate::jvm::major_version::MajorVersion;
 use crate::jvm::wrapper::{gen_wrapper, install_wrapper};
 use crate::jvm::{JavaVersion, Op};
-use crate::{FUJI_DIR, LINK_DIR, compiler_unreachable, exists, wrong_cmd, io_failure};
+use crate::{FUJI_DIR, LINK_DIR, compiler_unreachable, exists, io_failure, wrong_cmd};
 
 pub fn cmd_install(op: Op) -> Result<()> {
 	#[rustfmt::skip]

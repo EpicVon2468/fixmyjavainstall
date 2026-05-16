@@ -58,3 +58,4 @@
   - If Fuji converts `.md` man pages into (g)roff man pages, how does licensing work?
   - Either way, make sure to manually restore the licence header to the converted files, as `pandoc` seems to trim it...
   - What happens as relates to Java Platform, Standard Edition's licence?
+- [ ] Fix CI/CD publishing being broken

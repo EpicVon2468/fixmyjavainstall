@@ -12,7 +12,7 @@ use crate::cli::FujiCmd;
 use crate::commands::{has_program, progress_bar};
 use crate::env_util::add_to_path;
 use crate::install_method::InstallMethod;
-use crate::{compiler_unreachable, exists, wait_and_check_status, wrong_cmd, io_failure};
+use crate::{compiler_unreachable, exists, io_failure, wait_and_check_status, wrong_cmd};
 
 #[cfg(not(windows))]
 pub fn cmd_link(command: FujiCmd) -> Result<()> {

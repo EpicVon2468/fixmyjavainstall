@@ -3,7 +3,7 @@ use std::io::Write as _;
 
 use anyhow::{Context as _, Result};
 
-use crate::{exists, lock, unlock, io_failure};
+use crate::{exists, io_failure, lock, unlock};
 
 pub fn add_to_path<P: AsRef<str>>(dir: P) -> Result<()> {
 	add_to_path_(dir.as_ref())
