@@ -143,8 +143,8 @@ fn clean_java_home(java_home: &Path) -> Result<()> {
 			remove_dir_all(java_home)
 		} else {
 			remove_file(java_home)
-		}.with_context(|| io_failure!(java_home, "remove"));
+		}.with_context(|| io_failure!(java_home.display(), "remove"));
 		result.context("Couldn't remove entry which was occupying the new JAVA_HOME!")?;
 	};
-	create_dir_all(java_home).with_context(|| io_failure!(java_home, "create directory"))
+	create_dir_all(java_home).with_context(|| io_failure!(java_home.display(), "create directory"))
 }

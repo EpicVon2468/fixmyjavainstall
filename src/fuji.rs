@@ -218,7 +218,7 @@ pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 /// * If [`FujiArgs::command`][`field@FujiArgs::command`] is [`Some`]:
 /// 	* Propagated up from the following functions (if they are called):
 /// 		* [`cmd_link`][`cmd_link()`]
-///			* [`cmd_manage`][`cmd_manage()`]
+/// 		* [`cmd_manage`][`cmd_manage()`]
 /// 		* [`cmd_man`][`cmd_man()`]
 ///
 /// # Returns
@@ -231,7 +231,7 @@ pub fn alias_entrypoint(extras: &[OsString]) -> Result<()> {
 /// * If [`FujiArgs::command`][`field@FujiArgs::command`] is [`Some`]:
 /// 	* Propagated up from the following functions (if they are called):
 /// 		* [`cmd_link`][`cmd_link()`]
-///			* [`cmd_manage`][`cmd_manage()`]
+/// 		* [`cmd_manage`][`cmd_manage()`]
 /// 		* [`cmd_man`][`cmd_man()`]
 ///
 /// # Examples

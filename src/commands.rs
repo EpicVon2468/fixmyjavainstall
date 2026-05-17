@@ -265,7 +265,7 @@ pub fn update_perms(path: &Path, mode: Option<u32>, is_dir: bool) -> Result<()> 
 		0o644
 	};
 	set_permissions(path, Permissions::from_mode(new_mode))
-		.with_context(|| io_failure!(path, "set permissions for"))
+		.with_context(|| io_failure!(path.display(), "set permissions for"))
 }
 
 #[inline]
@@ -368,11 +368,7 @@ pub fn progress_bar(len: u64) -> ProgressBar {
 #[macro_export]
 macro_rules! io_failure {
 	($dest:expr, $msg:expr $(,)?) => {
-		format!(
-			"Couldn't {} path '{}'!",
-			$msg,
-			std::convert::AsRef::<std::path::Path>::as_ref($dest).display()
-		)
+		format!("Couldn't {} path '{}'!", $msg, $dest,)
 	};
 }
 

@@ -58,7 +58,7 @@ fn link_impl_(path: &Path, link_dir: &Path, install_method: &InstallMethod) -> R
 	let mut progress: u64 = 0;
 	let entries: ReadDir = bin
 		.read_dir()
-		.with_context(|| io_failure!(&bin, "list directory"))?;
+		.with_context(|| io_failure!(bin.display(), "list directory"))?;
 	for entry in entries {
 		let file: &Path = &entry?.path();
 		if file.is_dir() {
@@ -111,7 +111,7 @@ fn symlink_link_(source: &Path, dest: &Path) -> Result<()> {
 			remove_file(dest)
 		} else {
 			remove_dir_all(dest)
-		}.with_context(|| io_failure!(dest, "remove existing"))?;
+		}.with_context(|| io_failure!(dest.display(), "remove existing"))?;
 	};
 	symlink_impl(source, dest).with_context(|| {
 		format!(
