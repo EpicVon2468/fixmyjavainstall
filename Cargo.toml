@@ -151,7 +151,7 @@ features = [
 
 [dependencies.tar]
 # Explicit specification because lower versions have potential vulns
-version = ">=0.4.45, <1"
+version = ">=0.4.46, <1"
 default-features = false
 
 [dependencies.ureq]
